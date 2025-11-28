@@ -5,6 +5,8 @@
     <RootNamespace>nfm_world</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>USE_BASS</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
       <PackageReference Include="ManagedBass" Version="4.0.1" />
@@ -13,6 +15,14 @@
       <PackageReference Include="Silk.NET.Input.Glfw" Version="2.22.0" />
       <PackageReference Include="Silk.NET.OpenGL" Version="2.22.0" />
       <PackageReference Include="Silk.NET.Windowing.Sdl" Version="2.22.0" />
-    <PackageReference Include="SkiaSharp" Version="3.119.1"/>
+      <PackageReference Include="SkiaSharp" Version="3.119.1" />
+      <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.1" />
   </ItemGroup>
+
+  <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
+    <Copy SourceFiles="skiadriver/bass.dll" DestinationFolder="$(OutDir)" />
+  </Target>
+  <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
+    <Copy SourceFiles="skiadriver/libbass.so" DestinationFolder="$(OutDir)" />
+  </Target>
 </Project>
