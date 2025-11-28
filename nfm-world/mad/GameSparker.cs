@@ -10,6 +10,7 @@ public class GameSparker
 
     private static long accumulator = 0;
     private static long lastFrameTime = 0;
+    private static int physics_dt = 47;
 
     public static void Load()
     {
@@ -36,9 +37,10 @@ public class GameSparker
 
         accumulator += (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) - lastFrameTime;
 
-        while(accumulator >= 21)
+
+        while(accumulator >= physics_dt)
         {
-            accumulator -= 21;
+            accumulator -= physics_dt;
             Medium.Around(cars[0], true);
         }
 

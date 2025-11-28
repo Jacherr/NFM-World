@@ -22,6 +22,7 @@
   <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
     <Copy SourceFiles="skiadriver/bass.dll" DestinationFolder="$(OutDir)" />
   </Target>
+
   <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
     <Copy SourceFiles="skiadriver/libbass.so" DestinationFolder="$(OutDir)" />
   </Target>
