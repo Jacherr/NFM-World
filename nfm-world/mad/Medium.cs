@@ -86,12 +86,12 @@ public class Medium
 
     internal static int Fallen;
     private static float _fo = 1.0F;
-    internal static int FocusPoint = 400;
+    internal static int FocusPoint = 640;
     internal static int Fogd = 7;
     private static int _fvect = 200;
     private static float _gofo = (float) (0.33000001311302185 + URandom.Double() * 1.34);
     internal static int Ground = 250;
-    internal static int H = 450;
+    internal static int H = 720;
     internal static int Hit = 45000;
     internal static int Ih = 0;
     internal static int Iw = 0;
@@ -175,7 +175,7 @@ public class Medium
     private static int[] _twn;
     internal static bool Vert;
     internal static int Vxz = 180;
-    internal static int W = 800;
+    internal static int W = 1280;
     internal static int X;
     internal static int Xz;
     internal static int Y;

@@ -38,7 +38,7 @@ public unsafe class Program
     private readonly Glfw _glfw;
     private static bool loaded;
     private const int FrameDelay = (int) (1000 / 21.3f);
-    private const float scale = 2.5f;
+    private const float scale = 1.6f;
 
     private static readonly FrozenDictionary<Key, Keys> KeyMapping = new Dictionary<Key, Keys>()
     {
@@ -171,7 +171,7 @@ public unsafe class Program
         var options = WindowOptions.Default;
         options.Size = new Vector2D<int>((int)(800*scale), (int)(450*scale));
         options.Title = "Silk.NET with SkiaSharp Triangle";
-        options.UpdatesPerSecond = 21.3f;
+        options.UpdatesPerSecond = 60.0f;
         options.ShouldSwapAutomatically = false;
         options.API = GraphicsAPI.Default;
 
@@ -376,11 +376,11 @@ internal class SkiaSharpGraphics(SKCanvas canvas) : IGraphics
     {
         set
         {
-            canvas.Scale(1/sx, 1/sy);
-            canvas.Scale(value.X, value.Y);
+            //canvas.Scale(1/sx, 1/sy);
+            //canvas.Scale(value.X, value.Y);
             sx = value.X;
             sy = value.Y;
-            _paint.StrokeWidth = (sx + sy) / 3;
+            //_paint.StrokeWidth = (sx + sy) / 3;
         }
     }
 
