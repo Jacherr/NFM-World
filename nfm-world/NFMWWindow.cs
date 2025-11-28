@@ -17,6 +17,7 @@ using Keys = NFMWorld.Util.Keys;
 using Window = Silk.NET.Windowing.Window;
 using NFMWorld.DriverInterface;
 using NFMWorld.SkiaDriver;
+using NFMWorld.Mad;
 
 namespace NFMWorld;
 
@@ -198,10 +199,10 @@ public unsafe class Program
         {
             loaded = true;
                 
-            //GameSparker.Load();
+            GameSparker.Load();
         }
             
-        //GameSparker.GameTick();
+        GameSparker.GameTick();
         
         _canvas.Flush();
         _window.SwapBuffers();
