@@ -2774,9 +2774,9 @@ class ContO
         return (i - i269) * (i - i269) + (i270 - i271) * (i270 - i271);
     }
 
-    private void Rot(int[] ais, int[] is272, int i, int i273, int i274, int i275)
+    private void Rot(int[] ais, int[] is272, int i, int i273, float i274, int i275)
     {
-        if (i274 != 0)
+        if ((int)i274 != 0)
         {
             for (var i276 = 0; i276 < i275; i276++)
             {

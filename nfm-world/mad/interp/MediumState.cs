@@ -5,10 +5,10 @@ public struct MediumState
     public int X;
     public int Y;
     public int Z;
-    public int Xz;
-    public int Zy;
+    public float Xz;
+    public float Zy;
     public int FocusPoint;
-    public int Vxz;
+    public float Vxz;
 
     public MediumState()
     {

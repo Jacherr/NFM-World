@@ -21,6 +21,7 @@ public class GameSparker
 
     public static void Load()
     {
+        timer = new Stopwatch();
         timer.Start();
         new Medium();
         currentMediumState = new MediumState();
@@ -51,7 +52,7 @@ public class GameSparker
         while(accumulator >= physics_dt)
         {
             accumulator -= physics_dt;
-            Medium.Around(cars[0], true);
+            Medium.Around(cars[0], false);
 
             prevMediumState = currentMediumState;
             currentMediumState = new MediumState();
@@ -61,7 +62,7 @@ public class GameSparker
         MediumState interp_state = currentMediumState.InterpWith(prevMediumState, interp_ratio);
         interp_state.Apply();
 
-        Console.WriteLine(currentMediumState.X + ", " + prevMediumState.X + ", " + interp_state.X + ", " + interp_ratio);
+        Console.WriteLine(currentMediumState.Xz + ", " + prevMediumState.Xz + ", " + interp_state.Xz + ", " + interp_ratio);
 
         Render();
 

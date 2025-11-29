@@ -174,13 +174,13 @@ public class Medium
     private static readonly float[] Tsin = new float[360];
     private static int[] _twn;
     internal static bool Vert;
-    internal static int Vxz = 180;
+    internal static float Vxz = 180f;
     internal static int W = 1280;
     internal static int X;
-    internal static int Xz;
+    internal static float Xz;
     internal static int Y;
     internal static int Z;
-    internal static int Zy;
+    internal static float Zy;
 
     static Medium()
     {
@@ -409,12 +409,12 @@ public class Medium
         var r = x % m;
         return r<0 ? r + m : r;
     }
-    internal static float Sin(int deg)
+    internal static float Sin(float deg)
     {
         return (float)Math.Sin(deg * (Math.PI / 180));
     }
         
-    internal static float Cos(int deg)
+    internal static float Cos(float deg)
     {
         return (float)Math.Cos(deg * (Math.PI / 180));
     }
@@ -2227,9 +2227,9 @@ public class Medium
         return Rand[_trn] / 10.0F;
     }
 
-    private static void Rot(int[] ais, int[] is274, int i, int i275, int i276, int i277)
+    private static void Rot(int[] ais, int[] is274, int i, int i275, float i276, int i277)
     {
-        if (i276 != 0)
+        if ((int)i276 != 0)
         {
             for (var i278 = 0; i278 < i277; i278++)
             {

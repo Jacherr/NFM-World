@@ -1464,9 +1464,9 @@ class Plane : IComparable<Plane>
         _projf = _projf / 3.0F;
     }
 
-    internal void Rot(int[] ais, int[] is163, int i, int i164, int i165, int i166)
+    internal void Rot(int[] ais, int[] is163, int i, int i164, float i165, int i166)
     {
-        if (i165 != 0)
+        if ((int)i165 != 0)
         {
             for (var i167 = 0; i167 < i166; i167++)
             {
