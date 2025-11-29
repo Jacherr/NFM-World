@@ -148,7 +148,7 @@ public static void KeyPressed(Keys key)
         
         cars = new ContO[10];
 
-        FileUtil.LoadFiles("../data/cars", CarRads, (ais, id) =>
+        FileUtil.LoadFiles("./data/cars", CarRads, (ais, id) =>
         {
             cars[id] = new ContO(ais);
             cars[id] = new ContO(cars[id], 0, 0, 0, 0);
