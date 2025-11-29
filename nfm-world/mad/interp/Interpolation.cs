@@ -2,9 +2,9 @@ namespace NFMWorld.Mad.Interp;
 
 public class Interpolation {
     public static int InterpolateCoord(int current, int prev, float ratio) {
-        int diff = current - prev;
-        int interp = (int) (diff * ratio) + prev;
-        return interp;
+        float diff = current - prev;
+        float interp = (diff * ratio) + prev;
+        return (int)interp;
     }
 
     public static float InterpolateAngle(float current, float prev, float ratio) {
