@@ -20,8 +20,13 @@
       <None Include="data\**\*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
-  <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
+  <!-- windows builds -->
+  <Target Name="CopyCustomContentWindows" AfterTargets="AfterBuild" Condition="'$(OS)' == 'Windows_NT'">
     <Copy SourceFiles="skiadriver/bass.dll" DestinationFolder="$(OutDir)" />
+  </Target>
+
+  <!-- linux builds -->
+  <Target Name="CopyCustomContentLinux" AfterTargets="AfterBuild" Condition="'$(OS)' != 'Windows_NT'">
     <Copy SourceFiles="skiadriver/libbass.so" DestinationFolder="$(OutDir)" />
   </Target>
 
