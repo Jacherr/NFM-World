@@ -1191,7 +1191,9 @@ internal class Mad
         for (var i49 = 0; i49 < 4; i49++)
         {
             isWheelGrounded[i49] = false;
-            if (wheely[i49] > 245.0F)
+            // ab precision (lower vaslue = easier)
+            // default 245
+            if (wheely[i49] > 240.0F)
             {
                 nGroundedWheels++;
                 Wtouch = true;
