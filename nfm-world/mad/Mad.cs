@@ -5,7 +5,7 @@ namespace NFMWorld.Mad;
 
 internal class Mad
 {
-    private static readonly float _tickRate = 0.333333f;
+    private static readonly float _tickRate = GameSparker.PHYSICS_MULTIPLIER;
 
     internal bool Btab;
     internal int Capcnt;
@@ -564,7 +564,7 @@ internal class Mad
                     {
                         Dcomp += (int)(0.5 * Stat.Airs) * _tickRate;//
                     }
-                    f12 = -Stat.Airc * _tickRate;
+                    f12 = Stat.Airc;
                 }
                 else if (Dcomp != 0.0F && Ucomp > -2.0F)
                 {
@@ -1708,9 +1708,15 @@ internal class Mad
         } else
             _cntouch = 0; // CHK12
         //DS-addons: Bad landing hotfix
-        int newy = (int) ((wheely[0] + wheely[1] + wheely[2] + wheely[3]) / 4.0F - (float) bottomy * Medium.Cos(this.Pzy) * Medium.Cos(this.Pxy) + f12);
+
+        int newy = (int) ((wheely[0] + wheely[1] + wheely[2] + wheely[3]) / 4.0F - (bottomy * Medium.Cos(Pzy) * Medium.Cos(Pxy) + f12));
+        Console.WriteLine(Speed);
+        
         py = conto.Y - newy;
-        conto.Y = newy;
+        float diff = py;
+        diff = diff * _tickRate;
+        conto.Y -= (int)diff;
+
         //conto.y = (int) ((fs_23[0] + fs_23[1] + fs_23[2] + fs_23[3]) / 4.0F - (float) i_10 * this.m.cos(this.Pzy) * this.m.cos(this.Pxy) + f_12);
         //
         if (zyinv)
