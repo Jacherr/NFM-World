@@ -411,12 +411,12 @@ public class Medium
     }
     internal static float Sin(float deg)
     {
-        return (float)Math.Sin(deg * (Math.PI / 180));
+        return float.Sin(deg * ((float)Math.PI / 180));
     }
         
     internal static float Cos(float deg)
     {
-        return (float)Math.Cos(deg * (Math.PI / 180));
+        return float.Cos(deg * ((float)Math.PI / 180));
     }
 
     internal static void D()

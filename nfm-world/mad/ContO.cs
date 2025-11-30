@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Text;
 using NFMWorld.Util;
 using Random = NFMWorld.Util.Random;
@@ -124,12 +125,8 @@ public class ContO
         Err = "";
         Roofat = 0;
         Wh = 0;
-        // p = new Plane[286];
-        P = new Plane[10000];
-        // int[] is0 = new int[286];
-        var is0 = new int[10000];
-        // for (int i = 0; i < 286; i++)
-        // is0[i] = 0;
+        var p = new UnlimitedArray<Plane>();
+        var is0 = new UnlimitedArray<int>();
         int i;
         for (i = 0; i < 10000; i++)
         {
@@ -143,8 +140,8 @@ public class ContO
             }
             Shadow = true;
         }
-        var aastring = "";
-        var aabool = false;
+        var curline = "";
+        var inPoly = false;
         var bool1 = false;
         i = 0;
         var f = 1.0F;
@@ -153,9 +150,9 @@ public class ContO
         {
             1.0F, 1.0F, 1.0F
         };
-        var is3 = new int[8000];
-        var is4 = new int[8000];
-        var is5 = new int[8000];
+        var x = new UnlimitedArray<int>();
+        var y = new UnlimitedArray<int>();
+        var z = new UnlimitedArray<int>();
         int[] is6 =
         {
             0, 0, 0
@@ -172,20 +169,17 @@ public class ContO
         var bool15 = false;
         var bool16 = false;
 
-        var randomcolor = false;
-        var randoutline = false;
         IsInstantiated = false;
-
         try
         {
             foreach (var aline in Encoding.Default.GetString(_is).Split('\n'))
             {
-                aastring = aline.Trim();
+                curline = aline.Trim();
                 if (Npl < 10000 /* 210 */)
                 {
-                    if (aastring.StartsWith("<p>"))
+                    if (curline.StartsWith("<p>"))
                     {
-                        aabool = true;
+                        inPoly = true;
                         i = 0;
                         i10 = 0;
                         i11 = 0;
@@ -195,49 +189,46 @@ public class ContO
                         {
                             bool15 = false;
                         }
-
-                        randomcolor = false;
-                        randoutline = false;
                     }
-                    if (aabool)
+                    if (inPoly)
                     {
-                        if (aastring.StartsWith("gr("))
+                        if (curline.StartsWith("gr("))
                         {
-                            i10 = Getvalue("gr", aastring, 0);
+                            i10 = Getvalue("gr", curline, 0);
                         }
-                        if (aastring.StartsWith("fs("))
+                        if (curline.StartsWith("fs("))
                         {
-                            i11 = Getvalue("fs", aastring, 0);
+                            i11 = Getvalue("fs", curline, 0);
                             is0[Npl] = 2;
                         }
-                        if (aastring.StartsWith("c("))
+                        if (curline.StartsWith("c("))
                         {
                             i14 = 0;
-                            is6[0] = Getvalue("c", aastring, 0);
-                            is6[1] = Getvalue("c", aastring, 1);
-                            is6[2] = Getvalue("c", aastring, 2);
+                            is6[0] = Getvalue("c", curline, 0);
+                            is6[1] = Getvalue("c", curline, 1);
+                            is6[2] = Getvalue("c", curline, 2);
                         }
-                        if (aastring.StartsWith("glass"))
+                        if (curline.StartsWith("glass"))
                         {
                             i14 = 1;
                         }
-                        if (aastring.StartsWith("gshadow"))
+                        if (curline.StartsWith("gshadow"))
                         {
                             i14 = 2;
                         }
-                        if (aastring.StartsWith("lightF"))
+                        if (curline.StartsWith("lightF"))
                         {
                             i13 = 1;
                         }
-                        if (aastring.StartsWith("light"))
+                        if (curline.StartsWith("light"))
                         {
                             i13 = 1;
                         }
-                        if (aastring.StartsWith("lightB"))
+                        if (curline.StartsWith("lightB"))
                         {
                             i13 = 2;
                         }
-                        if (aastring.StartsWith("noOutline"))
+                        if (curline.StartsWith("noOutline"))
                         {
                             bool15 = true;
                         }
@@ -247,12 +238,12 @@ public class ContO
 //                        if (aastring.StartsWith("randoutline()")) {
 //                            randoutline = true;
 //                        }
-                        if (aastring.StartsWith("p("))
+                        if (curline.StartsWith("p("))
                         {
-                            is3[i] = (int) (Getvalue("p", aastring, 0) * f * f2 * fs[0]);
-                            is4[i] = (int) (Getvalue("p", aastring, 1) * f * fs[1]);
-                            is5[i] = (int) (Getvalue("p", aastring, 2) * f * fs[2]);
-                            var i18 = (int) Math.Sqrt(is3[i] * is3[i] + is4[i] * is4[i] + is5[i] * is5[i]);
+                            x[i] = (int) (Getvalue("p", curline, 0) * f * f2 * fs[0]);
+                            y[i] = (int) (Getvalue("p", curline, 1) * f * fs[1]);
+                            z[i] = (int) (Getvalue("p", curline, 2) * f * fs[2]);
+                            var i18 = (int) Math.Sqrt(x[i] * x[i] + y[i] * y[i] + z[i] * z[i]);
                             if (i18 > MaxR)
                             {
                                 MaxR = i18;
@@ -260,39 +251,39 @@ public class ContO
                             i++;
                         }
                     }
-                    if (aastring.StartsWith("</p>"))
+                    if (curline.StartsWith("</p>"))
                     {
-                        P[Npl] = new Plane(is3, is5, is4, i, is6, i14, i10, i11, 0, 0, 0, Disline, 0, bool7, i13, bool15);
+                        p[Npl] = new Plane(x, z, y, i, is6, i14, i10, i11, 0, 0, 0, Disline, 0, bool7, i13, bool15);
                         if (is6[0] == Fcol[0] && is6[1] == Fcol[1] && is6[2] == Fcol[2] && i14 == 0)
                         {
-                            P[Npl].Colnum = 1;
+                            p[Npl].Colnum = 1;
                         }
                         if (is6[0] == Scol[0] && is6[1] == Scol[1] && is6[2] == Scol[2] && i14 == 0)
                         {
-                            P[Npl].Colnum = 2;
+                            p[Npl].Colnum = 2;
                         }
                         Npl++;
-                        aabool = false;
+                        inPoly = false;
                     }
                 }
-                if (aastring.StartsWith("rims("))
+                if (curline.StartsWith("rims("))
                 {
-                    wheels.Setrims(Getvalue("rims", aastring, 0), Getvalue("rims", aastring, 1),
-                        Getvalue("rims", aastring, 2), Getvalue("rims", aastring, 3),
-                        Getvalue("rims", aastring, 4));
+                    wheels.Setrims(Getvalue("rims", curline, 0), Getvalue("rims", curline, 1),
+                        Getvalue("rims", curline, 2), Getvalue("rims", curline, 3),
+                        Getvalue("rims", curline, 4));
                 }
-                if (aastring.StartsWith("w(") && i9 < 4)
+                if (curline.StartsWith("w(") && i9 < 4)
                 {
-                    Keyx[i9] = (int) (Getvalue("w", aastring, 0) * f * fs[0]);
-                    Keyz[i9] = (int) (Getvalue("w", aastring, 2) * f * fs[2]);
-                    wheels.Make(P, Npl, (int) (Getvalue("w", aastring, 0) * f * f2 * fs[0]),
-                        (int) (Getvalue("w", aastring, 1) * f * fs[1]),
-                        (int) (Getvalue("w", aastring, 2) * f * fs[2]), Getvalue("w", aastring, 3),
-                        (int) (Getvalue("w", aastring, 4) * f * f2), (int) (Getvalue("w", aastring, 5) * f), i12);
+                    Keyx[i9] = (int) (Getvalue("w", curline, 0) * f * fs[0]);
+                    Keyz[i9] = (int) (Getvalue("w", curline, 2) * f * fs[2]);
+                    wheels.Make(p, Npl, (int) (Getvalue("w", curline, 0) * f * f2 * fs[0]),
+                        (int) (Getvalue("w", curline, 1) * f * fs[1]),
+                        (int) (Getvalue("w", curline, 2) * f * fs[2]), Getvalue("w", curline, 3),
+                        (int) (Getvalue("w", curline, 4) * f * f2), (int) (Getvalue("w", curline, 5) * f), i12);
                     Npl += 19;
                     if (Medium.Loadnew)
                     {
-                        Wh += (int) (Getvalue("w", aastring, 5) * f);
+                        Wh += (int) (Getvalue("w", curline, 5) * f);
                         if (wheels.Ground > 140)
                         {
                             var string19 = "FRONT";
@@ -300,9 +291,15 @@ public class ContO
                             {
                                 string19 = "BACK";
                             }
-                            Err = "Wheels Error:\n" + string19 +
-                                  " Wheels floor ais too far below the center of Y Axis of the car!    \n\nPlease decrease the Y value of the " +
-                                  string19 + " Wheels or decrease its height.     \n \n";
+                            Err =
+                                $"""
+                                 Wheels Error:
+                                 {string19} Wheels floor ais too far below the center of Y Axis of the car!    
+
+                                 Please decrease the Y value of the {string19} Wheels or decrease its height.     
+                                  
+
+                                 """;
                             Errd = true;
                             Keyz[i9] = 0;
                             Keyx[i9] = 0;
@@ -314,9 +311,15 @@ public class ContO
                             {
                                 string20 = "BACK";
                             }
-                            Err = "Wheels Error:\n" + string20 +
-                                  " Wheels floor ais too far above the center of Y Axis of the car!    \n\nPlease increase the Y value of the " +
-                                  string20 + " Wheels or increase its height.     \n \n";
+                            Err =
+                                $"""
+                                 Wheels Error:
+                                 {string20} Wheels floor ais too far above the center of Y Axis of the car!    
+
+                                 Please increase the Y value of the {string20} Wheels or increase its height.     
+                                  
+
+                                 """;
                             Errd = true;
                             Keyz[i9] = 0;
                             Keyx[i9] = 0;
@@ -328,9 +331,15 @@ public class ContO
                             {
                                 string21 = "BACK";
                             }
-                            Err = "Wheels Error:\n" + string21 +
-                                  " Wheels are too far apart!    \n\nPlease decrease the \u00b1X value of the " +
-                                  string21 + " Wheels.     \n \n";
+                            Err =
+                                $"""
+                                 Wheels Error:
+                                 {string21} Wheels are too far apart!    
+
+                                 Please decrease the ±X value of the {string21} Wheels.     
+                                  
+
+                                 """;
                             Errd = true;
                             Keyz[i9] = 0;
                             Keyx[i9] = 0;
@@ -345,13 +354,20 @@ public class ContO
                             else
                             {
                                 Err =
-                                    "Wheels Error:\nFRONT Wheels are too far forwards from the center of the Z Axis!    \n\nPlease decrease the +Z value of the FRONT Wheels.     \n \n";
+                                    """
+                                    Wheels Error:
+                                    FRONT Wheels are too far forwards from the center of the Z Axis!    
+
+                                    Please decrease the +Z value of the FRONT Wheels.     
+                                     
+
+                                    """;
                             }
                             Errd = true;
                             Keyz[i9] = 0;
                             Keyx[i9] = 0;
                         }
-                        if ((int) (Getvalue("w", aastring, 4) * f * f2) > 300)
+                        if ((int) (Getvalue("w", curline, 4) * f * f2) > 300)
                         {
                             var string22 = "FRONT";
                             if (Keyz[i9] < 0)
@@ -368,9 +384,9 @@ public class ContO
                     }
                     i9++;
                 }
-                if (aastring.StartsWith("tracks"))
+                if (curline.StartsWith("tracks"))
                 {
-                    var i23 = Getvalue("tracks", aastring, 0);
+                    var i23 = Getvalue("tracks", curline, 0);
                     _txy = new int[i23];
                     _tzy = new int[i23];
                     _tc = new int[i23, 3];
@@ -387,7 +403,7 @@ public class ContO
                 }
                 if (bool8)
                 {
-                    if (aastring.StartsWith("<track>"))
+                    if (curline.StartsWith("<track>"))
                     {
                         bool1 = true;
                         _notwall[Tnt] = false;
@@ -407,58 +423,58 @@ public class ContO
                     }
                     if (bool1)
                     {
-                        if (aastring.StartsWith("c"))
+                        if (curline.StartsWith("c"))
                         {
-                            _tc[Tnt, 0] = Getvalue("c", aastring, 0);
-                            _tc[Tnt, 1] = Getvalue("c", aastring, 1);
-                            _tc[Tnt, 2] = Getvalue("c", aastring, 2);
+                            _tc[Tnt, 0] = Getvalue("c", curline, 0);
+                            _tc[Tnt, 1] = Getvalue("c", curline, 1);
+                            _tc[Tnt, 2] = Getvalue("c", curline, 2);
                         }
-                        if (aastring.StartsWith("xy"))
+                        if (curline.StartsWith("xy"))
                         {
-                            _txy[Tnt] = Getvalue("xy", aastring, 0);
+                            _txy[Tnt] = Getvalue("xy", curline, 0);
                         }
-                        if (aastring.StartsWith("zy"))
+                        if (curline.StartsWith("zy"))
                         {
-                            _tzy[Tnt] = Getvalue("zy", aastring, 0);
+                            _tzy[Tnt] = Getvalue("zy", curline, 0);
                         }
-                        if (aastring.StartsWith("radx"))
+                        if (curline.StartsWith("radx"))
                         {
-                            _tradx[Tnt] = (int) (Getvalue("radx", aastring, 0) * f);
+                            _tradx[Tnt] = (int) (Getvalue("radx", curline, 0) * f);
                         }
-                        if (aastring.StartsWith("rady"))
+                        if (curline.StartsWith("rady"))
                         {
-                            _trady[Tnt] = (int) (Getvalue("rady", aastring, 0) * f);
+                            _trady[Tnt] = (int) (Getvalue("rady", curline, 0) * f);
                         }
-                        if (aastring.StartsWith("radz"))
+                        if (curline.StartsWith("radz"))
                         {
-                            _tradz[Tnt] = (int) (Getvalue("radz", aastring, 0) * f);
+                            _tradz[Tnt] = (int) (Getvalue("radz", curline, 0) * f);
                         }
-                        if (aastring.StartsWith("ty"))
+                        if (curline.StartsWith("ty"))
                         {
-                            _ty[Tnt] = (int) (Getvalue("ty", aastring, 0) * f);
+                            _ty[Tnt] = (int) (Getvalue("ty", curline, 0) * f);
                         }
-                        if (aastring.StartsWith("tx"))
+                        if (curline.StartsWith("tx"))
                         {
-                            _tx[Tnt] = (int) (Getvalue("tx", aastring, 0) * f);
+                            _tx[Tnt] = (int) (Getvalue("tx", curline, 0) * f);
                         }
-                        if (aastring.StartsWith("tz"))
+                        if (curline.StartsWith("tz"))
                         {
-                            _tz[Tnt] = (int) (Getvalue("tz", aastring, 0) * f);
+                            _tz[Tnt] = (int) (Getvalue("tz", curline, 0) * f);
                         }
-                        if (aastring.StartsWith("skid"))
+                        if (curline.StartsWith("skid"))
                         {
-                            _skd[Tnt] = Getvalue("skid", aastring, 0);
+                            _skd[Tnt] = Getvalue("skid", curline, 0);
                         }
-                        if (aastring.StartsWith("dam"))
+                        if (curline.StartsWith("dam"))
                         {
                             _dam[Tnt] = 3;
                         }
-                        if (aastring.StartsWith("notwall"))
+                        if (curline.StartsWith("notwall"))
                         {
                             _notwall[Tnt] = true;
                         }
                     }
-                    if (aastring.StartsWith("</track>"))
+                    if (curline.StartsWith("</track>"))
                     {
                         var x1 = _tx[Tnt] - _tradx[Tnt];
                         var x2 = _tx[Tnt] + _tradx[Tnt];
@@ -477,71 +493,71 @@ public class ContO
                         Tnt++;
                     }
                 }
-                if (aastring.StartsWith("disp("))
+                if (curline.StartsWith("disp("))
                 {
-                    Disp = Getvalue("disp", aastring, 0);
+                    Disp = Getvalue("disp", curline, 0);
                 }
-                if (aastring.StartsWith("disline("))
+                if (curline.StartsWith("disline("))
                 {
-                    Disline = Getvalue("disline", aastring, 0) * 2;
+                    Disline = Getvalue("disline", curline, 0) * 2;
                 }
-                if (aastring.StartsWith("shadow"))
+                if (curline.StartsWith("shadow"))
                 {
                     Shadow = true;
                 }
-                if (aastring.StartsWith("stonecold"))
+                if (curline.StartsWith("stonecold"))
                 {
                     Noline = true;
                 }
-                if (aastring.StartsWith("newstone"))
+                if (curline.StartsWith("newstone"))
                 {
                     Noline = true;
                     bool15 = true;
                     bool16 = true;
                 }
-                if (aastring.StartsWith("decorative"))
+                if (curline.StartsWith("decorative"))
                 {
                     Decor = true;
                 }
-                if (aastring.StartsWith("road"))
+                if (curline.StartsWith("road"))
                 {
                     bool7 = true;
                 }
-                if (aastring.StartsWith("notroad"))
+                if (curline.StartsWith("notroad"))
                 {
                     bool7 = false;
                 }
-                if (aastring.StartsWith("grounded("))
+                if (curline.StartsWith("grounded("))
                 {
-                    Grounded = Getvalue("grounded", aastring, 0) / 100.0F;
+                    Grounded = Getvalue("grounded", curline, 0) / 100.0F;
                 }
-                if (aastring.StartsWith("div("))
+                if (curline.StartsWith("div("))
                 {
-                    f = Getvalue("div", aastring, 0) / 10.0F;
+                    f = Getvalue("div", curline, 0) / 10.0F;
                 }
-                if (aastring.StartsWith("idiv("))
+                if (curline.StartsWith("idiv("))
                 {
-                    f = Getvalue("idiv", aastring, 0) / 100.0F;
+                    f = Getvalue("idiv", curline, 0) / 100.0F;
                 }
-                if (aastring.StartsWith("iwid("))
+                if (curline.StartsWith("iwid("))
                 {
-                    f2 = Getvalue("iwid", aastring, 0) / 100.0F;
+                    f2 = Getvalue("iwid", curline, 0) / 100.0F;
                 }
-                if (aastring.StartsWith("ScaleX("))
+                if (curline.StartsWith("ScaleX("))
                 {
-                    fs[0] = Getvalue("ScaleX", aastring, 0) / 100.0F;
+                    fs[0] = Getvalue("ScaleX", curline, 0) / 100.0F;
                 }
-                if (aastring.StartsWith("ScaleY("))
+                if (curline.StartsWith("ScaleY("))
                 {
-                    fs[1] = Getvalue("ScaleY", aastring, 0) / 100.0F;
+                    fs[1] = Getvalue("ScaleY", curline, 0) / 100.0F;
                 }
-                if (aastring.StartsWith("ScaleZ("))
+                if (curline.StartsWith("ScaleZ("))
                 {
-                    fs[2] = Getvalue("ScaleZ", aastring, 0) / 100.0F;
+                    fs[2] = Getvalue("ScaleZ", curline, 0) / 100.0F;
                 }
-                if (aastring.StartsWith("gwgr("))
+                if (curline.StartsWith("gwgr("))
                 {
-                    i12 = Getvalue("gwgr", aastring, 0);
+                    i12 = Getvalue("gwgr", curline, 0);
                     if (Medium.Loadnew)
                     {
                         if (i12 > 40)
@@ -558,18 +574,18 @@ public class ContO
                         }
                     }
                 }
-                if (aastring.StartsWith("1stColor("))
+                if (curline.StartsWith("1stColor("))
                 {
-                    Fcol[0] = Getvalue("1stColor", aastring, 0);
-                    Fcol[1] = Getvalue("1stColor", aastring, 1);
-                    Fcol[2] = Getvalue("1stColor", aastring, 2);
+                    Fcol[0] = Getvalue("1stColor", curline, 0);
+                    Fcol[1] = Getvalue("1stColor", curline, 1);
+                    Fcol[2] = Getvalue("1stColor", curline, 2);
                     Colok++;
                 }
-                if (aastring.StartsWith("2ndColor("))
+                if (curline.StartsWith("2ndColor("))
                 {
-                    Scol[0] = Getvalue("2ndColor", aastring, 0);
-                    Scol[1] = Getvalue("2ndColor", aastring, 1);
-                    Scol[2] = Getvalue("2ndColor", aastring, 2);
+                    Scol[0] = Getvalue("2ndColor", curline, 0);
+                    Scol[1] = Getvalue("2ndColor", curline, 1);
+                    Scol[2] = Getvalue("2ndColor", curline, 2);
                     Colok++;
                 }
             }
@@ -578,7 +594,7 @@ public class ContO
         {
             if (!Errd)
             {
-                Err = "Error While Loading 3D Model\n\nLine:     " + aastring + "\n\nError Detail:\n" + exception +
+                Err = "Error While Loading 3D Model\n\nLine:     " + curline + "\n\nError Detail:\n" + exception +
                       "           \n \n";
                 Console.WriteLine(Err);
                 Errd = true;
@@ -609,37 +625,37 @@ public class ContO
             for (var i27 = 0; i27 < Npl; i27++)
             {
                 var i28 = 0;
-                var i29 = P[i27].Ox[0];
-                var i30 = P[i27].Ox[0];
-                var i31 = P[i27].Oy[0];
-                var i32 = P[i27].Oy[0];
-                var i33 = P[i27].Oz[0];
-                var i34 = P[i27].Oz[0];
-                for (var i35 = 0; i35 < P[i27].N; i35++)
+                var i29 = p[i27].Ox[0];
+                var i30 = p[i27].Ox[0];
+                var i31 = p[i27].Oy[0];
+                var i32 = p[i27].Oy[0];
+                var i33 = p[i27].Oz[0];
+                var i34 = p[i27].Oz[0];
+                for (var i35 = 0; i35 < p[i27].N; i35++)
                 {
-                    if (P[i27].Ox[i35] > i29)
+                    if (p[i27].Ox[i35] > i29)
                     {
-                        i29 = P[i27].Ox[i35];
+                        i29 = p[i27].Ox[i35];
                     }
-                    if (P[i27].Ox[i35] < i30)
+                    if (p[i27].Ox[i35] < i30)
                     {
-                        i30 = P[i27].Ox[i35];
+                        i30 = p[i27].Ox[i35];
                     }
-                    if (P[i27].Oy[i35] > i31)
+                    if (p[i27].Oy[i35] > i31)
                     {
-                        i31 = P[i27].Oy[i35];
+                        i31 = p[i27].Oy[i35];
                     }
-                    if (P[i27].Oy[i35] < i32)
+                    if (p[i27].Oy[i35] < i32)
                     {
-                        i32 = P[i27].Oy[i35];
+                        i32 = p[i27].Oy[i35];
                     }
-                    if (P[i27].Oz[i35] > i33)
+                    if (p[i27].Oz[i35] > i33)
                     {
-                        i33 = P[i27].Oz[i35];
+                        i33 = p[i27].Oz[i35];
                     }
-                    if (P[i27].Oz[i35] < i34)
+                    if (p[i27].Oz[i35] < i34)
                     {
-                        i34 = P[i27].Oz[i35];
+                        i34 = p[i27].Oz[i35];
                     }
                 }
                 if (Math.Abs(i29 - i30) <= Math.Abs(i31 - i32) && Math.Abs(i29 - i30) <= Math.Abs(i33 - i34))
@@ -663,27 +679,27 @@ public class ContO
                 {
                     var i36 = 1000;
                     var i37 = 0;
-                    for (var i38 = 0; i38 < P[i27].N; i38++)
+                    for (var i38 = 0; i38 < p[i27].N; i38++)
                     {
                         var i39 = i38 + 1;
-                        if (i39 >= P[i27].N)
+                        if (i39 >= p[i27].N)
                         {
-                            i39 -= P[i27].N;
+                            i39 -= p[i27].N;
                         }
                         var i40 = i38 + 2;
-                        if (i40 >= P[i27].N)
+                        if (i40 >= p[i27].N)
                         {
-                            i40 -= P[i27].N;
+                            i40 -= p[i27].N;
                         }
                         if (i28 == 1)
                         {
                             var i41 = Math.Abs(
-                                (int) (Math.Atan((P[i27].Oz[i38] - P[i27].Oz[i39]) /
-                                                 (double) (P[i27].Oy[i38] - P[i27].Oy[i39])) /
+                                (int) (Math.Atan((p[i27].Oz[i38] - p[i27].Oz[i39]) /
+                                                 (double) (p[i27].Oy[i38] - p[i27].Oy[i39])) /
                                        0.017453292519943295));
                             var i42 = Math.Abs(
-                                (int) (Math.Atan((P[i27].Oz[i40] - P[i27].Oz[i39]) /
-                                                 (double) (P[i27].Oy[i40] - P[i27].Oy[i39])) /
+                                (int) (Math.Atan((p[i27].Oz[i40] - p[i27].Oz[i39]) /
+                                                 (double) (p[i27].Oy[i40] - p[i27].Oy[i39])) /
                                        0.017453292519943295));
                             if (i41 > 45)
                             {
@@ -702,12 +718,12 @@ public class ContO
                         if (i28 == 2)
                         {
                             var i43 = Math.Abs(
-                                (int) (Math.Atan((P[i27].Oz[i38] - P[i27].Oz[i39]) /
-                                                 (double) (P[i27].Ox[i38] - P[i27].Ox[i39])) /
+                                (int) (Math.Atan((p[i27].Oz[i38] - p[i27].Oz[i39]) /
+                                                 (double) (p[i27].Ox[i38] - p[i27].Ox[i39])) /
                                        0.017453292519943295));
                             var i44 = Math.Abs(
-                                (int) (Math.Atan((P[i27].Oz[i40] - P[i27].Oz[i39]) /
-                                                 (double) (P[i27].Ox[i40] - P[i27].Ox[i39])) /
+                                (int) (Math.Atan((p[i27].Oz[i40] - p[i27].Oz[i39]) /
+                                                 (double) (p[i27].Ox[i40] - p[i27].Ox[i39])) /
                                        0.017453292519943295));
                             if (i43 > 45)
                             {
@@ -726,12 +742,12 @@ public class ContO
                         if (i28 == 3)
                         {
                             var i45 = Math.Abs(
-                                (int) (Math.Atan((P[i27].Oy[i38] - P[i27].Oy[i39]) /
-                                                 (double) (P[i27].Ox[i38] - P[i27].Ox[i39])) /
+                                (int) (Math.Atan((p[i27].Oy[i38] - p[i27].Oy[i39]) /
+                                                 (double) (p[i27].Ox[i38] - p[i27].Ox[i39])) /
                                        0.017453292519943295));
                             var i46 = Math.Abs(
-                                (int) (Math.Atan((P[i27].Oy[i40] - P[i27].Oy[i39]) /
-                                                 (double) (P[i27].Ox[i40] - P[i27].Ox[i39])) /
+                                (int) (Math.Atan((p[i27].Oy[i40] - p[i27].Oy[i39]) /
+                                                 (double) (p[i27].Ox[i40] - p[i27].Ox[i39])) /
                                        0.017453292519943295));
                             if (i45 > 45)
                             {
@@ -750,159 +766,159 @@ public class ContO
                     }
                     if (i37 != 0)
                     {
-                        var is47 = new int[P[i27].N];
-                        var is48 = new int[P[i27].N];
-                        var is49 = new int[P[i27].N];
-                        for (var i50 = 0; i50 < P[i27].N; i50++)
+                        var is47 = new int[p[i27].N];
+                        var is48 = new int[p[i27].N];
+                        var is49 = new int[p[i27].N];
+                        for (var i50 = 0; i50 < p[i27].N; i50++)
                         {
-                            is47[i50] = P[i27].Ox[i50];
-                            is48[i50] = P[i27].Oy[i50];
-                            is49[i50] = P[i27].Oz[i50];
+                            is47[i50] = p[i27].Ox[i50];
+                            is48[i50] = p[i27].Oy[i50];
+                            is49[i50] = p[i27].Oz[i50];
                         }
-                        for (var i51 = 0; i51 < P[i27].N; i51++)
+                        for (var i51 = 0; i51 < p[i27].N; i51++)
                         {
                             var i52 = i51 + i37;
-                            if (i52 >= P[i27].N)
+                            if (i52 >= p[i27].N)
                             {
-                                i52 -= P[i27].N;
+                                i52 -= p[i27].N;
                             }
-                            P[i27].Ox[i51] = is47[i52];
-                            P[i27].Oy[i51] = is48[i52];
-                            P[i27].Oz[i51] = is49[i52];
+                            p[i27].Ox[i51] = is47[i52];
+                            p[i27].Oy[i51] = is48[i52];
+                            p[i27].Oz[i51] = is49[i52];
                         }
                     }
                     if (i28 == 1)
                     {
-                        if (Math.Abs(P[i27].Oz[0] - P[i27].Oz[1]) > Math.Abs(P[i27].Oy[0] - P[i27].Oy[1]))
+                        if (Math.Abs(p[i27].Oz[0] - p[i27].Oz[1]) > Math.Abs(p[i27].Oy[0] - p[i27].Oy[1]))
                         {
-                            if (P[i27].Oz[0] > P[i27].Oz[1])
+                            if (p[i27].Oz[0] > p[i27].Oz[1])
                             {
-                                if (P[i27].Oy[1] > P[i27].Oy[2])
+                                if (p[i27].Oy[1] > p[i27].Oy[2])
                                 {
-                                    P[i27].Fs = 1;
+                                    p[i27].Fs = 1;
                                 }
                                 else
                                 {
-                                    P[i27].Fs = -1;
+                                    p[i27].Fs = -1;
                                 }
                             }
-                            else if (P[i27].Oy[1] > P[i27].Oy[2])
+                            else if (p[i27].Oy[1] > p[i27].Oy[2])
                             {
-                                P[i27].Fs = -1;
+                                p[i27].Fs = -1;
                             }
                             else
                             {
-                                P[i27].Fs = 1;
+                                p[i27].Fs = 1;
                             }
                         }
-                        else if (P[i27].Oy[0] > P[i27].Oy[1])
+                        else if (p[i27].Oy[0] > p[i27].Oy[1])
                         {
-                            if (P[i27].Oz[1] > P[i27].Oz[2])
+                            if (p[i27].Oz[1] > p[i27].Oz[2])
                             {
-                                P[i27].Fs = -1;
+                                p[i27].Fs = -1;
                             }
                             else
                             {
-                                P[i27].Fs = 1;
+                                p[i27].Fs = 1;
                             }
                         }
-                        else if (P[i27].Oz[1] > P[i27].Oz[2])
+                        else if (p[i27].Oz[1] > p[i27].Oz[2])
                         {
-                            P[i27].Fs = 1;
+                            p[i27].Fs = 1;
                         }
                         else
                         {
-                            P[i27].Fs = -1;
+                            p[i27].Fs = -1;
                         }
                     }
 
                     if (i28 == 2)
                     {
-                        if (Math.Abs(P[i27].Oz[0] - P[i27].Oz[1]) > Math.Abs(P[i27].Ox[0] - P[i27].Ox[1]))
+                        if (Math.Abs(p[i27].Oz[0] - p[i27].Oz[1]) > Math.Abs(p[i27].Ox[0] - p[i27].Ox[1]))
                         {
-                            if (P[i27].Oz[0] > P[i27].Oz[1])
+                            if (p[i27].Oz[0] > p[i27].Oz[1])
                             {
-                                if (P[i27].Ox[1] > P[i27].Ox[2])
+                                if (p[i27].Ox[1] > p[i27].Ox[2])
                                 {
-                                    P[i27].Fs = -1;
+                                    p[i27].Fs = -1;
                                 }
                                 else
                                 {
-                                    P[i27].Fs = 1;
+                                    p[i27].Fs = 1;
                                 }
                             }
-                            else if (P[i27].Ox[1] > P[i27].Ox[2])
+                            else if (p[i27].Ox[1] > p[i27].Ox[2])
                             {
-                                P[i27].Fs = 1;
+                                p[i27].Fs = 1;
                             }
                             else
                             {
-                                P[i27].Fs = -1;
+                                p[i27].Fs = -1;
                             }
                         }
-                        else if (P[i27].Ox[0] > P[i27].Ox[1])
+                        else if (p[i27].Ox[0] > p[i27].Ox[1])
                         {
-                            if (P[i27].Oz[1] > P[i27].Oz[2])
+                            if (p[i27].Oz[1] > p[i27].Oz[2])
                             {
-                                P[i27].Fs = 1;
+                                p[i27].Fs = 1;
                             }
                             else
                             {
-                                P[i27].Fs = -1;
+                                p[i27].Fs = -1;
                             }
                         }
-                        else if (P[i27].Oz[1] > P[i27].Oz[2])
+                        else if (p[i27].Oz[1] > p[i27].Oz[2])
                         {
-                            P[i27].Fs = -1;
+                            p[i27].Fs = -1;
                         }
                         else
                         {
-                            P[i27].Fs = 1;
+                            p[i27].Fs = 1;
                         }
                     }
 
                     if (i28 == 3)
                     {
-                        if (Math.Abs(P[i27].Oy[0] - P[i27].Oy[1]) > Math.Abs(P[i27].Ox[0] - P[i27].Ox[1]))
+                        if (Math.Abs(p[i27].Oy[0] - p[i27].Oy[1]) > Math.Abs(p[i27].Ox[0] - p[i27].Ox[1]))
                         {
-                            if (P[i27].Oy[0] > P[i27].Oy[1])
+                            if (p[i27].Oy[0] > p[i27].Oy[1])
                             {
-                                if (P[i27].Ox[1] > P[i27].Ox[2])
+                                if (p[i27].Ox[1] > p[i27].Ox[2])
                                 {
-                                    P[i27].Fs = 1;
+                                    p[i27].Fs = 1;
                                 }
                                 else
                                 {
-                                    P[i27].Fs = -1;
+                                    p[i27].Fs = -1;
                                 }
                             }
-                            else if (P[i27].Ox[1] > P[i27].Ox[2])
+                            else if (p[i27].Ox[1] > p[i27].Ox[2])
                             {
-                                P[i27].Fs = -1;
+                                p[i27].Fs = -1;
                             }
                             else
                             {
-                                P[i27].Fs = 1;
+                                p[i27].Fs = 1;
                             }
                         }
-                        else if (P[i27].Ox[0] > P[i27].Ox[1])
+                        else if (p[i27].Ox[0] > p[i27].Ox[1])
                         {
-                            if (P[i27].Oy[1] > P[i27].Oy[2])
+                            if (p[i27].Oy[1] > p[i27].Oy[2])
                             {
-                                P[i27].Fs = -1;
+                                p[i27].Fs = -1;
                             }
                             else
                             {
-                                P[i27].Fs = 1;
+                                p[i27].Fs = 1;
                             }
                         }
-                        else if (P[i27].Oy[1] > P[i27].Oy[2])
+                        else if (p[i27].Oy[1] > p[i27].Oy[2])
                         {
-                            P[i27].Fs = 1;
+                            p[i27].Fs = 1;
                         }
                         else
                         {
-                            P[i27].Fs = -1;
+                            p[i27].Fs = -1;
                         }
                     }
 
@@ -912,37 +928,37 @@ public class ContO
                     {
                         if (i55 != i27 && is0[i55] != 0)
                         {
-                            var i57 = P[i55].Ox[0];
-                            var i58 = P[i55].Ox[0];
-                            var i59 = P[i55].Oy[0];
-                            var i60 = P[i55].Oy[0];
-                            var i61 = P[i55].Oz[0];
-                            var i62 = P[i55].Oz[0];
-                            for (var i63 = 0; i63 < P[i55].N; i63++)
+                            var i57 = p[i55].Ox[0];
+                            var i58 = p[i55].Ox[0];
+                            var i59 = p[i55].Oy[0];
+                            var i60 = p[i55].Oy[0];
+                            var i61 = p[i55].Oz[0];
+                            var i62 = p[i55].Oz[0];
+                            for (var i63 = 0; i63 < p[i55].N; i63++)
                             {
-                                if (P[i55].Ox[i63] > i57)
+                                if (p[i55].Ox[i63] > i57)
                                 {
-                                    i57 = P[i55].Ox[i63];
+                                    i57 = p[i55].Ox[i63];
                                 }
-                                if (P[i55].Ox[i63] < i58)
+                                if (p[i55].Ox[i63] < i58)
                                 {
-                                    i58 = P[i55].Ox[i63];
+                                    i58 = p[i55].Ox[i63];
                                 }
-                                if (P[i55].Oy[i63] > i59)
+                                if (p[i55].Oy[i63] > i59)
                                 {
-                                    i59 = P[i55].Oy[i63];
+                                    i59 = p[i55].Oy[i63];
                                 }
-                                if (P[i55].Oy[i63] < i60)
+                                if (p[i55].Oy[i63] < i60)
                                 {
-                                    i60 = P[i55].Oy[i63];
+                                    i60 = p[i55].Oy[i63];
                                 }
-                                if (P[i55].Oz[i63] > i61)
+                                if (p[i55].Oz[i63] > i61)
                                 {
-                                    i61 = P[i55].Oz[i63];
+                                    i61 = p[i55].Oz[i63];
                                 }
-                                if (P[i55].Oz[i63] < i62)
+                                if (p[i55].Oz[i63] < i62)
                                 {
-                                    i62 = P[i55].Oz[i63];
+                                    i62 = p[i55].Oz[i63];
                                 }
                             }
                             var i64 = (i57 + i58) / 2;
@@ -1000,13 +1016,13 @@ public class ContO
                     }
                     if (bool54 && !bool53)
                     {
-                        P[i27].Fs *= -1;
+                        p[i27].Fs *= -1;
                         bool70 = true;
                     }
                     if (bool53 && bool54)
                     {
-                        P[i27].Fs = 0;
-                        P[i27].Gr = 40;
+                        p[i27].Fs = 0;
+                        p[i27].Gr = 40;
                         bool70 = true;
                     }
                     if (!bool70)
@@ -1033,14 +1049,14 @@ public class ContO
                             if (i73 != i27)
                             {
                                 var bool74 = false;
-                                var bools = new bool[P[i73].N];
-                                for (var i75 = 0; i75 < P[i73].N; i75++)
+                                var bools = new bool[p[i73].N];
+                                for (var i75 = 0; i75 < p[i73].N; i75++)
                                 {
                                     bools[i75] = false;
-                                    for (var i76 = 0; i76 < P[i27].N; i76++)
+                                    for (var i76 = 0; i76 < p[i27].N; i76++)
                                     {
-                                        if (P[i27].Ox[i76] == P[i73].Ox[i75] && P[i27].Oy[i76] == P[i73].Oy[i75] &&
-                                            P[i27].Oz[i76] == P[i73].Oz[i75])
+                                        if (p[i27].Ox[i76] == p[i73].Ox[i75] && p[i27].Oy[i76] == p[i73].Oy[i75] &&
+                                            p[i27].Oz[i76] == p[i73].Oz[i75])
                                         {
                                             bools[i75] = true;
                                             bool74 = true;
@@ -1049,41 +1065,41 @@ public class ContO
                                 }
                                 if (bool74)
                                 {
-                                    for (var i77 = 0; i77 < P[i73].N; i77++)
+                                    for (var i77 = 0; i77 < p[i73].N; i77++)
                                     {
                                         if (!bools[i77])
                                         {
                                             if (i28 == 1)
                                             {
-                                                if (P[i73].Ox[i77] > i71)
+                                                if (p[i73].Ox[i77] > i71)
                                                 {
-                                                    i71 = P[i73].Ox[i77];
+                                                    i71 = p[i73].Ox[i77];
                                                 }
-                                                if (P[i73].Ox[i77] < i72)
+                                                if (p[i73].Ox[i77] < i72)
                                                 {
-                                                    i72 = P[i73].Ox[i77];
+                                                    i72 = p[i73].Ox[i77];
                                                 }
                                             }
                                             if (i28 == 2)
                                             {
-                                                if (P[i73].Oy[i77] > i71)
+                                                if (p[i73].Oy[i77] > i71)
                                                 {
-                                                    i71 = P[i73].Oy[i77];
+                                                    i71 = p[i73].Oy[i77];
                                                 }
-                                                if (P[i73].Oy[i77] < i72)
+                                                if (p[i73].Oy[i77] < i72)
                                                 {
-                                                    i72 = P[i73].Oy[i77];
+                                                    i72 = p[i73].Oy[i77];
                                                 }
                                             }
                                             if (i28 == 3)
                                             {
-                                                if (P[i73].Oz[i77] > i71)
+                                                if (p[i73].Oz[i77] > i71)
                                                 {
-                                                    i71 = P[i73].Oz[i77];
+                                                    i71 = p[i73].Oz[i77];
                                                 }
-                                                if (P[i73].Oz[i77] < i72)
+                                                if (p[i73].Oz[i77] < i72)
                                                 {
-                                                    i72 = P[i73].Oz[i77];
+                                                    i72 = p[i73].Oz[i77];
                                                 }
                                             }
                                         }
@@ -1096,11 +1112,11 @@ public class ContO
                         {
                             if ((i71 + i72) / 2 > (i29 + i30) / 2)
                             {
-                                P[i27].Fs *= -1;
+                                p[i27].Fs *= -1;
                             }
                             else if ((i71 + i72) / 2 == (i29 + i30) / 2 && (i29 + i30) / 2 < 0)
                             {
-                                P[i27].Fs *= -1;
+                                p[i27].Fs *= -1;
                             }
                         }
 
@@ -1108,11 +1124,11 @@ public class ContO
                         {
                             if ((i71 + i72) / 2 > (i31 + i32) / 2)
                             {
-                                P[i27].Fs *= -1;
+                                p[i27].Fs *= -1;
                             }
                             else if ((i71 + i72) / 2 == (i31 + i32) / 2 && (i31 + i32) / 2 < 0)
                             {
-                                P[i27].Fs *= -1;
+                                p[i27].Fs *= -1;
                             }
                         }
 
@@ -1120,18 +1136,20 @@ public class ContO
                         {
                             if ((i71 + i72) / 2 > (i33 + i34) / 2)
                             {
-                                P[i27].Fs *= -1;
+                                p[i27].Fs *= -1;
                             }
                             else if ((i71 + i72) / 2 == (i33 + i34) / 2 && (i33 + i34) / 2 < 0)
                             {
-                                P[i27].Fs *= -1;
+                                p[i27].Fs *= -1;
                             }
                         }
                     }
-                    P[i27].Deltafntyp();
+                    p[i27].Deltafntyp();
                 }
             }
         }
+
+        P = p.ToArray();
     }
 
     internal ContO(ContO conto78, int toX, int toY, int toZ, int i81)
@@ -1590,7 +1608,8 @@ public class ContO
             Trackers.X[Trackers.Nt] += X;
             Trackers.Z[Trackers.Nt] += Z;
             Trackers.Y[Trackers.Nt] += Y;
-            Sys.ArrayCopy(P[i119].Oc, 0, Trackers.C[Trackers.Nt], 0, 3);
+            int[] dest = Trackers.C[Trackers.Nt];
+            Array.Copy(P[i119].Oc, 0, dest, 0, 3);
             Trackers.Skd[Trackers.Nt] = 2;
             Trackers.Dam[Trackers.Nt] = 1;
             Trackers.Notwall[Trackers.Nt] = false;
@@ -1612,7 +1631,8 @@ public class ContO
         Trackers.Z[Trackers.Nt] = (is118[0] + is118[1]) / 2 + Z;
         Trackers.Zy[Trackers.Nt] = 0;
         Trackers.Xy[Trackers.Nt] = 0;
-        Sys.ArrayCopy(P[4].Oc, 0, Trackers.C[Trackers.Nt], 0, 3);
+        int[] dest1 = Trackers.C[Trackers.Nt];
+        Array.Copy(P[4].Oc, 0, dest1, 0, 3);
         Trackers.Skd[Trackers.Nt] = 4;
         Trackers.Dam[Trackers.Nt] = 1;
         Trackers.Notwall[Trackers.Nt] = false;
@@ -2047,10 +2067,10 @@ public class ContO
             is186[7] = Y - Medium.Y - _edl[i] + 5 + (int) (Medium.Random() * 5.0F);
             if (Roted)
             {
-                Rot(ais, is187, X - Medium.X, Z - Medium.Z, 90, 8);
+                Plane.Rot(ais, is187, X - Medium.X, Z - Medium.Z, 90, 8);
             }
-            Rot(ais, is187, Medium.Cx, Medium.Cz, Medium.Xz, 8);
-            Rot(is186, is187, Medium.Cy, Medium.Cz, Medium.Zy, 8);
+            Plane.Rot(ais, is187, Medium.Cx, Medium.Cz, Medium.Xz, 8);
+            Plane.Rot(is186, is187, Medium.Cy, Medium.Cz, Medium.Zy, 8);
             var aabool = true;
             var i189 = 0;
             var i190 = 0;
@@ -2248,11 +2268,11 @@ public class ContO
                 is170[j] = Grat + Y - Medium.Y;
                 is171[j] = Keyz[j] + Z - Medium.Z;
             }
-            Rot(ais, is170, X - Medium.X, Y - Medium.Y, Xy, 4);
-            Rot(is170, is171, Y - Medium.Y, Z - Medium.Y, Zy, 4);
-            Rot(ais, is171, X - Medium.X, Z - Medium.Z, Xz, 4);
-            Rot(ais, is171, Medium.Cx, Medium.Cz, Medium.Xz, 4);
-            Rot(is170, is171, Medium.Cy, Medium.Cz, Medium.Zy, 4);
+            Plane.Rot(ais, is170, X - Medium.X, Y - Medium.Y, Xy, 4);
+            Plane.Rot(is170, is171, Y - Medium.Y, Z - Medium.Y, Zy, 4);
+            Plane.Rot(ais, is171, X - Medium.X, Z - Medium.Z, Xz, 4);
+            Plane.Rot(ais, is171, Medium.Cx, Medium.Cz, Medium.Xz, 4);
+            Plane.Rot(is170, is171, Medium.Cy, Medium.Cz, Medium.Zy, 4);
             var i = 0;
             var i172 = 0;
             var i173 = 0;
@@ -2283,14 +2303,10 @@ public class ContO
             {
                 i172 = i173;
             }
-            var i176 = Medium.Cx + (int) ((X - Medium.X - Medium.Cx) * Medium.Cos(Medium.Xz) -
-                                          (Z - Medium.Z - Medium.Cz) * Medium.Sin(Medium.Xz));
-            var i177 = Medium.Cz + (int) ((X - Medium.X - Medium.Cx) * Medium.Sin(Medium.Xz) +
-                                          (Z - Medium.Z - Medium.Cz) * Medium.Cos(Medium.Xz));
-            var i178 = Medium.Cy + (int) ((Y - Medium.Y - Medium.Cy) * Medium.Cos(Medium.Zy) -
-                                          (i177 - Medium.Cz) * Medium.Sin(Medium.Zy));
-            i177 = Medium.Cz + (int) ((Y - Medium.Y - Medium.Cy) * Medium.Sin(Medium.Zy) +
-                                      (i177 - Medium.Cz) * Medium.Cos(Medium.Zy));
+            var i176 = Medium.Cx + (int) ((X - Medium.X - Medium.Cx) * Medium.Cos(Medium.Xz) - (Z - Medium.Z - Medium.Cz) * Medium.Sin(Medium.Xz));
+            var i177 = Medium.Cz + (int) ((X - Medium.X - Medium.Cx) * Medium.Sin(Medium.Xz) + (Z - Medium.Z - Medium.Cz) * Medium.Cos(Medium.Xz));
+            var i178 = Medium.Cy + (int) ((Y - Medium.Y - Medium.Cy) * Medium.Cos(Medium.Zy) - (i177 - Medium.Cz) * Medium.Sin(Medium.Zy));
+            i177 = Medium.Cz + (int) ((Y - Medium.Y - Medium.Cy) * Medium.Sin(Medium.Zy) + (i177 - Medium.Cz) * Medium.Cos(Medium.Zy));
             ais[0] = Xs((int) (i176 - i / 0.8 - Medium.Random() * (i / 2.4)), i177);
             is170[0] = Ys((int) (i178 - i172 / 1.92 - Medium.Random() * (i172 / 5.67)), i177);
             ais[1] = Xs((int) (i176 - i / 0.8 - Medium.Random() * (i / 2.4)), i177);
@@ -2309,23 +2325,23 @@ public class ContO
             is170[7] = Ys((int) (i178 - i172 / 0.8 - Medium.Random() * (i172 / 2.4)), i177);
             if (Fcnt == 3)
             {
-                Rot(ais, is170, Xs(i176, i177), Ys(i178, i177), 22, 8);
+                Plane.Rot(ais, is170, Xs(i176, i177), Ys(i178, i177), 22, 8);
             }
             if (Fcnt == 4)
             {
-                Rot(ais, is170, Xs(i176, i177), Ys(i178, i177), 22, 8);
+                Plane.Rot(ais, is170, Xs(i176, i177), Ys(i178, i177), 22, 8);
             }
             if (Fcnt == 5)
             {
-                Rot(ais, is170, Xs(i176, i177), Ys(i178, i177), 0, 8);
+                Plane.Rot(ais, is170, Xs(i176, i177), Ys(i178, i177), 0, 8);
             }
             if (Fcnt == 6)
             {
-                Rot(ais, is170, Xs(i176, i177), Ys(i178, i177), -22, 8);
+                Plane.Rot(ais, is170, Xs(i176, i177), Ys(i178, i177), -22, 8);
             }
             if (Fcnt == 7)
             {
-                Rot(ais, is170, Xs(i176, i177), Ys(i178, i177), -22, 8);
+                Plane.Rot(ais, is170, Xs(i176, i177), Ys(i178, i177), -22, 8);
             }
             var i179 = (int) (191.0F + 191.0F * (Medium.Snap[0] / 350.0F));
             if (i179 > 255)
@@ -2452,7 +2468,7 @@ public class ContO
         is147[2] = (int) ((Keyz[3] - 30) * i148 * 1.2 + Z - Medium.Z);
         ais[3] = (int) (Keyx[2] * 1.2 + X - Medium.X);
         is147[3] = (int) ((Keyz[2] - 30) * i148 * 1.2 + Z - Medium.Z);
-        Rot(ais, is147, X - Medium.X, Z - Medium.Z, Xz, 4);
+        Plane.Rot(ais, is147, X - Medium.X, Z - Medium.Z, Xz, 4);
         var i150 = (int) (Medium.Crgrnd[0] / 1.5);
         var i151 = (int) (Medium.Crgrnd[1] / 1.5);
         var i152 = (int) (Medium.Crgrnd[2] / 1.5);
@@ -2528,8 +2544,8 @@ public class ContO
                 }
             }
         }
-        Rot(ais, is147, Medium.Cx, Medium.Cz, Medium.Xz, 4);
-        Rot(is146, is147, Medium.Cy, Medium.Cz, Medium.Zy, 4);
+        Plane.Rot(ais, is147, Medium.Cx, Medium.Cz, Medium.Xz, 4);
+        Plane.Rot(is146, is147, Medium.Cy, Medium.Cz, Medium.Zy, 4);
         var aabool = true;
         var i161 = 0;
         var i162 = 0;
@@ -2778,23 +2794,10 @@ public class ContO
         }
     }
 
-    private int Py(int i, int i269, int i270, int i271)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static int Py(int x1, int x2, int y1, int y2)
     {
-        return (i - i269) * (i - i269) + (i270 - i271) * (i270 - i271);
-    }
-
-    private void Rot(int[] ais, int[] is272, int i, int i273, float i274, int i275)
-    {
-        if ((int)i274 != 0)
-        {
-            for (var i276 = 0; i276 < i275; i276++)
-            {
-                var i277 = ais[i276];
-                var i278 = is272[i276];
-                ais[i276] = i + (int) ((i277 - i) * Medium.Cos(i274) - (i278 - i273) * Medium.Sin(i274));
-                is272[i276] = i273 + (int) ((i277 - i) * Medium.Sin(i274) + (i278 - i273) * Medium.Cos(i274));
-            }
-        }
+        return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
     }
 
     internal void Spark(float f, float f235, float f236, float f237, float f238, float f239, int i)
@@ -2832,21 +2835,23 @@ public class ContO
         Rcz = f239;
     }
 
-    private int Xs(int i, int i260)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static int Xs(int x, int z)
     {
-        if (i260 < 50)
+        if (z < 50)
         {
-            i260 = 50;
+            z = 50;
         }
-        return (i260 - Medium.FocusPoint) * (Medium.Cx - i) / i260 + i;
+        return (z - Medium.FocusPoint) * (Medium.Cx - x) / z + x;
     }
 
-    private int Ys(int i, int i261)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static int Ys(int y, int z)
     {
-        if (i261 < 50)
+        if (z < 50)
         {
-            i261 = 50;
+            z = 50;
         }
-        return (i261 - Medium.FocusPoint) * (Medium.Cy - i) / i261 + i;
+        return (z - Medium.FocusPoint) * (Medium.Cy - y) / z + y;
     }
 }

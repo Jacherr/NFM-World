@@ -1,3 +1,5 @@
+using NFMWorld.Util;
+
 namespace NFMWorld.Mad;
 
 internal class Wheels
@@ -20,7 +22,7 @@ internal class Wheels
         Ground = 0;
     }
 
-    internal void Make(Plane[] planes, int i, int i4, int i5, int i6, int i7, int i8, int i9, int i10)
+    internal void Make(UnlimitedArray<Plane> planes, int i, int i4, int i5, int i6, int i7, int i8, int i9, int i10)
     {
         var ais = new int[20];
         var is11 = new int[20];

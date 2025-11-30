@@ -76,7 +76,8 @@ internal class Trackers
                     i7++;
                 }
                 Sect[i3, i4] = new int[i7];
-                Sys.ArrayCopy(ais, 0, Sect[i3, i4], 0, i7);
+                int[] dest = Sect[i3, i4];
+                Array.Copy(ais, 0, dest, 0, i7);
             }
         }
         for (var i12 = 0; i12 < Nt; i12++)

@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using NFMWorld.Util;
 using NFMWorld.Util;
 using Random = NFMWorld.Util.Random;
@@ -52,20 +53,20 @@ class Plane : IComparable<Plane>
 
     internal sbyte Project;
 
-    internal Plane(int[] ais, int[] is0, int[] is1, int i, int[] is2, int i3, int i4, int i5, int i6, int i7,
+    internal Plane(ReadOnlySpan<int> x, ReadOnlySpan<int> z, ReadOnlySpan<int> y, int n, int[] is2, int i3, int i4, int i5, int i6, int i7,
         int i8, int i9, int i10, bool abool, int i11, bool bool12)
     {
-        N = i;
+        N = n;
         Ox = new int[N];
         Oz = new int[N];
         Oy = new int[N];
         for (var i13 = 0; i13 < N; i13++)
         {
-            Ox[i13] = ais[i13];
-            Oy[i13] = is1[i13];
-            Oz[i13] = is0[i13];
+            Ox[i13] = x[i13];
+            Oy[i13] = y[i13];
+            Oz[i13] = z[i13];
         }
-        Sys.ArrayCopy(is2, 0, Oc, 0, 3);
+        Array.Copy(is2, 0, Oc, 0, 3);
         if (i4 == -15)
         {
             if (is2[0] == 211)
@@ -138,7 +139,7 @@ class Plane : IComparable<Plane>
         }
         if (i3 == 3)
         {
-            Sys.ArrayCopy(is2, 0, C, 0, 3);
+            Array.Copy(is2, 0, C, 0, 3);
         }
         _disline = i9;
         Bfase = i10;
@@ -1436,9 +1437,7 @@ class Plane : IComparable<Plane>
             {
                 if (i27 != i26)
                 {
-                    _deltaf *= (float) (Math.Sqrt((Ox[i27] - Ox[i26]) * (Ox[i27] - Ox[i26]) +
-                                                  (Oy[i27] - Oy[i26]) * (Oy[i27] - Oy[i26]) +
-                                                  (Oz[i27] - Oz[i26]) * (Oz[i27] - Oz[i26])) / 100.0);
+                    _deltaf *= float.Sqrt((Ox[i27] - Ox[i26]) * (Ox[i27] - Ox[i26]) + (Oy[i27] - Oy[i26]) * (Oy[i27] - Oy[i26]) + (Oz[i27] - Oz[i26]) * (Oz[i27] - Oz[i26])) / 100.0f;
                 }
             }
         }
@@ -1454,28 +1453,40 @@ class Plane : IComparable<Plane>
             {
                 if (i28 != i)
                 {
-                    _projf *= (float) (Math.Sqrt((Ox[i] - Ox[i28]) * (Ox[i] - Ox[i28]) +
-                                                 (Oz[i] - Oz[i28]) * (Oz[i] - Oz[i28])) / 100.0);
+                    _projf *= float.Sqrt((Ox[i] - Ox[i28]) * (Ox[i] - Ox[i28]) + (Oz[i] - Oz[i28]) * (Oz[i] - Oz[i28])) / 100.0f;
                 }
             }
         }
         _projf = _projf / 3.0F;
     }
 
-    internal static void Rot(Span<int> ais, Span<int> is163, int i, int i164, float i165, int i166)
+    internal static void Rot(Span<int> a, Span<int> b, int offA, int offB, float angle, int len)
     {
-        if (i165 > 0 || i165 < 0)
+        if (angle is > 0 or < 0)
         {
-            for (var i167 = 0; i167 < i166; i167++)
+            for (var i = 0; i < len; i++)
             {
-                var i168 = ais[i167];
-                var i169 = is163[i167];
-                ais[i167] = i + (int) ((i168 - i) * Medium.Cos(i165) - (i169 - i164) * Medium.Sin(i165));
-                is163[i167] = i164 + (int) ((i168 - i) * Medium.Sin(i165) + (i169 - i164) * Medium.Cos(i165));
+                var pa = a[i];
+                var pb = b[i];
+                a[i] = offA + (int) ((pa - offA) * Medium.Cos(angle) - (pb - offB) * Medium.Sin(angle));
+                b[i] = offB + (int) ((pa - offA) * Medium.Sin(angle) + (pb - offB) * Medium.Cos(angle));
             }
         }
     }
-
+    
+    internal static void Rot(Span<float> a, Span<float> b, float offA, float offB, float angle, int len)
+    {
+        if (angle is > 0 or < 0)
+        {
+            for (var i = 0; i < len; i++)
+            {
+                var pa = a[i];
+                var pb = b[i];
+                a[i] = offA + ((pa - offA) * Medium.Cos(angle) - (pb - offB) * Medium.Sin(angle));
+                b[i] = offB + ((pa - offA) * Medium.Sin(angle) + (pb - offB) * Medium.Cos(angle));
+            }
+        }
+    }
 
     internal void S(int i, int i120, int i121, float i122, float i123, float i124, int i125)
     {
@@ -1681,29 +1692,33 @@ class Plane : IComparable<Plane>
         }
     }
 
-    private int Spy(int i, int i170)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static int Spy(int x, int z)
     {
-        return (int) Math.Sqrt((i - Medium.Cx) * (i - Medium.Cx) + i170 * i170);
+        return (int) Math.Sqrt((x - Medium.Cx) * (x - Medium.Cx) + z * z);
     }
 
-    private int Xs(int i, int i161)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static int Xs(int x, int z)
     {
-        if (i161 < Medium.Cz)
+        if (z < Medium.Cz)
         {
-            i161 = Medium.Cz;
+            z = Medium.Cz;
         }
-        return (i161 - Medium.FocusPoint) * (Medium.Cx - i) / i161 + i;
+        return (z - Medium.FocusPoint) * (Medium.Cx - x) / z + x;
     }
 
-    private int Ys(int i, int i162)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static int Ys(int x, int z)
     {
-        if (i162 < Medium.Cz)
+        if (z < Medium.Cz)
         {
-            i162 = Medium.Cz;
+            z = Medium.Cz;
         }
-        return (i162 - Medium.FocusPoint) * (Medium.Cy - i) / i162 + i;
+        return (z - Medium.FocusPoint) * (Medium.Cy - x) / z + x;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int CompareTo(Plane? o)
     {
         if (o == null)
