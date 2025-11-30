@@ -21,6 +21,15 @@ public class GameSparker
     private static MediumState currentMediumState;
     private static MediumState prevMediumState;
 
+    // View modes
+    public enum ViewMode
+    {
+        Follow,
+        Around,
+    }
+    private static ViewMode currentViewMode = ViewMode.Follow;
+    /////////////////////////////////
+
     private static Control playerControl;
     private static Mad playerMad;
 
@@ -80,15 +89,10 @@ public static void KeyPressed(Keys key)
             {
                 playerControl.Radar = !playerControl.Radar;
             }
-
-            /*if (key == Keys.V)
+            if (key == Keys.V)
             {
-                _view++;
-                if (_view == 3)
-                {
-                    _view = 0;
-                }
-            }*/
+                currentViewMode = (ViewMode)(((int)currentViewMode + 1) % Enum.GetValues<ViewMode>().Length);
+            }
         //}
     }
 
@@ -181,7 +185,19 @@ public static void KeyPressed(Keys key)
         {
             accumulator -= physics_dt_us;
 
-            Medium.Follow(cars[0], playerMad.Cxz, playerControl.Lookback);
+            //Medium.Follow(cars[0], playerMad.Cxz, playerControl.Lookback);
+            //Medium.Around(cars[0], true);
+
+            switch (currentViewMode)
+            {
+                case ViewMode.Follow:
+                    Medium.Follow(cars[0], playerMad.Cxz, playerControl.Lookback);
+                    break;
+                case ViewMode.Around:
+                    Medium.Around(cars[0], true);
+                    break;
+            }
+
             playerMad.Drive(playerControl, cars[0]);
 
             prevMediumState = currentMediumState;

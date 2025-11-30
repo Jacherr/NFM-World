@@ -170,8 +170,8 @@ public unsafe class Program
     {
         var options = WindowOptions.Default;
         options.Size = new Vector2D<int>((int)(800*scale), (int)(450*scale));
-        options.Title = "Silk.NET with SkiaSharp Triangle";
-        options.UpdatesPerSecond = 60f;
+        options.Title = "Need For Madness: World";
+        options.UpdatesPerSecond = 144f;
         options.ShouldSwapAutomatically = false;
         options.API = GraphicsAPI.Default;
 
