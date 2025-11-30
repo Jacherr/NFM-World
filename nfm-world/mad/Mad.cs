@@ -521,62 +521,62 @@ internal class Mad
             {
                 if (control.Up)
                 {
-                    if (Ucomp == 0.0F)
+                    if (Ucomp == 0.0F * _tickRate)
                     {
-                        Ucomp = 10.0F + (Scy[0] + 50.0F) / 20.0F;
-                        if (Ucomp < 5.0F)
+                        Ucomp = 10.0F + (Scy[0] + 50.0F) / 20.0F * _tickRate;
+                        if (Ucomp < 5.0F * _tickRate)
                         {
-                            Ucomp = 5.0F;
+                            Ucomp = 5.0F * _tickRate;
                         }
-                        if (Ucomp > 10.0F)
+                        if (Ucomp > 10.0F * _tickRate)
                         {
-                            Ucomp = 10.0F;
+                            Ucomp = 10.0F * _tickRate;
                         }
-                        Ucomp *= Stat.Airs;
+                        Ucomp *= Stat.Airs * _tickRate;
                     }
-                    if (Ucomp < 20.0F)
+                    if (Ucomp < 20.0F * _tickRate)
                     {
-                        Ucomp += (int)(0.5 * Stat.Airs) * _tickRate;//
+                        Ucomp += (float)(0.5 * Stat.Airs) * _tickRate;//
                     }
-                    f = -Stat.Airc * Medium.Sin(conto.Xz) * i4 * _tickRate;
-                    f11 = Stat.Airc * Medium.Cos(conto.Xz) * i4 * _tickRate;
+                    f = -Stat.Airc * Medium.Sin(conto.Xz) * i4;// * _tickRate;
+                    f11 = Stat.Airc * Medium.Cos(conto.Xz) * i4;// * _tickRate;
                 }
-                else if (Ucomp != 0.0F && Ucomp > -2.0F)
+                else if (Ucomp != 0.0F * _tickRate && Ucomp > -2.0F * _tickRate)
                 {
-                    Ucomp -= (int)(0.5 * Stat.Airs) * _tickRate;//
+                    Ucomp -= (float)(0.5 * Stat.Airs);//
                 }
                 if (control.Down)
                 {
-                    if (Dcomp == 0.0F)
+                    if (Dcomp == 0.0F * _tickRate)
                     {
-                        Dcomp = 10.0F + (Scy[0] + 50.0F) / 20.0F;
-                        if (Dcomp < 5.0F)
+                        Dcomp = 10.0F + (Scy[0] + 50.0F) / 20.0F * _tickRate;
+                        if (Dcomp < 5.0F * _tickRate)
                         {
-                            Dcomp = 5.0F;
+                            Dcomp = 5.0F * _tickRate;
                         }
-                        if (Dcomp > 10.0F)
+                        if (Dcomp > 10.0F * _tickRate)
                         {
-                            Dcomp = 10.0F;
+                            Dcomp = 10.0F * _tickRate;
                         }
-                        Dcomp *= Stat.Airs;
+                        Dcomp *= Stat.Airs * _tickRate;
                     }
-                    if (Dcomp < 20.0F)
+                    if (Dcomp < 20.0F * _tickRate)
                     {
-                        Dcomp += (int)(0.5 * Stat.Airs) * _tickRate;//
+                        Dcomp += (float)(0.5 * Stat.Airs) * _tickRate;//
                     }
                     f12 = Stat.Airc;
                 }
-                else if (Dcomp != 0.0F && Ucomp > -2.0F)
+                else if (Dcomp != 0.0F * _tickRate && Ucomp > -2.0F * _tickRate)
                 {
-                    Dcomp -= (int)(0.5 * Stat.Airs) * _tickRate;
+                    Dcomp -= (float)(0.5 * Stat.Airs) * _tickRate;
                 }//
                 if (control.Left)
                 {
-                    if (Lcomp == 0.0F)
+                    if (Lcomp == 0.0F * _tickRate)
                     {
-                        Lcomp = 5.0F;
+                        Lcomp = 5.0F * _tickRate;
                     }
-                    if (Lcomp < 20.0F)
+                    if (Lcomp < 20.0F * _tickRate)
                     {
                         Lcomp += 2.0F * Stat.Airs * _tickRate;//
                     }
@@ -589,33 +589,33 @@ internal class Mad
                 }
                 if (control.Right)//
                 {
-                    if (Rcomp == 0.0F)
+                    if (Rcomp == 0.0F * _tickRate)
                     {
-                        Rcomp = 5.0F;
+                        Rcomp = 5.0F * _tickRate;
                     }
-                    if (Rcomp < 20.0F)
+                    if (Rcomp < 20.0F * _tickRate)
                     {
                         Rcomp += 2.0F * Stat.Airs * _tickRate;
                     }
                     f = Stat.Airc * Medium.Cos(conto.Xz) * i * _tickRate;
                     f11 = Stat.Airc * Medium.Sin(conto.Xz) * i * _tickRate;
                 }
-                else if (Rcomp > 0.0F)//
+                else if (Rcomp > 0.0F * _tickRate)//
                 {
                     Rcomp -= 2.0F * Stat.Airs * _tickRate;
                 }
-                Pzy += (int)((Dcomp - Ucomp) * Medium.Cos(Pxy)) * _tickRate; //
+
+
+                Pzy += (int)((Dcomp - Ucomp) * Medium.Cos(Pxy)); //
                 if (zyinv)
                 {
-                    // no
-                    conto.Xz += (int)((Dcomp - Ucomp) * Medium.Sin(Pxy)) * _tickRate;
+                    conto.Xz += (int)((Dcomp - Ucomp) * Medium.Sin(Pxy));
                 }
                 else
                 {
-                    // no
-                    conto.Xz -= (int)((Dcomp - Ucomp) * Medium.Sin(Pxy)) * _tickRate;
+                    conto.Xz -= (int)((Dcomp - Ucomp) * Medium.Sin(Pxy));
                 }
-                Pxy += (int)(Rcomp - Lcomp) * _tickRate;
+                Pxy += (int)(Rcomp - Lcomp);
             }
             else
             {//
@@ -1699,7 +1699,8 @@ internal class Mad
             }
         }
         if (!Mtouch && Wtouch) {
-            if (_cntouch == 10) {
+            // NFM-WORLD set this to 0 to enable AB
+            if (_cntouch == 0/*10*/) {
                 //this.mtouch = true;
                 Mtouch = true; //DS-addons: Bad landing hotfix
             } else {
@@ -1710,7 +1711,6 @@ internal class Mad
         //DS-addons: Bad landing hotfix
 
         int newy = (int) ((wheely[0] + wheely[1] + wheely[2] + wheely[3]) / 4.0F - (bottomy * Medium.Cos(Pzy) * Medium.Cos(Pxy) + f12));
-        Console.WriteLine(Speed);
         
         py = conto.Y - newy;
         float diff = py;
