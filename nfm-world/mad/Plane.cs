@@ -745,8 +745,7 @@ class Plane : IComparable<Plane>
         var i110 = (i103 + i104) / 2;
         var i111 = (i105 + i106) / 2;
         var i112 = (i107 + i108) / 2;
-        _av = (int) Math.Sqrt((Medium.Cy - i110) * (Medium.Cy - i110) +
-                              (Medium.Cx - i111) * (Medium.Cx - i111) + i112 * i112 + i98 * i98 * i98);
+        _av = (int) float.Sqrt((Medium.Cy - i110) * (Medium.Cy - i110) + (Medium.Cx - i111) * (Medium.Cx - i111) + i112 * i112 + i98 * i98 * i98);
         if (Medium.Trk == 0 && (_av > Medium.Fade[_disline] || _av == 0))
         {
             bool84 = false;
