@@ -328,7 +328,7 @@ internal class Mad
         rebound = Math.Min(rebound, maxAngleRebound);
 
         // part 2: the bigger the bounce stat, the bigger the bounce
-        rebound += CarDefine.Bounce[Cn];
+        rebound += CarDefine.Bounce[Cn] * _tickRate;
         float minRebound = 1.1F;
         rebound = Math.Max(rebound, minRebound);
 
@@ -359,7 +359,7 @@ internal class Mad
         rebound = Math.Min(rebound, maxAngleRebound);
 //        if (wasMtouch)
 //            rebound = 0;
-        rebound += CarDefine.Bounce[Cn] - 0.2F;
+        rebound += (CarDefine.Bounce[Cn] - 0.2F)*_tickRate;
         float minRebound = 1.1F;
         rebound = Math.Max(rebound, minRebound);
         Regz(wi, -1 * Scz[wi] * rebound * Trackers.Dam[ti] /** checkpoints.dam*/, conto);
@@ -372,7 +372,7 @@ internal class Mad
         rebound = Math.Min(rebound, maxAngleRebound);
 //        if (wasMtouch)
 //            rebound = 0;
-        rebound += CarDefine.Bounce[Cn] - 0.2F;
+        rebound += (CarDefine.Bounce[Cn] - 0.2F)*_tickRate;
         float minRebound = 1.1F;
         rebound = Math.Max(rebound, minRebound);
         Regx(wi, -1 * Scx[wi] * rebound * Trackers.Dam[ti]/* * checkpoints.dam*/, conto);
@@ -1717,7 +1717,7 @@ internal class Mad
         //DS-addons: Bad landing hotfix
 
         int newy = (int) ((wheely[0] + wheely[1] + wheely[2] + wheely[3]) / 4.0F - (bottomy * Medium.Cos(Pzy) * Medium.Cos(Pxy) + f12));
-        
+
         py = conto.Y - newy;
         float diff = py;
         diff = diff * _tickRate;

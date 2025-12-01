@@ -597,6 +597,7 @@ public static void KeyPressed(Keys key)
             //Medium.Follow(cars[0], playerMad.Cxz, playerControl.Lookback);
             //Medium.Around(cars[0], true);
 
+            playerMad.Drive(playerControl, cars[0]);
             switch (currentViewMode)
             {
                 case ViewMode.Follow:
@@ -606,8 +607,6 @@ public static void KeyPressed(Keys key)
                     Medium.Around(cars[0], true);
                     break;
             }
-
-            playerMad.Drive(playerControl, cars[0]);
 
             prevMediumState = currentMediumState;
             currentMediumState = new MediumState();
