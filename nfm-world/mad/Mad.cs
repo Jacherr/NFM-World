@@ -523,14 +523,14 @@ internal class Mad
                 {
                     if (Ucomp == 0.0F * _tickRate)
                     {
-                        Ucomp = 10.0F + (Scy[0] + 50.0F) / 20.0F * _tickRate;
-                        if (Ucomp < 5.0F * _tickRate)
+                        Ucomp = 10.0F + (Scy[0] + 50.0F) / 20.0F;
+                        if (Ucomp < 5.0F)
                         {
-                            Ucomp = 5.0F * _tickRate;
+                            Ucomp = 5.0F;
                         }
-                        if (Ucomp > 10.0F * _tickRate)
+                        if (Ucomp > 10.0F)
                         {
-                            Ucomp = 10.0F * _tickRate;
+                            Ucomp = 10.0F;
                         }
                         Ucomp *= Stat.Airs * _tickRate;
                     }
@@ -549,14 +549,14 @@ internal class Mad
                 {
                     if (Dcomp == 0.0F * _tickRate)
                     {
-                        Dcomp = 10.0F + (Scy[0] + 50.0F) / 20.0F * _tickRate;
-                        if (Dcomp < 5.0F * _tickRate)
+                        Dcomp = (10.0F + Scy[0] + 50.0F) / 20.0F;
+                        if (Dcomp < 5.0F)
                         {
-                            Dcomp = 5.0F * _tickRate;
+                            Dcomp = 5.0F;
                         }
-                        if (Dcomp > 10.0F * _tickRate)
+                        if (Dcomp > 10.0F)
                         {
-                            Dcomp = 10.0F * _tickRate;
+                            Dcomp = 10.0F;
                         }
                         Dcomp *= Stat.Airs * _tickRate;
                     }
@@ -605,6 +605,7 @@ internal class Mad
                     Rcomp -= 2.0F * Stat.Airs * _tickRate;
                 }
 
+                //if(control.Right && control.Down) Console.WriteLine(Dcomp + ", " + Rcomp);
 
                 Pzy += (int)((Dcomp - Ucomp) * Medium.Cos(Pxy)); //
                 if (zyinv)
@@ -1187,7 +1188,6 @@ internal class Mad
         var isWheelGrounded = new bool[4];
         float groundY = 250f;
         float wheelYThreshold = 5f;
-        Console.WriteLine(wheely[0] + ", " + wheely[1] + ", " + wheely[2] + ", " + wheely[3]);
         for (var i49 = 0; i49 < 4; i49++)
         {
             isWheelGrounded[i49] = false;
@@ -1253,7 +1253,6 @@ internal class Mad
                     // but when using floating pieces, you have to make sure the ramp comes first in the code
                     if (Trackers.Xy[j] == 0 && Trackers.Zy[j] == 0 && Trackers.Y[j] != groundY && wheely[k] > Trackers.Y[j] - wheelYThreshold)
                     {
-                        Console.WriteLine("incremented");
                         ++nGroundedWheels;
                         Wtouch = true;
                         Gtouch = true;
@@ -1556,29 +1555,33 @@ internal class Mad
             }
         }
 
-        int i_81 = 0;
+        float i_81 = 0;
         if (Scy[2] != Scy[0]) {
             int sgn = Scy[2] < Scy[0] ? -1 : 1;
             float ratio = Hypot3(wheelz[0] - wheelz[2], wheely[0] - wheely[2], wheelx[0] - wheelx[2]) / (Math.Abs(conto.Keyz[0]) + Math.Abs(conto.Keyz[2]));
-            i_81 = d > 1 ? 0 : (int) dAcos(ratio) * sgn; // the d > 1 ? 0 part was different in the original code, but this I think makes more sense
+            ratio = Math.Clamp(ratio, -0.9998f, 0.9998f);
+            i_81 = d > 1 ? 0 : dAcos(ratio) * sgn; // the d > 1 ? 0 part was different in the original code, but this I think makes more sense
         }
-        int i_82 = 0;
+        float i_82 = 0;
         if (Scy[3] != Scy[1]) {
             int sgn = Scy[3] < Scy[1] ? -1 : 1;
             float ratio = Hypot3(wheelz[1] - wheelz[3], wheely[1] - wheely[3], wheelx[1] - wheelx[3]) / (Math.Abs(conto.Keyz[1]) + Math.Abs(conto.Keyz[3]));
-            i_82 = d > 1 ? 0 : (int) dAcos(ratio) * sgn;
+            ratio = Math.Clamp(ratio, -0.9998f, 0.9998f);
+            i_82 = d > 1 ? 0 : dAcos(ratio) * sgn;
         }
-        int i_83 = 0;
+        float i_83 = 0;
         if (Scy[1] != Scy[0]) {
             int sgn = Scy[1] < Scy[0] ? -1 : 1;
             float ratio = Hypot3(wheelz[0] - wheelz[1], wheely[0] - wheely[1], wheelx[0] - wheelx[1]) / (Math.Abs(conto.Keyx[0]) + Math.Abs(conto.Keyx[1]));
-            i_83 = d > 1 ? 0 : (int) dAcos(ratio) * sgn;
+            ratio = Math.Clamp(ratio, -0.9998f, 0.9998f);
+            i_83 = d > 1 ? 0 : dAcos(ratio) * sgn;
         }
-        int i_84 = 0;
+        float i_84 = 0;
         if (Scy[3] != Scy[2]) {
             int sgn = Scy[3] < Scy[2] ? -1 : 1;
             float ratio = Hypot3(wheelz[2] - wheelz[3], wheely[2] - wheely[3], wheelx[2] - wheelx[3]) / (Math.Abs(conto.Keyx[2]) + Math.Abs(conto.Keyx[3]));
-            i_84 = d > 1 ? 0 : (int) dAcos(ratio) * sgn;
+            ratio = Math.Clamp(ratio, -0.9998f, 0.9998f);
+            i_84 = d > 1 ? 0 : dAcos(ratio) * sgn;
         }
 
         if (hitVertical) {
@@ -1611,7 +1614,7 @@ internal class Mad
             {
             	if(Pzy > 0) //Pzy can be negative, so this needs to be accounted for
                 {
-                    Pzy -= Math.Abs(i_81); 
+                    Pzy -= Math.Abs(i_81);
                 } else
                 {
                     Pzy += Math.Abs(i_81);
@@ -1658,8 +1661,6 @@ internal class Mad
                 Pxy -= i_83 * _tickRate;
         }
         //
-        if(nGroundedWheels == 4)
-            Console.WriteLine(nGroundedWheels);
         if (nGroundedWheels == 4) {
             int i_86 = 0;
             while (Pzy < 360) {
