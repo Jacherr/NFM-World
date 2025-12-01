@@ -205,7 +205,7 @@ class Plane : IComparable<Plane>
         Deltafntyp();
     }
 
-    internal void D(Plane last, Plane next, int mx, int my, int mz, SinCosFloat xz, SinCosFloat xy, SinCosFloat yz, float i34, float i35,
+    internal void D(Plane last, Plane? next, int mx, int my, int mz, SinCosFloat xz, SinCosFloat xy, SinCosFloat yz, SinCosFloat wxz, SinCosFloat wzy,
         bool abool, int i36)
     {
         if (Master == 1)
@@ -247,11 +247,11 @@ class Plane : IComparable<Plane>
         }
         if (Wz != 0)
         {
-            Rot(y, z, Wy + my, Wz + mz, i35, N);
+            Rot(y, z, Wy + my, Wz + mz, wzy, N);
         }
         if (Wx != 0)
         {
-            Rot(x, z, Wx + mx, Wz + mz, i34, N);
+            Rot(x, z, Wx + mx, Wz + mz, wxz, N);
         }
         if (Chip == 1 && (Medium.Random() > 0.6 || Bfase == 0))
         {
@@ -794,37 +794,37 @@ class Plane : IComparable<Plane>
         }
     }
 
-    private Color CalcColor(Plane last, Plane next, int i36, float f, bool bool72, out int i114, out int i115, out int i116)
+    private Color CalcColor(Plane last, Plane? next, int i36, float brightness, bool bool72, out int r, out int g, out int b)
     {
         if (Project == -1)
         {
-            f = (float) (last._projf / last._deltaf + 0.3);
+            brightness = (float) (last._projf / last._deltaf + 0.3);
 
-            if (f > 1.0F)
+            if (brightness > 1.0F)
             {
-                f = 1.0F;
+                brightness = 1.0F;
             }
-            if (f < 0.6 || bool72)
+            if (brightness < 0.6 || bool72)
             {
                 //yeah its referencing OUR bool72, i dunno man...
-                f = 0.6F;
+                brightness = 0.6F;
             }
         }
         else if (Project == 1 && next != null)
         {
-            f = (float) (next._projf / next._deltaf + 0.3);
+            brightness = (float) (next._projf / next._deltaf + 0.3);
 
-            if (f > 1.0F)
+            if (brightness > 1.0F)
             {
-                f = 1.0F;
+                brightness = 1.0F;
             }
-            if (f < 0.6 || bool72)
+            if (brightness < 0.6 || bool72)
             {
                 //yeah its referencing OUR bool72, i dunno man...
-                f = 0.6F;
+                brightness = 0.6F;
             }
         }
-        var color = Color.GetHSBColor(HSB[0], HSB[1], HSB[2] * f);
+        var color = Color.GetHSBColor(HSB[0], HSB[1], HSB[2] * brightness);
         switch (Medium.Trk)
         {
             case 1:
@@ -833,7 +833,7 @@ class Plane : IComparable<Plane>
                 Color.RGBtoHSB(Oc[0], Oc[1], Oc[2], fs);
                 fs[0] = 0.15F;
                 fs[1] = 0.3F;
-                color = Color.GetHSBColor(fs[0], fs[1], fs[2] * f + 0.0F);
+                color = Color.GetHSBColor(fs[0], fs[1], fs[2] * brightness + 0.0F);
                 break;
             }
             case 3:
@@ -842,14 +842,14 @@ class Plane : IComparable<Plane>
                 Color.RGBtoHSB(Oc[0], Oc[1], Oc[2], fs);
                 fs[0] = 0.6F;
                 fs[1] = 0.14F;
-                color = Color.GetHSBColor(fs[0], fs[1], fs[2] * f + 0.0F);
+                color = Color.GetHSBColor(fs[0], fs[1], fs[2] * brightness + 0.0F);
                 break;
             }
         }
 
-        i114 = color.R;
-        i115 = color.G;
-        i116 = color.B;
+        r = color.R;
+        g = color.G;
+        b = color.B;
 /*
             if (false) { //before the dim
                 i114 = (int) (Random.Double() * 255);
@@ -859,46 +859,48 @@ class Plane : IComparable<Plane>
 */
         if (Medium.Lightson && (Light != 0 || (Gr == -11 || Gr == -12) && i36 == -1))
         {
-            i114 = Oc[0];
-            if (i114 > 255)
+            r = Oc[0];
+            if (r > 255)
             {
-                i114 = 255;
+                r = 255;
             }
-            if (i114 < 0)
+            if (r < 0)
             {
-                i114 = 0;
+                r = 0;
             }
-            i115 = Oc[1];
-            if (i115 > 255)
+            g = Oc[1];
+            if (g > 255)
             {
-                i115 = 255;
+                g = 255;
             }
-            if (i115 < 0)
+            if (g < 0)
             {
-                i115 = 0;
+                g = 0;
             }
-            i116 = Oc[2];
-            if (i116 > 255)
+            b = Oc[2];
+            if (b > 255)
             {
-                i116 = 255;
+                b = 255;
             }
-            if (i116 < 0)
+            if (b < 0)
             {
-                i116 = 0;
+                b = 0;
             }
         }
         if (Medium.Trk == 0)
         {
-            for (var i117 = 0; i117 < 16; i117++)
+            for (var fadefrom = 0; fadefrom < 16; fadefrom++)
             {
-                if (_av > Medium.Fade[i117])
+                if (_av > Medium.Fade[fadefrom])
                 {
-                    i114 = (i114 * Medium.Fogd + Medium.Cfade[0]) / (Medium.Fogd + 1);
-                    i115 = (i115 * Medium.Fogd + Medium.Cfade[1]) / (Medium.Fogd + 1);
-                    i116 = (i116 * Medium.Fogd + Medium.Cfade[2]) / (Medium.Fogd + 1);
+                    r = (r * Medium.Fogd + Medium.Cfade[0]) / (Medium.Fogd + 1);
+                    g = (g * Medium.Fogd + Medium.Cfade[1]) / (Medium.Fogd + 1);
+                    b = (b * Medium.Fogd + Medium.Cfade[2]) / (Medium.Fogd + 1);
                 }
             }
         }
+
+        color = new Color(r, g, b);
         return color;
     }
 
