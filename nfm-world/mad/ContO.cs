@@ -78,8 +78,8 @@ public class ContO
     private float[] _vry = [];
     private float[] _vrz = [];
     internal int Wh;
-    internal float Wxz = 0;
-    internal float Wzy = 0;
+    internal SinCosFloat Wxz = 0;
+    internal SinCosFloat Wzy = 0;
     internal int X;
     internal SinCosFloat Xy;
     internal SinCosFloat Xz;
@@ -1693,8 +1693,7 @@ public class ContO
                     P[j].D(P[j - 1], P[j + 1], X - Medium.X, Y - Medium.Y, Z - Medium.Z, Xz, Xy, Zy, Wxz, Wzy,
                         Noline, i126);
                 }
-                P[npl].D(P[npl - 1], null, X - Medium.X, Y - Medium.Y, Z - Medium.Z, Xz, Xy, Zy, Wxz, Wzy, Noline,
-                    i126);
+                P[npl].D(P[npl - 1], null, X - Medium.X, Y - Medium.Y, Z - Medium.Z, Xz, Xy, Zy, Wxz, Wzy, Noline, i126);
 
                 if (Shadow)
                 {
