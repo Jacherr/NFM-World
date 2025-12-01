@@ -794,7 +794,7 @@ class Plane : IComparable<Plane>
         }
     }
 
-    private Color CalcColor(Plane last, Plane? next, int i36, float brightness, bool bool72, out int r, out int g, out int b)
+    private void CalcColor(Plane last, Plane? next, int i36, float brightness, bool bool72, out int r, out int g, out int b)
     {
         if (Project == -1)
         {
@@ -899,9 +899,6 @@ class Plane : IComparable<Plane>
                 }
             }
         }
-
-        color = new Color(r, g, b);
-        return color;
     }
 
     private void DrawPart(Span<int> is85, Span<int> is86)
