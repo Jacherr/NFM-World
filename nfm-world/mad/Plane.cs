@@ -1468,8 +1468,9 @@ class Plane : IComparable<Plane>
             {
                 var pa = a[i];
                 var pb = b[i];
-                a[i] = offA + (int) ((pa - offA) * Medium.Cos(angle) - (pb - offB) * Medium.Sin(angle));
-                b[i] = offB + (int) ((pa - offA) * Medium.Sin(angle) + (pb - offB) * Medium.Cos(angle));
+                var (sin, cos) = Medium.SinCos(angle);
+                a[i] = offA + (int) ((pa - offA) * cos - (pb - offB) * sin);
+                b[i] = offB + (int) ((pa - offA) * sin + (pb - offB) * cos);
             }
         }
     }
@@ -1482,8 +1483,9 @@ class Plane : IComparable<Plane>
             {
                 var pa = a[i];
                 var pb = b[i];
-                a[i] = offA + (int) ((pa - offA) * Medium.Cos(angle) - (pb - offB) * Medium.Sin(angle));
-                b[i] = offB + (int) ((pa - offA) * Medium.Sin(angle) + (pb - offB) * Medium.Cos(angle));
+                var (sin, cos) = Medium.SinCos(angle);
+                a[i] = offA + (int) ((pa - offA) * cos - (pb - offB) * sin);
+                b[i] = offB + (int) ((pa - offA) * sin + (pb - offB) * cos);
             }
         }
     }
@@ -1496,8 +1498,10 @@ class Plane : IComparable<Plane>
             {
                 var pa = a[i];
                 var pb = b[i];
-                a[i] = offA + (int) ((pa - offA) * angle.Cos - (pb - offB) * angle.Sin);
-                b[i] = offB + (int) ((pa - offA) * angle.Sin + (pb - offB) * angle.Cos);
+                var cos = angle.Cos;
+                var sin = angle.Sin;
+                a[i] = offA + (int) ((pa - offA) * cos - (pb - offB) * sin);
+                b[i] = offB + (int) ((pa - offA) * sin + (pb - offB) * cos);
             }
         }
     }
@@ -1510,8 +1514,9 @@ class Plane : IComparable<Plane>
             {
                 var pa = a[i];
                 var pb = b[i];
-                a[i] = offA + ((pa - offA) * Medium.Cos(angle) - (pb - offB) * Medium.Sin(angle));
-                b[i] = offB + ((pa - offA) * Medium.Sin(angle) + (pb - offB) * Medium.Cos(angle));
+                var (sin, cos) = Medium.SinCos(angle);
+                a[i] = offA + ((pa - offA) * cos - (pb - offB) * sin);
+                b[i] = offB + ((pa - offA) * sin + (pb - offB) * cos);
             }
         }
     }

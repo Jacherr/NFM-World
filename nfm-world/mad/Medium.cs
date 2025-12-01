@@ -410,34 +410,58 @@ public class Medium
         return r<0 ? r + m : r;
     }
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static float Sin(int deg)
     {
         return float.Sin(deg * ((float)Math.PI / 180));
     }
         
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static float Cos(int deg)
     {
         return float.Cos(deg * ((float)Math.PI / 180));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static (float Sin, float Cos) SinCos(int deg)
+    {
+        return float.SinCos(deg * ((float)Math.PI / 180));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static float Sin(float deg)
     {
         return float.Sin(deg * ((float)Math.PI / 180));
     }
         
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static float Cos(float deg)
     {
         return float.Cos(deg * ((float)Math.PI / 180));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static (float Sin, float Cos) SinCos(float deg)
+    {
+        return float.SinCos(deg * ((float)Math.PI / 180));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static float Sin(SinCosFloat deg)
     {
         return deg.Sin;
     }
         
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static float Cos(SinCosFloat deg)
     {
         return deg.Cos;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static (float Sin, float Cos) SinCos(SinCosFloat deg)
+    {
+        return (deg.Sin, deg.Cos);
     }
 
     internal static void D()
