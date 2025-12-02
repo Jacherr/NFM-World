@@ -2029,6 +2029,10 @@ public class ContO
 
     private void Electrify()
     {
+        Span<int> ais = stackalloc int[8];
+        Span<int> is186 = stackalloc int[8];
+        Span<int> is187 = stackalloc int[8];
+
         for (var i = 0; i < 4; i++)
         {
             if (_elc[i] == 0)
@@ -2041,9 +2045,6 @@ public class ContO
             var i183 = (int) (_edr[i] + (190.0F - Medium.Random() * 380.0F));
             var i184 = (int) (Medium.Random() * 126.0F);
             var i185 = (int) (Medium.Random() * 126.0F);
-            var ais = new int[8];
-            var is186 = new int[8];
-            var is187 = new int[8];
             for (var i188 = 0; i188 < 8; i188++)
             {
                 is187[i188] = Z - Medium.Z;
