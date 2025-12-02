@@ -199,9 +199,8 @@ public unsafe class Program
     }
 
     private void OnUpdate(double delta)
-    {   
-        Stopwatch t = new Stopwatch();
-        t.Start();
+    {
+        Stopwatch t = Stopwatch.StartNew();
 
         if (!loaded)
         {
@@ -372,7 +371,7 @@ internal class NImpellerBackend : IBackend
         Graphics = new NImpellerGraphics(this);
     }
 
-    public ImpellerDisplayListBuilder DrawListBuilder { get; set; }
+    public ImpellerDisplayListBuilder? DrawListBuilder { get; set; }
 
     public Vector2D<float> Ratio
     {
@@ -415,6 +414,7 @@ internal class NImpellerBackend : IBackend
 internal class NImpellerGraphics(NImpellerBackend backend) : IGraphics
 {
     private readonly ImpellerPaint _paint = ImpellerPaint.New()!;
+    private readonly ImpellerTypographyContext _typographyContext = ImpellerTypographyContext.New()!;
     public Vector2D<float> Ratio { get; set; }
 
     public void SetColor(Color c)
@@ -527,7 +527,14 @@ internal class NImpellerGraphics(NImpellerBackend backend) : IGraphics
 
     public void DrawString(string text, int x, int y)
     {
-        
+        using var paragraphBuilder = _typographyContext.ParagraphBuilderNew()!;
+        using var impellerParagraphStyle = ImpellerParagraphStyle.New()!;
+        impellerParagraphStyle.SetForeground(_paint);
+        impellerParagraphStyle.SetFontSize(16f);
+        paragraphBuilder.PushStyle(impellerParagraphStyle);
+        paragraphBuilder.AddText(text);
+        using var paragraph = paragraphBuilder.BuildParagraphNew(10000)!;
+        backend.DrawListBuilder?.DrawParagraph(paragraph, new ImpellerPoint { X = x, Y = y });
     }
 
     public void FillOval(int p0, int p1, int p2, int p3)
