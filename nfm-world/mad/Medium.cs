@@ -2537,7 +2537,7 @@ public class Medium
             Csky[2] = 0;
         }
         var fs = new float[3];
-        Color.RGBtoHSB(Csky[0], Csky[1], Csky[2], fs);
+        Color.RGBtoHSB(Csky[0], Csky[1], Csky[2], out fs[0], out fs[1], out fs[2]);
         Darksky = fs[2] < 0.6;
     }
 

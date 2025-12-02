@@ -48,9 +48,9 @@ public struct Color
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void RGBtoHSB(int i, int i1, int i2, float[] fs)
+    public static void RGBtoHSB(int r, int g, int b, out float hue, out float saturation, out float brightness)
     {
-        Colors.RGBtoHSB(i, i1, i2, fs);
+        Colors.RGBtoHSB(r, g, b, out hue, out saturation, out brightness);
     }
 
     private const double Factor = 0.7;

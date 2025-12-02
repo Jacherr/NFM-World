@@ -2,13 +2,8 @@ namespace NFMWorld.Util;
 
 public class Colors
 {
-    public static float[] RGBtoHSB(int r, int g, int b, float[] hsbvals)
+    public static void RGBtoHSB(int r, int g, int b, out float hue, out float saturation, out float brightness)
     {
-        float hue, saturation, brightness;
-        if (hsbvals == null)
-        {
-            hsbvals = new float[3];
-        }
         var cmax = (r > g) ? r : g;
         if (b > cmax)
         {
@@ -21,10 +16,10 @@ public class Colors
             cmin = b;
         }
 
-        brightness = ((float) cmax) / 255.0f;
+        brightness = cmax / 255.0f;
         if (cmax != 0)
         {
-            saturation = ((float) (cmax - cmin)) / ((float) cmax);
+            saturation = (cmax - cmin) / ((float) cmax);
         }
         else
         {
@@ -37,9 +32,9 @@ public class Colors
         }
         else
         {
-            var redc = ((float) (cmax - r)) / ((float) (cmax - cmin));
-            var greenc = ((float) (cmax - g)) / ((float) (cmax - cmin));
-            var bluec = ((float) (cmax - b)) / ((float) (cmax - cmin));
+            var redc = (cmax - r) / ((float) (cmax - cmin));
+            var greenc = (cmax - g) / ((float) (cmax - cmin));
+            var bluec = (cmax - b) / ((float) (cmax - cmin));
             if (r == cmax)
             {
                 hue = bluec - greenc;
@@ -59,10 +54,6 @@ public class Colors
                 hue = hue + 1.0f;
             }
         }
-        hsbvals[0] = hue;
-        hsbvals[1] = saturation;
-        hsbvals[2] = brightness;
-        return hsbvals;
     }
 
     public static Color GetHSBColor(float hue, float saturation, float brightness)

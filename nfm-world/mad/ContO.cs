@@ -2238,7 +2238,7 @@ public class ContO
                 {
                     i169 = 0;
                 }
-                Color.RGBtoHSB(i167, i168, i169, P[i].HSB);
+                Color.RGBtoHSB(i167, i168, i169, out P[i].HSB[0], out P[i].HSB[1], out P[i].HSB[2]);
                 P[i].Flx = 1;
             }
         }
