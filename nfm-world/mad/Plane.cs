@@ -889,13 +889,14 @@ class Plane : IComparable<Plane>
         }
         if (Medium.Trk == 0)
         {
-            for (var fadefrom = 0; fadefrom < 16; fadefrom++)
+            for (var fadefrom = 15; fadefrom >= 0; fadefrom--)
             {
                 if (_av > Medium.Fade[fadefrom])
                 {
                     r = (r * Medium.Fogd + Medium.Cfade[0]) / (Medium.Fogd + 1);
                     g = (g * Medium.Fogd + Medium.Cfade[1]) / (Medium.Fogd + 1);
                     b = (b * Medium.Fogd + Medium.Cfade[2]) / (Medium.Fogd + 1);
+                    break;
                 }
             }
         }
