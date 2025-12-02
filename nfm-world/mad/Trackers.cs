@@ -28,7 +28,6 @@ internal class Trackers
 
     internal static void Devidetrackers(int i, int i0, int i1, int i2)
     {
-        Sect = null;
         Sx = i;
         Sz = i1;
         Ncx = i0 / 3000;
@@ -42,13 +41,13 @@ internal class Trackers
             Ncz = 1;
         }
         Sect = new int[Ncx, Ncz][];
+        var ais = new int[6700];
         for (var i3 = 0; i3 < Ncx; i3++)
         {
             for (var i4 = 0; i4 < Ncz; i4++)
             {
                 var i5 = Sx + i3 * 3000 + 1500;
                 var i6 = Sz + i4 * 3000 + 1500;
-                var ais = new int[6700];
                 var i7 = 0;
                 for (var i8 = 0; i8 < Nt; i8++)
                 {
@@ -76,8 +75,7 @@ internal class Trackers
                     i7++;
                 }
                 Sect[i3, i4] = new int[i7];
-                int[] dest = Sect[i3, i4];
-                Array.Copy(ais, 0, dest, 0, i7);
+                Array.Copy(ais, 0, Sect[i3, i4], 0, i7);
             }
         }
         for (var i12 = 0; i12 < Nt; i12++)
