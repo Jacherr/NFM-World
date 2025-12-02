@@ -1193,7 +1193,7 @@ public class Mad
             isWheelGrounded[i49] = false;
             // ab precision (lower vaslue = easier)
             // default 245
-            if (wheely[i49] > 240.0F)
+            if (wheely[i49] > 230.0F)
             {
                 nGroundedWheels++;
                 Wtouch = true;

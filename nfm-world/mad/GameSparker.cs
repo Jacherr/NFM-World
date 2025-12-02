@@ -28,7 +28,7 @@ public class GameSparker
     };
 
     private static long accumulator = 0;
-    private static long lastFrameTime = 0;
+    private static long lastTickTime = 0;
     public static float PHYSICS_MULTIPLIER = 0.3377f;
 
     /* Frequency of physics ticks */
@@ -581,10 +581,10 @@ public static void KeyPressed(Keys key)
 
     public static void GameTick()
     {
-        if(lastFrameTime == 0) 
-            lastFrameTime = timer.ElapsedMicroseconds;
+        if(lastTickTime == 0) 
+            lastTickTime = timer.ElapsedMicroseconds;
 
-        accumulator += timer.ElapsedMicroseconds - lastFrameTime;
+        accumulator += timer.ElapsedMicroseconds - lastTickTime;
 
         while(accumulator >= physics_dt_us)
         {
@@ -611,6 +611,17 @@ public static void KeyPressed(Keys key)
             current_car_states[0] = new CarState(cars_in_race[playerCarIndex].Conto);
         }
 
+        lastTickTime = timer.ElapsedMicroseconds;
+    }
+
+    public static void Render()
+    {
+        if(lastTickTime == 0) 
+            lastTickTime = timer.ElapsedMicroseconds;
+
+        Stopwatch t = new Stopwatch();
+        t.Start();
+
         float interp_ratio = accumulator / (float)physics_dt_us;
 
         MediumState medium_interp_state = currentMediumState.InterpWith(prevMediumState, interp_ratio);
@@ -619,15 +630,6 @@ public static void KeyPressed(Keys key)
         CarState car_interp_state = current_car_states[0].InterpWith(prev_car_states[0], interp_ratio);
         car_interp_state.Apply(cars_in_race[playerCarIndex].Conto);
 
-        Render();
-
-        current_car_states[0].Apply(cars[0]);
-        currentMediumState.Apply();
-        lastFrameTime = timer.ElapsedMicroseconds;
-    }
-
-    private static void Render()
-    {
         Medium.D();
 
         var renderQueue = new UnlimitedArray<ContO>(placed_stage_elements.Count);
@@ -667,5 +669,11 @@ public static void KeyPressed(Keys key)
         {
             obj.D();
         }
+
+        current_car_states[0].Apply(cars[0]);
+        currentMediumState.Apply();
+
+        G.SetColor(new Color(0, 0, 0));
+        G.DrawString("Render: " + t.ElapsedMilliseconds.ToString() + "ms", 100, 100);
     }
 }

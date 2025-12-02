@@ -179,7 +179,9 @@ public unsafe class Program
         var options = WindowOptions.Default;
         options.Size = new Vector2D<int>((int)(800*scale), (int)(450*scale));
         options.Title = "Need For Madness: World";
-        options.UpdatesPerSecond = 144f;
+        options.UpdatesPerSecond = 63f;
+        options.FramesPerSecond = 240f;
+        options.VSync = true;
         options.ShouldSwapAutomatically = false;
         options.API = new GraphicsAPI(ContextAPI.OpenGLES, new APIVersion(3, 0));
 
@@ -197,12 +199,7 @@ public unsafe class Program
     }
 
     private void OnUpdate(double delta)
-    {
-        _canvas.DrawRect(0, 0, _window.Size.X, _window.Size.Y, new SKPaint
-        {
-            Color = SKColors.Black
-        });
-        
+    {   
         if (!loaded)
         {
             loaded = true;
@@ -211,9 +208,6 @@ public unsafe class Program
         }
             
         GameSparker.GameTick();
-        
-        _canvas.Flush();
-        _window.SwapBuffers();
     }
 
     private void OnLoad()
@@ -294,6 +288,15 @@ public unsafe class Program
 
     private void OnRender(double delta)
     {
+        _canvas.DrawRect(0, 0, _window.Size.X, _window.Size.Y, new SKPaint
+        {
+            Color = SKColors.Black
+        });
+
+        GameSparker.Render();
+
+        _canvas.Flush();
+        _window.SwapBuffers();
     }
 
     public static void Main()
