@@ -205,8 +205,7 @@ class Plane : IComparable<Plane>
         Deltafntyp();
     }
 
-    internal void D(Plane last, Plane? next, int mx, int my, int mz, SinCosFloat xz, SinCosFloat xy, SinCosFloat yz, SinCosFloat wxz, SinCosFloat wzy,
-        bool lowZ, int i36)
+    internal void D(Plane last, Plane? next, int mx, int my, int mz, SinCosFloat xz, SinCosFloat xy, SinCosFloat yz, SinCosFloat wxz, SinCosFloat wzy, bool lowZ, int i36)
     {
         // cache fields for the hot path
         var trk = Medium.Trk;
@@ -327,13 +326,13 @@ class Plane : IComparable<Plane>
         {
             bool72 = true;
             var i82 = 0;
-            for (var i83 = 0; i83 < n; i83++)
+            for (var i = 0; i < n; i++)
             {
-                if (z[i83] < 50 && y[i83] > Medium.Cy)
+                if (z[i] < 50 && y[i] > Medium.Cy)
                 {
                     bool72 = false;
                 }
-                else if (y[i83] == y[0])
+                else if (y[i] == y[0])
                 {
                     i82++;
                 }
@@ -402,21 +401,18 @@ class Plane : IComparable<Plane>
             var i94 = 0;
             for (var i = 0; i < n; i++)
             {
-                for (var j = i; j < n; j++)
+                for (var j = i + 1; j < n; j++)
                 {
-                    if (i != j)
+                    var abs = Math.Abs(xScreen[i] - xScreen[j]);
+                    if (abs > i93)
                     {
-                        var abs = Math.Abs(xScreen[i] - xScreen[j]);
-                        if (abs > i93)
-                        {
-                            i93 = abs;
-                        }
+                        i93 = abs;
+                    }
 
-                        var abs2 = Math.Abs(yScreen[i] - yScreen[j]);
-                        if (abs2 > i94)
-                        {
-                            i94 = abs2;
-                        }
+                    var abs2 = Math.Abs(yScreen[i] - yScreen[j]);
+                    if (abs2 > i94)
+                    {
+                        i94 = abs2;
                     }
                 }
             }
@@ -435,7 +431,7 @@ class Plane : IComparable<Plane>
             return;
         }
 
-        var f = (_projf / _deltaf + 0.3).CapF();
+        var f = (_projf / _deltaf + 0.3f).Cap();
 
         if (lowZ && !Solo)
         {
@@ -569,9 +565,9 @@ class Plane : IComparable<Plane>
                         b = 255;
                     }
                 }
-                for (var i118 = 0; i118 < 16; i118++)
+                for (var fadefrom = 0; fadefrom < 16; fadefrom++)
                 {
-                    if (_av > Medium.Fade[i118])
+                    if (_av > Medium.Fade[fadefrom])
                     {
                         r = (r * Medium.Fogd + Medium.Cfade[0]) / (Medium.Fogd + 1);
                         g = (g * Medium.Fogd + Medium.Cfade[1]) / (Medium.Fogd + 1);
@@ -639,9 +635,9 @@ class Plane : IComparable<Plane>
             }
             b = 255;
         }
-        for (var i119 = 0; i119 < 16; i119++)
+        for (var fadefrom = 0; fadefrom < 16; fadefrom++)
         {
-            if (_av <= Medium.Fade[i119]) continue;
+            if (_av <= Medium.Fade[fadefrom]) continue;
             r = (r * Medium.Fogd + Medium.Cfade[0]) / (Medium.Fogd + 1);
             g = (g * Medium.Fogd + Medium.Cfade[1]) / (Medium.Fogd + 1);
             b = (b * Medium.Fogd + Medium.Cfade[2]) / (Medium.Fogd + 1);
