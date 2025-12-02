@@ -1,3 +1,4 @@
+using System.Numerics.Tensors;
 using System.Runtime.CompilerServices;
 using NFMWorld.Util;
 using NFMWorld.Util;
@@ -235,21 +236,17 @@ class Plane : IComparable<Plane>
         {
             if (gr is -11 or -12 or -13 && Medium.Lastmaf == 1)
             {
-                for (var i = 0; i < n; i++)
-                {
-                    x[i] = -ox[i] + mx;
-                    y[i] = oy[i] + my;
-                    z[i] = -oz[i] + mz;
-                }
+                UMath.VectorNegate(ox[..n], x);
+                UMath.VectorAdd(x, mx, x);
+                UMath.VectorAdd(oy[..n], my, y);
+                UMath.VectorNegate(oz[..n], z);
+                UMath.VectorAdd(z, mz, z);
             }
             else
             {
-                for (var i = 0; i < n; i++)
-                {
-                    x[i] = ox[i] + mx;
-                    y[i] = oy[i] + my;
-                    z[i] = oz[i] + mz;
-                }
+                UMath.VectorAdd(ox[..n], mx, x);
+                UMath.VectorAdd(oy[..n], my, y);
+                UMath.VectorAdd(oz[..n], mz, z);
             }
         }
         else
@@ -1456,14 +1453,8 @@ class Plane : IComparable<Plane>
     {
         if (angle != 0)
         {
-            for (var i = 0; i < len; i++)
-            {
-                var pa = a[i];
-                var pb = b[i];
-                var (sin, cos) = Medium.SinCos(angle);
-                a[i] = offA + (int) ((pa - offA) * cos - (pb - offB) * sin);
-                b[i] = offB + (int) ((pa - offA) * sin + (pb - offB) * cos);
-            }
+            var (sin, cos) = Medium.SinCos(angle);
+            UMath.VectorRotateCast<float, int>(a, b, offA, offB, sin, cos);
         }
     }
 
@@ -1471,14 +1462,8 @@ class Plane : IComparable<Plane>
     {
         if (angle != 0)
         {
-            for (var i = 0; i < len; i++)
-            {
-                var pa = a[i];
-                var pb = b[i];
-                var (sin, cos) = Medium.SinCos(angle);
-                a[i] = offA + (int) ((pa - offA) * cos - (pb - offB) * sin);
-                b[i] = offB + (int) ((pa - offA) * sin + (pb - offB) * cos);
-            }
+            var (sin, cos) = Medium.SinCos(angle);
+            UMath.VectorRotateCast<float, int>(a, b, offA, offB, sin, cos);
         }
     }
 
@@ -1486,15 +1471,7 @@ class Plane : IComparable<Plane>
     {
         if (angle != 0)
         {
-            for (var i = 0; i < len; i++)
-            {
-                var pa = a[i];
-                var pb = b[i];
-                var cos = angle.Cos;
-                var sin = angle.Sin;
-                a[i] = offA + (int) ((pa - offA) * cos - (pb - offB) * sin);
-                b[i] = offB + (int) ((pa - offA) * sin + (pb - offB) * cos);
-            }
+            UMath.VectorRotateCast<float, int>(a, b, offA, offB, angle.Sin, angle.Cos);
         }
     }
     
@@ -1502,14 +1479,8 @@ class Plane : IComparable<Plane>
     {
         if (angle != 0)
         {
-            for (var i = 0; i < len; i++)
-            {
-                var pa = a[i];
-                var pb = b[i];
-                var (sin, cos) = Medium.SinCos(angle);
-                a[i] = offA + ((pa - offA) * cos - (pb - offB) * sin);
-                b[i] = offB + ((pa - offA) * sin + (pb - offB) * cos);
-            }
+            var (sin, cos) = Medium.SinCos(angle);
+            UMath.VectorRotate(a, b, offA, offB, sin, cos);
         }
     }
 
