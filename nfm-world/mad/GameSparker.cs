@@ -619,9 +619,6 @@ public static void KeyPressed(Keys key)
         if(lastTickTime == 0) 
             lastTickTime = timer.ElapsedMicroseconds;
 
-        Stopwatch t = new Stopwatch();
-        t.Start();
-
         float interp_ratio = accumulator / (float)physics_dt_us;
 
         MediumState medium_interp_state = currentMediumState.InterpWith(prevMediumState, interp_ratio);
@@ -672,8 +669,5 @@ public static void KeyPressed(Keys key)
 
         current_car_states[0].Apply(cars[0]);
         currentMediumState.Apply();
-
-        G.SetColor(new Color(0, 0, 0));
-        G.DrawString("Render: " + t.ElapsedMilliseconds.ToString() + "ms", 100, 100);
     }
 }

@@ -22,6 +22,7 @@ using NFMWorld.Mad;
 using Silk.NET.Input.Glfw;
 using Silk.NET.Windowing.Glfw;
 using Silk.NET.Windowing.Sdl;
+using System.Diagnostics;
 
 namespace NFMWorld;
 
@@ -31,6 +32,7 @@ namespace NFMWorld;
 /// </summary>
 public unsafe class Program
 {
+    private int _lastFrameTime;
     private readonly IWindow _window;
     private GRGlInterface _grgInterface;
     private GRContext _grContext;
@@ -288,6 +290,9 @@ public unsafe class Program
 
     private void OnRender(double delta)
     {
+        Stopwatch t = new Stopwatch();
+        t.Start();
+
         _canvas.DrawRect(0, 0, _window.Size.X, _window.Size.Y, new SKPaint
         {
             Color = SKColors.Black
@@ -295,8 +300,13 @@ public unsafe class Program
 
         GameSparker.Render();
 
+        G.SetColor(new Color(0, 0, 0));
+        G.DrawString("Render: " + _lastFrameTime + "ms", 100, 100);
+
         _canvas.Flush();
         _window.SwapBuffers();
+
+        _lastFrameTime = (int)t.ElapsedMilliseconds;
     }
 
     public static void Main()
