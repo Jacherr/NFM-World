@@ -576,7 +576,7 @@ public static void KeyPressed(Keys key)
         }
         catch (Exception exception)
         {
-            Console.WriteLine("Error ain stage " + stage);
+            Console.WriteLine("Error in stage " + stage);
             Console.WriteLine("At line: " + astring);
             Console.WriteLine(exception);
         }
