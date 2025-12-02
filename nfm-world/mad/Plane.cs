@@ -1456,13 +1456,16 @@ class Plane : IComparable<Plane>
     {
         if (angle != 0)
         {
+            var (sin, cos) = Medium.SinCos(angle);
+            
             for (var i = 0; i < len; i++)
             {
                 var pa = a[i];
                 var pb = b[i];
-                var (sin, cos) = Medium.SinCos(angle);
-                a[i] = offA + (int) ((pa - offA) * cos - (pb - offB) * sin);
-                b[i] = offB + (int) ((pa - offA) * sin + (pb - offB) * cos);
+                var oa = (pa - offA);
+                var ob = (pb - offB);
+                a[i] = offA + (int) (oa * cos - ob * sin);
+                b[i] = offB + (int) (oa * sin + ob * cos);
             }
         }
     }
@@ -1471,13 +1474,16 @@ class Plane : IComparable<Plane>
     {
         if (angle != 0)
         {
+            var (sin, cos) = Medium.SinCos(angle);
+            
             for (var i = 0; i < len; i++)
             {
                 var pa = a[i];
                 var pb = b[i];
-                var (sin, cos) = Medium.SinCos(angle);
-                a[i] = offA + (int) ((pa - offA) * cos - (pb - offB) * sin);
-                b[i] = offB + (int) ((pa - offA) * sin + (pb - offB) * cos);
+                var oa = (pa - offA);
+                var ob = (pb - offB);
+                a[i] = offA + (int) (oa * cos - ob * sin);
+                b[i] = offB + (int) (oa * sin + ob * cos);
             }
         }
     }
@@ -1486,14 +1492,17 @@ class Plane : IComparable<Plane>
     {
         if (angle != 0)
         {
+            var cos = angle.Cos;
+            var sin = angle.Sin;
+
             for (var i = 0; i < len; i++)
             {
                 var pa = a[i];
                 var pb = b[i];
-                var cos = angle.Cos;
-                var sin = angle.Sin;
-                a[i] = offA + (int) ((pa - offA) * cos - (pb - offB) * sin);
-                b[i] = offB + (int) ((pa - offA) * sin + (pb - offB) * cos);
+                var oa = (pa - offA);
+                var ob = (pb - offB);
+                a[i] = offA + (int) (oa * cos - ob * sin);
+                b[i] = offB + (int) (oa * sin + ob * cos);
             }
         }
     }
@@ -1502,13 +1511,16 @@ class Plane : IComparable<Plane>
     {
         if (angle != 0)
         {
+            var (sin, cos) = Medium.SinCos(angle);
+            
             for (var i = 0; i < len; i++)
             {
                 var pa = a[i];
                 var pb = b[i];
-                var (sin, cos) = Medium.SinCos(angle);
-                a[i] = offA + ((pa - offA) * cos - (pb - offB) * sin);
-                b[i] = offB + ((pa - offA) * sin + (pb - offB) * cos);
+                var oa = (pa - offA);
+                var ob = (pb - offB);
+                a[i] = offA + (oa * cos - ob * sin);
+                b[i] = offB + (oa * sin + ob * cos);
             }
         }
     }
