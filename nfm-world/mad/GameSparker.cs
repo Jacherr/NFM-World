@@ -470,7 +470,7 @@ public static void KeyPressed(Keys key)
                     for (var q = 0; q < n; q++)
                     {
                         placed_stage_elements[_stagePartCount] = new ContO(stage_parts[wall], o,
-                            Medium.Ground - stage_parts[29].Grat, //29 may need to be 85 or xtgraphics.nCars - 16
+                            Medium.Ground - stage_parts[wall].Grat,
                             q * 4800 + p, 0);
                         _stagePartCount++;
                     }
