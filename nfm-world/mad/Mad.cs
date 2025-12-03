@@ -538,8 +538,8 @@ public class Mad
                     {
                         Ucomp += (float)(0.5 * Stat.Airs) * _tickRate;//
                     }
-                    f = -Stat.Airc * Medium.Sin(conto.Xz) * i4;// * _tickRate;
-                    f11 = Stat.Airc * Medium.Cos(conto.Xz) * i4;// * _tickRate;
+                    f = -Stat.Airc * Medium.Sin(conto.Xz) * i4 * _tickRate;
+                    f11 = Stat.Airc * Medium.Cos(conto.Xz) * i4 * _tickRate;
                 }
                 else if (Ucomp != 0.0F * _tickRate && Ucomp > -2.0F * _tickRate)
                 {
