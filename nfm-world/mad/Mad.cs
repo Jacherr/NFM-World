@@ -515,6 +515,12 @@ public class Mad
             }
             Loop = 2;
         }//
+
+        /* Regarding f, f11, f12:
+            We scale f and f11 to tickrate here because they are not scaled elsewhere. 
+            But f12 is scaled as part of assignment to conto.y, so we don't do it here.
+        */
+
         if (!Wasted)
         {
             if (Loop == 2)
@@ -536,14 +542,14 @@ public class Mad
                     }
                     if (Ucomp < 20.0F * _tickRate)
                     {
-                        Ucomp += (float)(0.5 * Stat.Airs) * _tickRate;//
+                        Ucomp += (float)(0.5 * Stat.Airs);//
                     }
                     f = -Stat.Airc * Medium.Sin(conto.Xz) * i4 * _tickRate;
                     f11 = Stat.Airc * Medium.Cos(conto.Xz) * i4 * _tickRate;
                 }
                 else if (Ucomp != 0.0F * _tickRate && Ucomp > -2.0F * _tickRate)
                 {
-                    Ucomp -= (float)(0.5 * Stat.Airs);//
+                    Ucomp -= (float)(0.5 * Stat.Airs) * _tickRate;//
                 }
                 if (control.Down)
                 {
@@ -562,8 +568,9 @@ public class Mad
                     }
                     if (Dcomp < 20.0F * _tickRate)
                     {
-                        Dcomp += (float)(0.5 * Stat.Airs) * _tickRate;//
+                        Dcomp += (float)(0.5 * Stat.Airs);//
                     }
+                    if(control.Down && !control.Up) Console.WriteLine("dcomp: " + Dcomp + ", ucomp: " + Ucomp + ", diff:" + (Dcomp - Ucomp));
                     f12 = Stat.Airc;
                 }
                 else if (Dcomp != 0.0F * _tickRate && Ucomp > -2.0F * _tickRate)
@@ -786,12 +793,10 @@ public class Mad
                     Pzy += (int)((Dcomp - Ucomp) * Medium.Cos(Pxy)) * _tickRate;
                     if (zyinv)
                     {
-                        // no
                         conto.Xz += (int)((Dcomp - Ucomp) * Medium.Sin(Pxy)) * _tickRate;
                     }
                     else
                     {
-                        // no
                         conto.Xz -= (int)((Dcomp - Ucomp) * Medium.Sin(Pxy)) * _tickRate;
                     }
                     Pxy += (int)(Rcomp - Lcomp) * _tickRate;
@@ -1747,30 +1752,30 @@ public class Mad
             bottomy * Medium.Sin(Pzy) * Medium.Cos(conto.Xz) + f11);
         if (Math.Abs(Speed) > 10.0F || !Mtouch)
         {
-            if (Math.Abs(Pxy - conto.Xy) >= 4)
+            if (Math.Abs(Pxy - conto.Xy) >= 4 * _tickRate)
             {
                 if (Pxy > conto.Xy)
                 {
-                    conto.Xy += 2 + (Pxy - conto.Xy) / 2;
+                    conto.Xy += (2 + (Pxy - conto.Xy) / 2) * _tickRate;
                 }
                 else
                 {
-                    conto.Xy -= 2 + (conto.Xy - Pxy) / 2;
+                    conto.Xy -= (2 + (conto.Xy - Pxy) / 2) * _tickRate;
                 }
             }
             else
             {
                 conto.Xy = Pxy;
             }
-            if (Math.Abs(Pzy - conto.Zy) >= 4)
+            if (Math.Abs(Pzy - conto.Zy) >= 4 * _tickRate)
             {
                 if (Pzy > conto.Zy)
                 {
-                    conto.Zy += 2 + (Pzy - conto.Zy) / 2;
+                    conto.Zy += (2 + (Pzy - conto.Zy) / 2) * _tickRate;
                 }
                 else
                 {
-                    conto.Zy -= 2 + (conto.Zy - Pzy) / 2;
+                    conto.Zy -= (2 + (conto.Zy - Pzy) / 2) * _tickRate;
                 }
             }
             else
