@@ -57,8 +57,8 @@ public class Mad
     internal bool Pr;
     internal bool Pu;
     internal bool Pushed;
-    internal float Pxy;
-    internal float Pzy;
+    internal int Pxy;
+    internal int Pzy;
     internal float Rcomp;
     private int _rpdcatch;
     internal bool Rtab;
@@ -392,18 +392,18 @@ public class Mad
         BadLanding = false;
         if (!Mtouch) Mtcount++; //DS-addons: Bad landing hotfix
         int zyangle;
-        for (zyangle = (int)Math.Abs(Pzy); zyangle > 360; zyangle -= 360)
+        for (zyangle = Math.Abs(Pzy); zyangle > 360; zyangle -= 360)
         {
             /* empty */
         }
         int xyangle;
-        for (xyangle = (int)Math.Abs(Pxy); xyangle > 360; xyangle -= 360)
+        for (xyangle = Math.Abs(Pxy); xyangle > 360; xyangle -= 360)
         {
             /* empty */
         }
 
         int zy;
-        for (zy = (int)Math.Abs(Pzy); zy > 270; zy -= 360)
+        for (zy = Math.Abs(Pzy); zy > 270; zy -= 360)
         {
         }
         zy = Math.Abs(zy);
@@ -414,7 +414,7 @@ public class Mad
 
         var xyinv = false;
         int xy;
-        for (xy = (int)Math.Abs(Pxy); xy > 270; xy -= 360)
+        for (xy = Math.Abs(Pxy); xy > 270; xy -= 360)
         {
         }
         xy = Math.Abs(xy);
@@ -543,7 +543,7 @@ public class Mad
                 }
                 else if (Ucomp != 0.0F && Ucomp > -2.0F)
                 {
-                    Ucomp -= (int)(0.5 * Stat.Airs) * _tickRate;//
+                    Ucomp -= 0.5f * Stat.Airs * _tickRate;//
                 }
                 if (control.Down)
                 {
@@ -568,7 +568,7 @@ public class Mad
                 }
                 else if (Dcomp != 0.0F && Ucomp > -2.0F)
                 {
-                    Dcomp -= (int)(0.5 * Stat.Airs) * _tickRate;
+                    Dcomp -= 0.5f * Stat.Airs * _tickRate;
                 }//
                 if (control.Left)
                 {
@@ -604,16 +604,16 @@ public class Mad
                 {
                     Rcomp -= 2.0F * Stat.Airs * _tickRate;
                 }
-                Pzy += (int)((Dcomp - Ucomp) * Medium.Cos(Pxy)) * _tickRate; //
+                Pzy = (int) (Pzy + (Dcomp - Ucomp) * Medium.Cos(Pxy) * _tickRate); //
                 if (zyinv)
                 {
-                    conto.Xz += (int)((Dcomp - Ucomp) * Medium.Sin(Pxy)) * _tickRate;
+                    conto.Xz += ((Dcomp - Ucomp) * Medium.Sin(Pxy)) * _tickRate;
                 }
                 else
                 {
-                    conto.Xz -= (int)((Dcomp - Ucomp) * Medium.Sin(Pxy)) * _tickRate;
+                    conto.Xz -= ((Dcomp - Ucomp) * Medium.Sin(Pxy)) * _tickRate;
                 }
-                Pxy += (int)(Rcomp - Lcomp) * _tickRate;
+                Pxy = (int) (Pxy + (Rcomp - Lcomp) * _tickRate);
             }
             else
             {//
@@ -780,7 +780,7 @@ public class Mad
                         }
                         Pd = false;
                     }
-                    Pzy += (int)((Dcomp - Ucomp) * Medium.Cos(Pxy)) * _tickRate;
+                    Pzy = (int)(Pzy + ((Dcomp - Ucomp) * Medium.Cos(Pxy)) * _tickRate);
                     if (zyinv)
                     {
                         conto.Xz += (int)((Dcomp - Ucomp) * Medium.Sin(Pxy)) * _tickRate;
@@ -789,7 +789,7 @@ public class Mad
                     {
                         conto.Xz -= (int)((Dcomp - Ucomp) * Medium.Sin(Pxy)) * _tickRate;
                     }
-                    Pxy += (int)(Rcomp - Lcomp) * _tickRate;
+                    Pxy = (int)(Pxy + (Rcomp - Lcomp) * _tickRate);
                 }
             }
         }
@@ -928,7 +928,7 @@ public class Mad
             wheelx[i24] = conto.Keyx[i24] + conto.X;
             wheely[i24] = bottomy + conto.Y;
             wheelz[i24] = conto.Z + conto.Keyz[i24];
-            Scy[i24] += 7.0F;
+            Scy[i24] += 7.0F * _tickRate;
         }
         Rot(wheelx, wheely, conto.X, conto.Y, Pxy, 4);
         Rot(wheely, wheelz, conto.Y, conto.Z, Pzy, 4);
@@ -1244,7 +1244,7 @@ public class Mad
                         if (!wasMtouch && Scy[k] != 7.0F /* * checkpoints.gravity */ * _tickRate)
                         { //Phy-addons: Recharged mode
                             float f_59 = Scy[k] / 333.33F;
-                            if ((double)f_59 > 0.3)
+                            if (f_59 > 0.3)
                                 f_59 = 0.3F;
                             if (surfaceType == 0)
                                 f_59 += (float)1.1;
@@ -1405,8 +1405,8 @@ public class Mad
                         // from (tz, ty) to (wz, wy) but rotated by (zy + 90) degrees around (tz, ty)
                         // https://www.geogebra.org/geometry/vhaznznv
                         // let's call this rotated vector (rz, ry)
-                        float ry = (float)(Trackers.Y[j] + ((wheely[k] - Trackers.Y[j]) * Medium.Cos(pAngle) - (wheelz[k] - Trackers.Z[j]) * Medium.Sin(pAngle)));
-                        float rz = (float)(Trackers.Z[j] + ((wheely[k] - Trackers.Y[j]) * Medium.Sin(pAngle) + (wheelz[k] - Trackers.Z[j]) * Medium.Cos(pAngle)));
+                        float ry = Trackers.Y[j] + ((wheely[k] - Trackers.Y[j]) * Medium.Cos(pAngle) - (wheelz[k] - Trackers.Z[j]) * Medium.Sin(pAngle));
+                        float rz = Trackers.Z[j] + ((wheely[k] - Trackers.Y[j]) * Medium.Sin(pAngle) + (wheelz[k] - Trackers.Z[j]) * Medium.Cos(pAngle));
 
                         // commenting this whole if and its body out makes us phase through ramps
                         // making this always true makes us snap to ramps even when we are airborne
@@ -1468,8 +1468,8 @@ public class Mad
                         // it seems the intention with this whole block was to rotate the t -> w vector, manipulate it
                         // then rotate back. If the surface being intersected is not ramping us up, then no changes are
                         // made to the vector and the rotation back just reverses the previous operation, making no changes
-                        wheely[k] = (float)(Trackers.Y[j] + ((ry - Trackers.Y[j]) * Medium.Cos(-pAngle) - (rz - Trackers.Z[j]) * Medium.Sin(-pAngle)));
-                        wheelz[k] = (float)(Trackers.Z[j] + ((ry - Trackers.Y[j]) * Medium.Sin(-pAngle) + (rz - Trackers.Z[j]) * Medium.Cos(-pAngle)));
+                        wheely[k] = Trackers.Y[j] + ((ry - Trackers.Y[j]) * Medium.Cos(-pAngle) - (rz - Trackers.Z[j]) * Medium.Sin(-pAngle));
+                        wheelz[k] = Trackers.Z[j] + ((ry - Trackers.Y[j]) * Medium.Sin(-pAngle) + (rz - Trackers.Z[j]) * Medium.Cos(-pAngle));
 
                         isWheelTouchingPiece[k] = true;
                     } // CHK9
@@ -1477,8 +1477,8 @@ public class Mad
                     {
                         int pAngle = 90 + Trackers.Xy[j];
 
-                        float ry = (float)(Trackers.Y[j] + ((wheely[k] - Trackers.Y[j]) * Medium.Cos(pAngle) - (wheelx[k] - Trackers.X[j]) * Medium.Sin(pAngle)));
-                        float rx = (float)(Trackers.X[j] + ((wheely[k] - Trackers.Y[j]) * Medium.Sin(pAngle) + (wheelx[k] - Trackers.X[j]) * Medium.Cos(pAngle)));
+                        float ry = Trackers.Y[j] + ((wheely[k] - Trackers.Y[j]) * Medium.Cos(pAngle) - (wheelx[k] - Trackers.X[j]) * Medium.Sin(pAngle));
+                        float rx = Trackers.X[j] + ((wheely[k] - Trackers.Y[j]) * Medium.Sin(pAngle) + (wheelx[k] - Trackers.X[j]) * Medium.Cos(pAngle));
                         if (rx > Trackers.X[j] /*&& rx < Trackers.X[j] + 200*/)
                         {
                             float maxXy = 50;
@@ -1511,8 +1511,8 @@ public class Mad
                             }
                         }
 
-                        wheely[k] = (float)(Trackers.Y[j] + ((ry - Trackers.Y[j]) * Medium.Cos(-pAngle) - (rx - Trackers.X[j]) * Medium.Sin(-pAngle)));
-                        wheelx[k] = (float)(Trackers.X[j] + ((ry - Trackers.Y[j]) * Medium.Sin(-pAngle) + (rx - Trackers.X[j]) * Medium.Cos(-pAngle)));
+                        wheely[k] = Trackers.Y[j] + ((ry - Trackers.Y[j]) * Medium.Cos(-pAngle) - (rx - Trackers.X[j]) * Medium.Sin(-pAngle));
+                        wheelx[k] = Trackers.X[j] + ((ry - Trackers.Y[j]) * Medium.Sin(-pAngle) + (rx - Trackers.X[j]) * Medium.Cos(-pAngle));
 
                         isWheelTouchingPiece[k] = true;
                     }
@@ -1693,10 +1693,10 @@ public class Mad
         } else
             _cntouch = 0; // CHK12
         //DS-addons: Bad landing hotfix
-        int newy = (int) ((wheely[0] + wheely[1] + wheely[2] + wheely[3]) / 4.0F - (float) bottomy * Medium.Cos(this.Pzy) * Medium.Cos(this.Pxy) + f12);
+        int newy = (int) ((wheely[0] + wheely[1] + wheely[2] + wheely[3]) / 4.0F - bottomy * Medium.Cos(this.Pzy) * Medium.Cos(this.Pxy) + f12);
         py = conto.Y - newy;
         conto.Y = newy;
-        //conto.y = (int) ((fs_23[0] + fs_23[1] + fs_23[2] + fs_23[3]) / 4.0F - (float) i_10 * this.m.cos(this.Pzy) * this.m.cos(this.Pxy) + f_12);
+        //conto.y = (int) ((fs_23[0] + fs_23[1] + fs_23[2] + fs_23[3]) / 4.0F - (float) i_10 * Medium.Cos(this.Pzy) * Medium.Cos(this.Pxy) + f_12);
         //
         if (zyinv)
             i = -1;
@@ -1704,20 +1704,9 @@ public class Mad
             i = 1;
 
         // CHK13
-        conto.X = (int)((wheelx[0] - conto.Keyx[0] * Medium.Cos(conto.Xz) + i * conto.Keyz[0] * Medium.Sin(conto.Xz) +
-                wheelx[1] - conto.Keyx[1] * Medium.Cos(conto.Xz) + i * conto.Keyz[1] * Medium.Sin(conto.Xz) +
-                wheelx[2] - conto.Keyx[2] * Medium.Cos(conto.Xz) + i * conto.Keyz[2] * Medium.Sin(conto.Xz) +
-                wheelx[3] - conto.Keyx[3] * Medium.Cos(conto.Xz) + i * conto.Keyz[3] * Medium.Sin(conto.Xz)) /
-            4.0F + bottomy * Medium.Sin(Pxy) * Medium.Cos(conto.Xz) -
-            bottomy * Medium.Sin(Pzy) * Medium.Sin(conto.Xz) + f);
-        conto.Z = (int)((wheelz[0] - i * conto.Keyz[0] * Medium.Cos(conto.Xz) -
-                          conto.Keyx[0] * Medium.Sin(conto.Xz) + wheelz[1] -
-                          i * conto.Keyz[1] * Medium.Cos(conto.Xz) - conto.Keyx[1] * Medium.Sin(conto.Xz) +
-                          wheelz[2] - i * conto.Keyz[2] * Medium.Cos(conto.Xz) -
-                          conto.Keyx[2] * Medium.Sin(conto.Xz) + wheelz[3] -
-                          i * conto.Keyz[3] * Medium.Cos(conto.Xz) - conto.Keyx[3] * Medium.Sin(conto.Xz)) / 4.0F +
-            bottomy * Medium.Sin(Pxy) * Medium.Sin(conto.Xz) -
-            bottomy * Medium.Sin(Pzy) * Medium.Cos(conto.Xz) + f11);
+        conto.X = (int) ((wheelx[0] - (float) conto.Keyx[0] * Medium.Cos(conto.Xz) * _tickRate + (float) (i * conto.Keyz[0]) * Medium.Sin(conto.Xz) * _tickRate + wheelx[1] - (float) conto.Keyx[1] * Medium.Cos(conto.Xz) * _tickRate + (float) (i * conto.Keyz[1]) * Medium.Sin(conto.Xz) * _tickRate + wheelx[2] - (float) conto.Keyx[2] * Medium.Cos(conto.Xz) * _tickRate + (float) (i * conto.Keyz[2]) * Medium.Sin(conto.Xz) * _tickRate + wheelx[3] - (float) conto.Keyx[3] * Medium.Cos(conto.Xz) * _tickRate + (float) (i * conto.Keyz[3]) * Medium.Sin(conto.Xz) * _tickRate) / 4.0F + (float) bottomy * Medium.Sin(this.Pxy) * Medium.Cos(conto.Xz) - (float) bottomy * Medium.Sin(this.Pzy) * Medium.Sin(conto.Xz) * _tickRate + f);
+        conto.Z = (int) ((wheelz[0] - (float) (i * conto.Keyz[0]) * Medium.Cos(conto.Xz) * _tickRate - (float) conto.Keyx[0] * Medium.Sin(conto.Xz) * _tickRate + wheelz[1] - (float) (i * conto.Keyz[1]) * Medium.Cos(conto.Xz) * _tickRate - (float) conto.Keyx[1] * Medium.Sin(conto.Xz) * _tickRate + wheelz[2] - (float) (i * conto.Keyz[2]) * Medium.Cos(conto.Xz) * _tickRate - (float) conto.Keyx[2] * Medium.Sin(conto.Xz) * _tickRate + wheelz[3] - (float) (i * conto.Keyz[3]) * Medium.Cos(conto.Xz) * _tickRate - (float) conto.Keyx[3] * Medium.Sin(conto.Xz) * _tickRate) / 4.0F + (float) bottomy * Medium.Sin(this.Pxy) * Medium.Sin(conto.Xz) - (float) bottomy * Medium.Sin(this.Pzy) * Medium.Cos(conto.Xz) * _tickRate + f11);
+
         if (Math.Abs(Speed) > 10.0F || !Mtouch)
         {
             if (Math.Abs(Pxy - conto.Xy) >= 4)
