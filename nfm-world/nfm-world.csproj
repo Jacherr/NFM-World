@@ -19,15 +19,22 @@
       <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.1" />
       <None Include="data\**\*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="NImpeller">
+      <HintPath>nimpellerdriver\NImpeller.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 
   <!-- windows builds -->
   <Target Name="CopyCustomContentWindows" AfterTargets="AfterBuild" Condition="'$(OS)' == 'Windows_NT'">
-    <Copy SourceFiles="skiadriver/bass.dll" DestinationFolder="$(OutDir)" />
+      <Copy SourceFiles="skiadriver/bass.dll" DestinationFolder="$(OutDir)" />
+      <Copy SourceFiles="nimpellerdriver/impeller.dll" DestinationFolder="$(OutDir)" />
   </Target>
 
   <!-- linux builds -->
   <Target Name="CopyCustomContentLinux" AfterTargets="AfterBuild" Condition="'$(OS)' != 'Windows_NT'">
-    <Copy SourceFiles="skiadriver/libbass.so" DestinationFolder="$(OutDir)" />
+      <Copy SourceFiles="skiadriver/libbass.so" DestinationFolder="$(OutDir)" />
+      <Copy SourceFiles="nimpellerdriver/libimpeller.so" DestinationFolder="$(OutDir)" />
   </Target>
 
 </Project>
