@@ -612,8 +612,6 @@ public class Mad
                     Rcomp -= 2.0F * Stat.Airs * _tickRate;
                 }
 
-                //if(control.Right && control.Down) Console.WriteLine(Dcomp + ", " + Rcomp);
-
                 Pzy += (int)((Dcomp - Ucomp) * Medium.Cos(Pxy)); //
                 if (zyinv)
                 {
@@ -623,7 +621,7 @@ public class Mad
                 {
                     conto.Xz -= (int)((Dcomp - Ucomp) * Medium.Sin(Pxy));
                 }
-                Pxy += (int)(Rcomp - Lcomp);
+                Pxy = (int)(Pxy + (Rcomp - Lcomp));
             }
             else
             {//
@@ -837,7 +835,7 @@ public class Mad
         }//
         if (conto.Wxz != 0 && !control.Left && !control.Right)
         {
-            if (Math.Abs(Speed) < 10.0F)
+            if (Math.Abs(Speed) < 10.0F * _tickRate)
             {
                 if (Math.Abs(conto.Wxz) == 1)
                 {
@@ -1750,7 +1748,7 @@ public class Mad
                           i * conto.Keyz[3] * Medium.Cos(conto.Xz) - conto.Keyx[3] * Medium.Sin(conto.Xz)) / 4.0F +
             bottomy * Medium.Sin(Pxy) * Medium.Sin(conto.Xz) -
             bottomy * Medium.Sin(Pzy) * Medium.Cos(conto.Xz) + f11);
-        if (Math.Abs(Speed) > 10.0F || !Mtouch)
+        if (Math.Abs(Speed) > 10.0F * _tickRate || !Mtouch)
         {
             if (Math.Abs(Pxy - conto.Xy) >= 4 * _tickRate)
             {

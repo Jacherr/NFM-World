@@ -202,6 +202,8 @@ public static void KeyPressed(Keys key)
 
         Medium.Groundpolys();
         Medium.D();
+
+        Medium.FocusPoint -= 100;
         
         cars = [];
         stage_parts = [];
