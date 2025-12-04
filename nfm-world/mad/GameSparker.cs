@@ -32,7 +32,9 @@ public class GameSparker
     public static float PHYSICS_MULTIPLIER = 0.3377f;
 
     /* Frequency of physics ticks */
-    private static int physics_dt_us = (int)(47000*PHYSICS_MULTIPLIER);
+    //private static int physics_dt_us_mult = 47000;
+    private static int physics_dt_us_mult = 34000;
+    private static int physics_dt_us = (int)(physics_dt_us_mult*PHYSICS_MULTIPLIER);
 
     private static MediumState currentMediumState;
     private static MediumState prevMediumState;
@@ -229,7 +231,7 @@ public static void KeyPressed(Keys key)
             stage_parts[id] = new ContO(ais);
         });
 
-        Loadstage("1");
+        Loadstage("15");
 
         cars_in_race[playerCarIndex] = new Car(new Stat(14), 0, cars[14], 0, 0);
 
