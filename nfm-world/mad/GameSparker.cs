@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using NFMWorld.Mad.Interp;
 using NFMWorld.Util;
+using ImGuiNET;
 
 namespace NFMWorld.Mad;
 
@@ -12,6 +13,8 @@ public class GameSparker
     private static UnlimitedArray<ContO> placed_stage_elements;
     private static CarState[] current_car_states;
     private static CarState[] prev_car_states;
+
+    private static DevConsole devConsole = new();
 
     private static readonly string[] CarRads = {
         "2000tornados", "formula7", "canyenaro", "lescrab", "nimi", "maxrevenge", "leadoxide", "koolkat", "drifter",
@@ -48,7 +51,7 @@ public class GameSparker
     private static ViewMode currentViewMode = ViewMode.Follow;
     /////////////////////////////////
 
-    private static UnlimitedArray<Car> cars_in_race = [];
+    public static UnlimitedArray<Car> cars_in_race = [];
     private static int playerCarIndex = 0;
 
     // stage loading
@@ -59,6 +62,17 @@ public static void KeyPressed(Keys key)
     {
         //if (!_exwist)
         //{
+
+        //Console.WriteLine($"Key pressed: {key}");
+
+        // ideally it would be perfect if it was the tilde key, like in Source Engine games
+        if (key == Keys.F1)
+        {
+            devConsole.Toggle();
+            return;
+        }
+
+        if (!devConsole.IsOpen()) {
             //115 114 99
             if (key == Keys.Up)
             {
@@ -115,7 +129,7 @@ public static void KeyPressed(Keys key)
             {
                 currentViewMode = (ViewMode)(((int)currentViewMode + 1) % Enum.GetValues<ViewMode>().Length);
             }
-        //}
+        }
     }
 
     public static void KeyReleased(Keys key)
@@ -624,6 +638,7 @@ public static void KeyPressed(Keys key)
 
     public static void Render()
     {
+
         if(lastTickTime == 0) 
             lastTickTime = timer.ElapsedMicroseconds;
 
@@ -675,8 +690,12 @@ public static void KeyPressed(Keys key)
         {
             obj.D();
         }
-
         /*current_car_states[0].Apply();
         currentMediumState.Apply();*/
+    }
+
+    public static void RenderDevConsole()
+    {
+        devConsole.Render();
     }
 }
