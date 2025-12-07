@@ -405,7 +405,6 @@ public class Mad
 
     int Mtcount = 0;
     int py = 0;
-    internal bool _debugApplyNFMMBouncing;
 
     internal void Drive(Control control, ContO conto)
     {
@@ -1180,7 +1179,9 @@ public class Mad
 
                 if (Math.Abs(Scy[j] - speedy) > traction * _tickRate)
                 {
-                    Scy[j] += traction * Math.Sign(speedy - Scy[j]) * _tickRate;
+                    // Jacher: decouple this from tickrate
+                    // this reduces bouncing when AB-ing, but at what cost?
+                    Scy[j] += traction * Math.Sign(speedy - Scy[j]); // * _tickRate;
                 }
                 else
                 {
@@ -1332,21 +1333,6 @@ public class Mad
                 bounceRebound(i49, conto);
             }
         }
-
-        if (GameSparker.DebugKeyStates.GetValueOrDefault(Keys.F2))
-        {
-            _debugApplyNFMMBouncing = !_debugApplyNFMMBouncing;
-            GameSparker.DebugKeyStates[Keys.F2] = false;
-        }
-
-        if (_debugApplyNFMMBouncing)
-            if (nGroundedWheels != 0) {
-                f48 /= nGroundedWheels;
-                for (int i52 = 0; i52 < 4; i52++)
-                    if (!isWheelGrounded[i52]) {
-                        wheely[i52] -= f48;
-                    }
-            }
 
         Span<bool> isWheelTouchingPiece = stackalloc bool[4]; // nwheels
         for (int j = 0; j < 4; ++j)
@@ -1847,6 +1833,8 @@ public class Mad
             xneg = -1;
         else
             xneg = 1;
+
+        Console.WriteLine("x: " + airx + ", z: " + airz + ", sum: " + Medium.Sin(Pxy) + ", sum2: " + Medium.Sin(Pzy));
 
         // CHK13
         // car sliding fix by jacher: do not adjust to tickrate
