@@ -441,8 +441,11 @@ internal class NImpellerGraphics(NImpellerBackend backend) : IGraphics
     private readonly ImpellerTypographyContext _typographyContext = ImpellerTypographyContext.New()!;
     public Vector2D<float> Ratio { get; set; }
 
+    private Color currentColor;
+
     public void SetColor(Color c)
     {
+        currentColor = c;
         _paint.SetColor(ImpellerColor.FromArgb(c.A, c.R, c.G, c.B));
     }
 
@@ -531,7 +534,8 @@ internal class NImpellerGraphics(NImpellerBackend backend) : IGraphics
 
     public void SetAlpha(float f)
     {
-        // throw new NotImplementedException();
+        currentColor = new Color(currentColor.R, currentColor.G, currentColor.B, (byte)f*100);
+        _paint.SetColor(ImpellerColor.FromArgb((int) (255f*f), currentColor.R, currentColor.G, currentColor.B));
     }
 
     public void DrawImage(IImage image, int x, int y)
