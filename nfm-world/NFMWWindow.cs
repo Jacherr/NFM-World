@@ -46,6 +46,7 @@ public unsafe class Program
     private static bool loaded;
     private const int FrameDelay = (int) (1000 / 21.3f);
     private const float scale = 1.6f;
+    private ImGuiController? _imguiController;
 
     private static readonly FrozenDictionary<Key, Keys> KeyMapping = new Dictionary<Key, Keys>()
     {
@@ -206,7 +207,9 @@ public unsafe class Program
         if (!loaded)
         {
             loaded = true;
-                
+            var originalOut = Console.Out;
+            GameSparker.Writer = new DevConsoleWriter(GameSparker.devConsole, originalOut);
+            Console.SetOut(GameSparker.Writer);
             GameSparker.Load();
         }
 
@@ -224,7 +227,8 @@ public unsafe class Program
         {
             return _window.GLContext!.TryGetProcAddress(name, out var addr) ? addr : IntPtr.Zero;
         })!;
-        _window.CreateOpenGL().GetInteger(GLEnum.FramebufferBinding, out var fbo);
+        var gl = _window.CreateOpenGL();
+        gl.GetInteger(GLEnum.FramebufferBinding, out var fbo);
         _fbo = fbo;
 
         _surface = _impellerContext.SurfaceCreateWrappedFBONew(
@@ -241,6 +245,9 @@ public unsafe class Program
 #endif
 
         _input = _window.CreateInput();
+        
+        _imguiController = new ImGuiController(gl, _window, _input);
+        
         _input.ConnectionChanged += InputOnConnectionChanged;
         
         foreach (var gamepad in _input.Gamepads)
@@ -328,6 +335,12 @@ public unsafe class Program
             _surface?.DrawDisplayList(displayList);
         }
         
+        // Render ImGui
+        _imguiController?.Update((float)delta);
+        _imguiController?.NewFrame();
+        GameSparker.RenderDevConsole();
+        _imguiController?.Render();
+
         _window.SwapBuffers();
 
         _lastFrameTime = (int)t.ElapsedMilliseconds;

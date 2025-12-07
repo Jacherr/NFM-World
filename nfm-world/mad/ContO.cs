@@ -87,6 +87,8 @@ public class ContO
     internal int Z;
     internal SinCosFloat Zy;
 
+    public static DevConsoleWriter Writer = null!;
+
     internal ContO(byte[] _is)
     {
         Keyx = new int[4];
@@ -596,7 +598,7 @@ public class ContO
             {
                 Err = "Error While Loading 3D Model\n\nLine:     " + curline + "\n\nError Detail:\n" + exception +
                       "           \n \n";
-                Console.WriteLine(Err);
+                Writer.WriteLine(Err);
                 Errd = true;
             }
         }

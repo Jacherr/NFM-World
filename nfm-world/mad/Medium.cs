@@ -182,6 +182,10 @@ public class Medium
     internal static int Z;
     internal static SinCosFloat Zy;
 
+    public static bool drawMountains = true;
+    public static bool drawClouds = true;
+    public static bool drawStars = true;
+
     static Medium()
     {
         for (var i = 0; i < 360; i++)
@@ -723,6 +727,7 @@ public class Medium
             {
                 Drawstars();
             }
+
             Drawmountains();
             Drawclouds();
         }
@@ -2033,7 +2038,6 @@ public class Medium
         }
     }
 
-/*
     internal static void Newpolys(int i, int i35, int i36, int i37, int i38)
     {
         var random = new URandom((i38 + Cgrnd[0] + Cgrnd[1] + Cgrnd[2]) * 1671);
@@ -2147,7 +2151,7 @@ public class Medium
             }
         }
     }
-*/
+
     internal static void Newstars()
     {
         _stx = [];

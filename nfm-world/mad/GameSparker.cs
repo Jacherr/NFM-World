@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using NFMWorld.Mad.Interp;
 using NFMWorld.Util;
+using ImGuiNET;
 
 namespace NFMWorld.Mad;
 
@@ -8,8 +9,10 @@ public class GameSparker
 {
     private static MicroStopwatch timer;
     private static UnlimitedArray<ContO> cars;
-    private static UnlimitedArray<ContO> stage_parts;
-    private static UnlimitedArray<ContO> placed_stage_elements;
+    public static UnlimitedArray<ContO> stage_parts;
+    public static UnlimitedArray<ContO> placed_stage_elements;
+
+    public static DevConsole devConsole = new();
 
     private static readonly string[] CarRads = {
         "2000tornados", "formula7", "canyenaro", "lescrab", "nimi", "maxrevenge", "leadoxide", "koolkat", "drifter",
@@ -25,6 +28,8 @@ public class GameSparker
         "tree5", "tree6", "tree7", "tree8", "cac1", "cac2", "cac3", "8sroad", "8soffroad"
     };
 
+    public static DevConsoleWriter Writer = null!;
+
     // View modes
     public enum ViewMode
     {
@@ -34,7 +39,7 @@ public class GameSparker
     private static ViewMode currentViewMode = ViewMode.Follow;
     /////////////////////////////////
 
-    private static UnlimitedArray<Car> cars_in_race = [];
+    public static UnlimitedArray<Car> cars_in_race = [];
     private static int playerCarIndex = 0;
 
     // stage loading
@@ -45,6 +50,17 @@ public static void KeyPressed(Keys key)
     {
         //if (!_exwist)
         //{
+
+        //Console.WriteLine($"Key pressed: {key}");
+
+        // ideally it would be perfect if it was the tilde key, like in Source Engine games
+        if (key == Keys.F1)
+        {
+            devConsole.Toggle();
+            return;
+        }
+
+        if (!devConsole.IsOpen()) {
             //115 114 99
             if (key == Keys.Up)
             {
@@ -101,7 +117,7 @@ public static void KeyPressed(Keys key)
             {
                 currentViewMode = (ViewMode)(((int)currentViewMode + 1) % Enum.GetValues<ViewMode>().Length);
             }
-        //}
+        }
     }
 
     public static void KeyReleased(Keys key)
@@ -146,7 +162,7 @@ public static void KeyPressed(Keys key)
         //}
     }
 
-    private static int GetModel(string input)
+    public static int GetModel(string input)
     {
         // Combine all model arrays
         string[][] allModels = new string[][]
@@ -233,11 +249,27 @@ public static void KeyPressed(Keys key)
     }
 
 
+    public static void CreateObject(string objectName, int x, int y, int z, int r)
+    {
+        var model = GetModel(objectName);
+        if (model == -1)
+        {
+            devConsole.Log($"Object '{objectName}' not found.", "warning");
+            return;
+        }
+
+        placed_stage_elements[_stagePartCount] = new ContO(
+            stage_parts[model], x, 250 - stage_parts[model].Grat - y, z, r);
+
+        _stagePartCount++;
+
+        devConsole.Log($"Created {objectName} at ({x}, {y}, {z}), rotation: {r}", "info");
+    }
 
     /**
      * Loads stage currently set by checkpoints.stage onto stageContos
      */
-    private static void Loadstage(string stage)
+    public static void Loadstage(string stage)
     {
         placed_stage_elements.Clear();
         _stagePartCount = 0;
@@ -248,6 +280,8 @@ public static void KeyPressed(Keys key)
         Medium.Noelec = 0;
         Medium.Ground = 250;
         Medium.Trk = 0;
+        Medium.drawClouds = true;
+        Medium.drawMountains = true;
         var i = 0;
         var k = 100;
         var l = 0;
@@ -315,15 +349,27 @@ public static void KeyPressed(Keys key)
                 }
                 if (astring.StartsWith("mountains"))
                 {
-                    Medium.Mgen = Getint("mountains", astring, 0);
+                    //Medium.Mgen = Getint("mountains", astring, 0);
+
+                    var value = astring.Split(' ')[1].Trim();
+                    if (value.Equals("false", StringComparison.OrdinalIgnoreCase))
+                    {
+                        Medium.drawMountains = false;
+                    }
+                    else if (int.TryParse(value, out var mgenValue))
+                    {
+                        Medium.Mgen = mgenValue; // Set mountain generation to the specified number
+                    }
+                    else
+                    {
+                        devConsole.Log($"Invalid value for 'mountains': {value}", "warning");
+                    }
                 }
                 if (astring.StartsWith("set"))
                 {
                     var setindex = Getint("set", astring, 0);
 
                     setindex -= _indexOffset;
-                    Console.WriteLine("Setindex ais: " + setindex);
-                    // ok why does it not load certain shit and doesnt assign correct pieces properly, very strange
                     placed_stage_elements[_stagePartCount] = new ContO(stage_parts[setindex], Getint("set", astring, 1),
                         Medium.Ground - stage_parts[setindex].Grat, Getint("set", astring, 2),
                         Getint("set", astring, 3));
@@ -546,17 +592,20 @@ public static void KeyPressed(Keys key)
                     Trackers.Nt++;
                 }
             }
-            //Medium.Newpolys(k, i - k, m, l - m, _notb);
-            Medium.Newclouds(k, i, m, l);
-            Medium.Newmountains(k, i, m, l);
-            Medium.Newstars();
+            Medium.Newpolys(k, i - k, m, l - m, _stagePartCount);
+            if (Medium.drawMountains)
+                Medium.Newmountains(k, i, m, l);
+            if (Medium.drawClouds)
+                Medium.Newclouds(k, i, m, l);
+            if (Medium.drawStars)
+                Medium.Newstars();
             Trackers.Devidetrackers(k, i - k, m, l - m);
         }
         catch (Exception exception)
         {
-            Console.WriteLine("Error in stage " + stage);
-            Console.WriteLine("At line: " + astring);
-            Console.WriteLine(exception);
+            Writer.WriteLine("Error in stage: " + stage, "error");
+            Writer.WriteLine("At line: " + astring, "error");
+            Writer.WriteLine(exception.ToString(), "error");
         }
         GC.Collect();
     }
@@ -616,5 +665,10 @@ public static void KeyPressed(Keys key)
         {
             obj.D();
         }
+    }
+
+    public static void RenderDevConsole()
+    {
+        devConsole.Render();
     }
 }

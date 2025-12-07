@@ -10,6 +10,8 @@ class CarDefine
     public static readonly int FiftySix = 56; // NCARS + MAX CUSTOM CARS
     public static readonly int Forty = 40; // MAX CUSTOM CARS LOAD
 
+    public static DevConsoleWriter Writer = null!;
+
     private static ContO[] _bco;
 
     internal static readonly int[,] Swits =
@@ -691,7 +693,7 @@ class CarDefine
                     }
                     catch (Exception ignored)
                     {
-                        Console.WriteLine(ignored);
+                        Writer.WriteLine(ignored);
                     }
                 }
                 if (line.StartsWith("carmaker("))
@@ -706,7 +708,7 @@ class CarDefine
         }
         catch (Exception exception)
         {
-            Console.WriteLine("Error Loading Car Stat: " + exception);
+            Writer.WriteLine("Error Loading Car Stat: " + exception);
         }
         if (abool && bool3)
         {
