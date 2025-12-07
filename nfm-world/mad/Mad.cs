@@ -1702,18 +1702,18 @@ public class Mad
             i = 1;
 
         // CHK13
-        conto.X = (int) ((wheelx[0] - (float) conto.Keyx[0] * Medium.Cos(conto.Xz) * _tickRate + (float) (i * conto.Keyz[0]) * Medium.Sin(conto.Xz) * _tickRate + 
-            wheelx[1] - (float) conto.Keyx[1] * Medium.Cos(conto.Xz) * _tickRate + (float) (i * conto.Keyz[1]) * Medium.Sin(conto.Xz) * _tickRate + 
-            wheelx[2] - (float) conto.Keyx[2] * Medium.Cos(conto.Xz) * _tickRate + (float) (i * conto.Keyz[2]) * Medium.Sin(conto.Xz) * _tickRate + 
-            wheelx[3] - (float) conto.Keyx[3] * Medium.Cos(conto.Xz) * _tickRate + (float) (i * conto.Keyz[3]) * Medium.Sin(conto.Xz) * _tickRate) / 4.0F 
-            + (float) bottomy * Medium.Sin(this.Pxy) * Medium.Cos(conto.Xz) - (float) bottomy * Medium.Sin(this.Pzy) * Medium.Sin(conto.Xz) * _tickRate + f);
+        conto.X = (int) ((wheelx[0] -  conto.Keyx[0] * Medium.Cos(conto.Xz)  +  (i * conto.Keyz[0]) * Medium.Sin(conto.Xz)  + 
+            wheelx[1] -  conto.Keyx[1] * Medium.Cos(conto.Xz)  +  (i * conto.Keyz[1]) * Medium.Sin(conto.Xz)  + 
+            wheelx[2] -  conto.Keyx[2] * Medium.Cos(conto.Xz)  +  (i * conto.Keyz[2]) * Medium.Sin(conto.Xz)  + 
+            wheelx[3] -  conto.Keyx[3] * Medium.Cos(conto.Xz)  +  (i * conto.Keyz[3]) * Medium.Sin(conto.Xz) ) / 4.0F 
+            +  bottomy * Medium.Sin(this.Pxy) * Medium.Cos(conto.Xz) -  bottomy * Medium.Sin(this.Pzy) * Medium.Sin(conto.Xz)  + f);
             
         conto.Z = (int) (
-            (wheelz[0] - (float) (i * conto.Keyz[0]) * Medium.Cos(conto.Xz) * _tickRate - (float) conto.Keyx[0] * Medium.Sin(conto.Xz) * _tickRate 
-            + wheelz[1] - (float) (i * conto.Keyz[1]) * Medium.Cos(conto.Xz) * _tickRate - (float) conto.Keyx[1] * Medium.Sin(conto.Xz) * _tickRate 
-            + wheelz[2] - (float) (i * conto.Keyz[2]) * Medium.Cos(conto.Xz) * _tickRate - (float) conto.Keyx[2] * Medium.Sin(conto.Xz) * _tickRate 
-            + wheelz[3] - (float) (i * conto.Keyz[3]) * Medium.Cos(conto.Xz) * _tickRate - (float) conto.Keyx[3] * Medium.Sin(conto.Xz) * _tickRate) / 4.0F 
-            + (float) bottomy * Medium.Sin(this.Pxy) * Medium.Sin(conto.Xz) - (float) bottomy * Medium.Sin(this.Pzy) * Medium.Cos(conto.Xz) * _tickRate + f11);
+            (wheelz[0] -  (i * conto.Keyz[0]) * Medium.Cos(conto.Xz)  -  conto.Keyx[0] * Medium.Sin(conto.Xz)  
+            + wheelz[1] -  (i * conto.Keyz[1]) * Medium.Cos(conto.Xz)  -  conto.Keyx[1] * Medium.Sin(conto.Xz)  
+            + wheelz[2] -  (i * conto.Keyz[2]) * Medium.Cos(conto.Xz)  -  conto.Keyx[2] * Medium.Sin(conto.Xz)  
+            + wheelz[3] -  (i * conto.Keyz[3]) * Medium.Cos(conto.Xz)  -  conto.Keyx[3] * Medium.Sin(conto.Xz) ) / 4.0F 
+            +  bottomy * Medium.Sin(this.Pxy) * Medium.Sin(conto.Xz) -  bottomy * Medium.Sin(this.Pzy) * Medium.Cos(conto.Xz)  + f11);
 
         if (Math.Abs(Speed) > 10.0F || !Mtouch)
         {
