@@ -10,8 +10,6 @@ public class GameSparker
     private static UnlimitedArray<ContO> cars;
     private static UnlimitedArray<ContO> stage_parts;
     private static UnlimitedArray<ContO> placed_stage_elements;
-    private static CarState[] current_car_states;
-    private static CarState[] prev_car_states;
 
     private static readonly string[] CarRads = {
         "2000tornados", "formula7", "canyenaro", "lescrab", "nimi", "maxrevenge", "leadoxide", "koolkat", "drifter",
@@ -26,15 +24,6 @@ public class GameSparker
         "roll3", "roll4", "roll5", "roll6", "opile1", "opile2", "aircheckpoint", "tree1", "tree2", "tree3", "tree4",
         "tree5", "tree6", "tree7", "tree8", "cac1", "cac2", "cac3", "8sroad", "8soffroad"
     };
-
-    private static long accumulator = 0;
-    private static long lastTickTime = 0;
-    public static float PHYSICS_MULTIPLIER = 21f/63f;
-    private static int physics_dt_us_mult = (int)(1000f/0.021f);
-    private static int physics_dt_us = (int)(physics_dt_us_mult*PHYSICS_MULTIPLIER);
-
-    private static MediumState currentMediumState;
-    private static MediumState prevMediumState;
 
     // View modes
     public enum ViewMode
@@ -196,8 +185,6 @@ public static void KeyPressed(Keys key)
         timer = new MicroStopwatch();
         timer.Start();
         new Medium();
-        currentMediumState = new MediumState();
-        prevMediumState = new MediumState();
 
         Medium.Groundpolys();
         Medium.D();
@@ -207,14 +194,6 @@ public static void KeyPressed(Keys key)
         cars = [];
         stage_parts = [];
         placed_stage_elements = [];
-
-        current_car_states = new CarState[100];
-        prev_car_states = new CarState[100];
-
-        for(int i = 0; i < 100; i++) {
-            current_car_states[i] = new CarState();
-            prev_car_states[i] = new CarState();
-        }
 
         FileUtil.LoadFiles("./data/models/cars", CarRads, (ais, id) => {
             cars[id] = new ContO(ais);
@@ -584,55 +563,20 @@ public static void KeyPressed(Keys key)
 
     public static void GameTick()
     {
-        if(lastTickTime == 0) 
-            lastTickTime = timer.ElapsedMicroseconds;
-
-        accumulator += timer.ElapsedMicroseconds - lastTickTime;
-
-        while(accumulator >= physics_dt_us)
+        cars_in_race[playerCarIndex].Drive();
+        switch (currentViewMode)
         {
-            accumulator -= physics_dt_us;
-
-            //Medium.Follow(cars[0], playerMad.Cxz, cars_in_race[playerCarIndex].Control.Lookback);
-            //Medium.Around(cars[0], true);
-
-            cars_in_race[playerCarIndex].Drive();
-            switch (currentViewMode)
-            {
-                case ViewMode.Follow:
-                    Medium.Follow(cars_in_race[playerCarIndex].Conto, cars_in_race[playerCarIndex].Mad.Cxz, cars_in_race[playerCarIndex].Control.Lookback);
-                    break;
-                case ViewMode.Around:
-                    Medium.Around(cars_in_race[playerCarIndex].Conto, true);
-                    break;
-            }
-
-            prevMediumState = currentMediumState;
-            currentMediumState = new MediumState();
-
-            prev_car_states[0] = current_car_states[0];
-            current_car_states[0] = new CarState(cars_in_race[playerCarIndex].Conto);
+            case ViewMode.Follow:
+                Medium.Follow(cars_in_race[playerCarIndex].Conto, cars_in_race[playerCarIndex].Mad.Cxz, cars_in_race[playerCarIndex].Control.Lookback);
+                break;
+            case ViewMode.Around:
+                Medium.Around(cars_in_race[playerCarIndex].Conto, true);
+                break;
         }
-
-        Render();
-
-        lastTickTime = timer.ElapsedMicroseconds;
     }
 
     public static void Render()
     {
-        if(lastTickTime == 0) 
-            lastTickTime = timer.ElapsedMicroseconds;
-
-        /*
-        float interp_ratio = accumulator / (float)physics_dt_us;
-
-        MediumState medium_interp_state = currentMediumState.InterpWith(prevMediumState, interp_ratio);
-        medium_interp_state.Apply();
-
-        CarState car_interp_state = current_car_states[0].InterpWith(prev_car_states[0], interp_ratio);
-        car_interp_state.Apply(cars_in_race[playerCarIndex].Conto);*/
-
         Medium.D();
 
         var renderQueue = new UnlimitedArray<ContO>(placed_stage_elements.Count);
@@ -672,8 +616,5 @@ public static void KeyPressed(Keys key)
         {
             obj.D();
         }
-
-        /*current_car_states[0].Apply();
-        currentMediumState.Apply();*/
     }
 }

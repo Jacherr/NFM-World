@@ -6,7 +6,7 @@ namespace NFMWorld.Mad;
 
 public class Mad
 {
-    private static readonly float _tickRate = GameSparker.PHYSICS_MULTIPLIER;
+    private static readonly float _tickRate = 21.4f/63f;
 
     internal bool Btab;
     internal int Capcnt;
