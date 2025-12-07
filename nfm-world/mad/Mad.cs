@@ -1850,18 +1850,19 @@ public class Mad
             xneg = 1;
 
         // CHK13
-        conto.X = (int) ((wheelx[0] - conto.Keyx[0] * Medium.Cos(conto.Xz) * _tickRate + xneg * conto.Keyz[0] * Medium.Sin(conto.Xz) * _tickRate + 
-            wheelx[1] - conto.Keyx[1] * Medium.Cos(conto.Xz) * _tickRate + xneg * conto.Keyz[1] * Medium.Sin(conto.Xz) * _tickRate + 
-            wheelx[2] - conto.Keyx[2] * Medium.Cos(conto.Xz) * _tickRate + xneg * conto.Keyz[2] * Medium.Sin(conto.Xz) * _tickRate + 
-            wheelx[3] - conto.Keyx[3] * Medium.Cos(conto.Xz) * _tickRate + xneg * conto.Keyz[3] * Medium.Sin(conto.Xz) * _tickRate) / 4.0F 
-            + bottomy * Medium.Sin(Pxy) * Medium.Cos(conto.Xz) - bottomy * Medium.Sin(Pzy) * Medium.Sin(conto.Xz) * _tickRate + airx);
+        // car sliding fix by jacher: do not adjust to tickrate
+        conto.X = (int) ((wheelx[0] - conto.Keyx[0] * Medium.Cos(conto.Xz) + xneg * conto.Keyz[0] * Medium.Sin(conto.Xz) + 
+            wheelx[1] - conto.Keyx[1] * Medium.Cos(conto.Xz) + xneg * conto.Keyz[1] * Medium.Sin(conto.Xz) + 
+            wheelx[2] - conto.Keyx[2] * Medium.Cos(conto.Xz) + xneg * conto.Keyz[2] * Medium.Sin(conto.Xz) + 
+            wheelx[3] - conto.Keyx[3] * Medium.Cos(conto.Xz) + xneg * conto.Keyz[3] * Medium.Sin(conto.Xz)) / 4.0F 
+            + bottomy * Medium.Sin(Pxy) * Medium.Cos(conto.Xz) - bottomy * Medium.Sin(Pzy) * Medium.Sin(conto.Xz) + airx);
             
         conto.Z = (int) (
-            (wheelz[0] - xneg * conto.Keyz[0] * Medium.Cos(conto.Xz) * _tickRate - conto.Keyx[0] * Medium.Sin(conto.Xz) * _tickRate 
-            + wheelz[1] - xneg * conto.Keyz[1] * Medium.Cos(conto.Xz) * _tickRate - conto.Keyx[1] * Medium.Sin(conto.Xz) * _tickRate 
-            + wheelz[2] - xneg * conto.Keyz[2] * Medium.Cos(conto.Xz) * _tickRate - conto.Keyx[2] * Medium.Sin(conto.Xz) * _tickRate 
-            + wheelz[3] - xneg * conto.Keyz[3] * Medium.Cos(conto.Xz) * _tickRate - conto.Keyx[3] * Medium.Sin(conto.Xz) * _tickRate) / 4.0F 
-            + bottomy * Medium.Sin(Pxy) * Medium.Sin(conto.Xz) - bottomy * Medium.Sin(Pzy) * Medium.Cos(conto.Xz) * _tickRate + airz);
+            (wheelz[0] - xneg * conto.Keyz[0] * Medium.Cos(conto.Xz) - conto.Keyx[0] * Medium.Sin(conto.Xz)
+            + wheelz[1] - xneg * conto.Keyz[1] * Medium.Cos(conto.Xz) - conto.Keyx[1] * Medium.Sin(conto.Xz) 
+            + wheelz[2] - xneg * conto.Keyz[2] * Medium.Cos(conto.Xz) - conto.Keyx[2] * Medium.Sin(conto.Xz) 
+            + wheelz[3] - xneg * conto.Keyz[3] * Medium.Cos(conto.Xz) - conto.Keyx[3] * Medium.Sin(conto.Xz)) / 4.0F 
+            + bottomy * Medium.Sin(Pxy) * Medium.Sin(conto.Xz) - bottomy * Medium.Sin(Pzy) * Medium.Cos(conto.Xz) + airz);
 
         if (Math.Abs(Speed) > 10.0F || !Mtouch)
         {
