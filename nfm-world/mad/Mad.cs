@@ -660,17 +660,17 @@ public class Mad
                     Rcomp -= 2.0F * Stat.Airs * _tickRate;
                 }
 
-                Pzy = (Pzy + (Dcomp - Ucomp) * Medium.Cos(Pxy) * _tickRate); //
+                Pzy = (int)(Pzy + (Dcomp - Ucomp) * Medium.Cos(Pxy) * _tickRate); //
                 if (zyinv)
                 {
-                    conto.Xz += ((Dcomp - Ucomp) * Medium.Sin(Pxy)) * _tickRate;
+                    conto.Xz += (Dcomp - Ucomp) * Medium.Sin(Pxy) * _tickRate;
                 }
                 else
                 {
-                    conto.Xz -= ((Dcomp - Ucomp) * Medium.Sin(Pxy)) * _tickRate;
+                    conto.Xz -= (Dcomp - Ucomp) * Medium.Sin(Pxy) * _tickRate;
                 }
 
-                Pxy = (Pxy + (Rcomp - Lcomp) * _tickRate);
+                Pxy = (int)(Pxy + (Rcomp - Lcomp) * _tickRate);
             }
             else
             {
