@@ -25,7 +25,7 @@ namespace NFMWorld.Mad
         public DevConsole()
         {
             DevConsoleCommands.RegisterAll(this);
-            Log("NFM-World master-2025.12.07", "info");
+            Log("NFM-World master-2025.12.08", "info");
         }
 
         public void Toggle()
