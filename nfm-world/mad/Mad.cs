@@ -405,11 +405,12 @@ public class Mad
 
     int Mtcount = 0;
     int py = 0;
+    internal bool _debugApplyNFMMBouncing;
 
     internal void Drive(Control control, ContO conto)
     {
-        var i = 1;
-        var i4 = 1;
+        var xneg = 1;
+        var zneg = 1;
         var zyinv = false;
         var revspeed = false;
         var hitVertical = false;
@@ -420,6 +421,7 @@ public class Mad
         {
             /* empty */
         }
+
         float xyangle;
         for (xyangle = Math.Abs(Pxy); xyangle > 360; xyangle -= 360)
         {
@@ -430,6 +432,7 @@ public class Mad
         for (zy = Math.Abs(Pzy); zy > 270; zy -= 360)
         {
         }
+
         zy = Math.Abs(zy);
         if (zy > 90)
         {
@@ -441,11 +444,12 @@ public class Mad
         for (xy = Math.Abs(Pxy); xy > 270; xy -= 360)
         {
         }
+
         xy = Math.Abs(xy);
         if (xy > 90)
         {
             xyinv = true;
-            i4 = -1;
+            zneg = -1;
         }
 
 
@@ -462,16 +466,19 @@ public class Mad
                 xyinv = true;
                 BadLanding = true;
             }
-            i = -1;
+
+            xneg = -1;
         }
         else if (xyinv)
         {
             BadLanding = true;
         }
+
         if (BadLanding)
         {
             bottomy = Stat.Flipy + Squash;
         }
+
         control.Zyinv = zyinv;
         //
 
@@ -482,6 +489,7 @@ public class Mad
         {
             Loop = 0;
         }
+
         if (Wtouch)
         {
             if (Loop == 2 || Loop == -1)
@@ -491,24 +499,29 @@ public class Mad
                 {
                     Pl = true;
                 }
+
                 if (control.Right)
                 {
                     Pr = true;
                 }
+
                 if (control.Up)
                 {
                     Pu = true;
                 }
+
                 if (control.Down)
                 {
                     Pd = true;
                 }
             }
+
             Ucomp = 0.0F;
             Dcomp = 0.0F;
             Lcomp = 0.0F;
             Rcomp = 0.0F;
-        }//
+        } //
+
         if (control.Handb)
         {
             if (!Pushed)
@@ -530,6 +543,7 @@ public class Mad
         {
             Pushed = false;
         }
+
         if (Loop == 1)
         {
             var f13 = (Scy[0] + Scy[1] + Scy[2] + Scy[3]) / 4.0F;
@@ -537,8 +551,10 @@ public class Mad
             {
                 Scy[i14] = f13;
             }
+
             Loop = 2;
-        }//
+        } //
+
         if (!Wasted)
         {
             if (Loop == 2)
@@ -552,23 +568,28 @@ public class Mad
                         {
                             Ucomp = 5.0F;
                         }
+
                         if (Ucomp > 10.0F)
                         {
                             Ucomp = 10.0F;
                         }
+
                         Ucomp *= Stat.Airs;
                     }
+
                     if (Ucomp < 20.0F * _tickRate) // maxine: scale to tickrate
                     {
-                        Ucomp += 0.5f * Stat.Airs * _tickRate;//
+                        Ucomp += 0.5f * Stat.Airs * _tickRate; //
                     }
-                    airx = -Stat.Airc * Medium.Sin(conto.Xz) * i4 * _tickRate;
-                    airz = Stat.Airc * Medium.Cos(conto.Xz) * i4 * _tickRate;
+
+                    airx = -Stat.Airc * Medium.Sin(conto.Xz) * zneg * _tickRate;
+                    airz = Stat.Airc * Medium.Cos(conto.Xz) * zneg * _tickRate;
                 }
                 else if (Ucomp != 0.0F && Ucomp > -2.0F)
                 {
-                    Ucomp -= 0.5f * Stat.Airs * _tickRate;//
+                    Ucomp -= 0.5f * Stat.Airs * _tickRate; //
                 }
+
                 if (control.Down)
                 {
                     if (Dcomp == 0.0F)
@@ -578,56 +599,67 @@ public class Mad
                         {
                             Dcomp = 5.0F;
                         }
+
                         if (Dcomp > 10.0F)
                         {
                             Dcomp = 10.0F;
                         }
+
                         Dcomp *= Stat.Airs;
                     }
+
                     if (Dcomp < 20.0F * _tickRate) // maxine: scale to tickrate
                     {
-                        Dcomp += 0.5f * Stat.Airs * _tickRate;//
+                        Dcomp += 0.5f * Stat.Airs * _tickRate; //
                     }
+
                     airy = -Stat.Airc * _tickRate;
                 }
                 else if (Dcomp != 0.0F && Ucomp > -2.0F)
                 {
                     Dcomp -= 0.5f * Stat.Airs * _tickRate;
-                }//
+                } //
+
                 if (control.Left)
                 {
                     if (Lcomp == 0.0F)
                     {
                         Lcomp = 5.0F;
                     }
+
                     if (Lcomp < 20.0F * _tickRate) // maxine: scale to tickrate
                     {
-                        Lcomp += 2.0F * Stat.Airs * _tickRate;//
+                        Lcomp += 2.0F * Stat.Airs * _tickRate; //
                     }
-                    airx = -Stat.Airc * Medium.Cos(conto.Xz) * i * _tickRate;
-                    airz = -Stat.Airc * Medium.Sin(conto.Xz) * i * _tickRate;
+
+                    airx = -Stat.Airc * Medium.Cos(conto.Xz) * xneg * _tickRate;
+                    airz = -Stat.Airc * Medium.Sin(conto.Xz) * xneg * _tickRate;
                 }
                 else if (Lcomp > 0.0F)
                 {
-                    Lcomp -= 2.0F * Stat.Airs * _tickRate;//
+                    Lcomp -= 2.0F * Stat.Airs * _tickRate; //
                 }
-                if (control.Right)//
+
+                if (control.Right) //
                 {
                     if (Rcomp == 0.0F)
                     {
                         Rcomp = 5.0F;
                     }
+
                     if (Rcomp < 20.0F * _tickRate) // maxine: scale to tickrate
                     {
                         Rcomp += 2.0F * Stat.Airs * _tickRate;
                     }
-                    airx = Stat.Airc * Medium.Cos(conto.Xz) * i * _tickRate;
-                    airz = Stat.Airc * Medium.Sin(conto.Xz) * i * _tickRate;
+
+                    airx = Stat.Airc * Medium.Cos(conto.Xz) * xneg * _tickRate;
+                    airz = Stat.Airc * Medium.Sin(conto.Xz) * xneg * _tickRate;
                 }
-                else if (Rcomp > 0.0F)//
+                else if (Rcomp > 0.0F) //
                 {
                     Rcomp -= 2.0F * Stat.Airs * _tickRate;
                 }
+
                 Pzy = (Pzy + (Dcomp - Ucomp) * Medium.Cos(Pxy) * _tickRate); //
                 if (zyinv)
                 {
@@ -637,15 +669,18 @@ public class Mad
                 {
                     conto.Xz -= ((Dcomp - Ucomp) * Medium.Sin(Pxy)) * _tickRate;
                 }
+
                 Pxy = (Pxy + (Rcomp - Lcomp) * _tickRate);
             }
             else
-            {//
+            {
+                //
                 var f15 = Power;
                 if (f15 < 40.0F)
                 {
                     f15 = 40.0F;
                 }
+
                 if (control.Down)
                 {
                     if (Speed > 0.0F)
@@ -664,7 +699,8 @@ public class Mad
                         }
 
                         if (i16 != 2)
-                        {//
+                        {
+                            //
                             Speed -= (Stat.Acelf[i16] / 2.0F + f15 * Stat.Acelf[i16] / 196.0F) * _tickRate;
                         }
                         else
@@ -676,7 +712,7 @@ public class Mad
 
                 if (control.Up)
                 {
-                    if (Speed < 0.0F)//
+                    if (Speed < 0.0F) //
                     {
                         Speed += Stat.Handb * _tickRate;
                     }
@@ -700,7 +736,7 @@ public class Mad
                             Speed = Stat.Swits[2] / 2 + f15 * Stat.Swits[2] / 196.0F;
                         }
                     }
-                }//
+                } //
 
                 if (control.Handb && Math.Abs(Speed) > Stat.Handb)
                 {
@@ -712,7 +748,7 @@ public class Mad
                     {
                         Speed -= Stat.Handb * _tickRate;
                     }
-                }//
+                } //
 
                 if (Loop == -1 && conto.Y < 100)
                 {
@@ -724,20 +760,23 @@ public class Mad
                             {
                                 Lcomp = 5.0F * Stat.Airs * _tickRate;
                             }
+
                             if (Lcomp < 20.0F)
                             {
                                 Lcomp += 2.0F * Stat.Airs * _tickRate;
                             }
                         }
-                    }//
+                    } //
                     else
                     {
                         if (Lcomp > 0.0F)
                         {
                             Lcomp -= 2.0F * Stat.Airs * _tickRate;
                         }
+
                         Pl = false;
-                    }//
+                    } //
+
                     if (control.Right)
                     {
                         if (!Pr)
@@ -746,11 +785,12 @@ public class Mad
                             {
                                 Rcomp = 5.0F * Stat.Airs * _tickRate;
                             }
+
                             if (Rcomp < 20.0F)
                             {
                                 Rcomp += 2.0F * Stat.Airs * _tickRate;
                             }
-                        }//
+                        } //
                     }
                     else
                     {
@@ -758,8 +798,10 @@ public class Mad
                         {
                             Rcomp -= 2.0F * Stat.Airs * _tickRate;
                         }
+
                         Pr = false;
-                    }//
+                    } //
+
                     if (control.Up)
                     {
                         if (!Pu)
@@ -768,11 +810,12 @@ public class Mad
                             {
                                 Ucomp = 5.0F * Stat.Airs * _tickRate;
                             }
+
                             if (Ucomp < 20.0F)
                             {
                                 Ucomp += 2.0F * Stat.Airs * _tickRate;
                             }
-                        }//
+                        } //
                     }
                     else
                     {
@@ -780,8 +823,10 @@ public class Mad
                         {
                             Ucomp -= 2.0F * Stat.Airs * _tickRate;
                         }
+
                         Pu = false;
                     }
+
                     if (control.Down)
                     {
                         if (!Pd)
@@ -790,6 +835,7 @@ public class Mad
                             {
                                 Dcomp = 5.0F * Stat.Airs * _tickRate;
                             }
+
                             if (Dcomp < 20.0F)
                             {
                                 Dcomp += 2.0F * Stat.Airs * _tickRate;
@@ -802,8 +848,10 @@ public class Mad
                         {
                             Dcomp -= 2.0F * Stat.Airs * _tickRate;
                         }
+
                         Pd = false;
                     }
+
                     Pzy = (int)(Pzy + ((Dcomp - Ucomp) * Medium.Cos(Pxy)) * _tickRate);
                     if (zyinv)
                     {
@@ -813,6 +861,7 @@ public class Mad
                     {
                         conto.Xz -= (int)((Dcomp - Ucomp) * Medium.Sin(Pxy)) * _tickRate;
                     }
+
                     Pxy = (int)(Pxy + (Rcomp - Lcomp) * _tickRate);
                 }
             }
@@ -823,6 +872,7 @@ public class Mad
         {
             f20 = 20.0F;
         }
+
         conto.Wzy -= (int)f20 * _tickRate;
         // commented out in phys physics
         //        if (conto.Wzy < -30)
@@ -841,6 +891,7 @@ public class Mad
                 conto.Wxz = -36;
             }
         }
+
         if (control.Left)
         {
             conto.Wxz += Stat.Turn * _tickRate;
@@ -848,7 +899,8 @@ public class Mad
             {
                 conto.Wxz = 36;
             }
-        }//
+        } //
+
         if (conto.Wxz != 0 && !control.Left && !control.Right)
         {
             if (Math.Abs(Speed) < 10.0F)
@@ -857,10 +909,12 @@ public class Mad
                 {
                     conto.Wxz = 0;
                 }
+
                 if (conto.Wxz > 0)
                 {
-                    conto.Wxz--;  // tick rate for this stuff?
+                    conto.Wxz--; // tick rate for this stuff?
                 }
+
                 if (conto.Wxz < 0)
                 {
                     conto.Wxz++;
@@ -872,26 +926,30 @@ public class Mad
                 {
                     conto.Wxz = 0;
                 }
+
                 if (conto.Wxz > 0)
                 {
                     conto.Wxz -= Stat.Turn * 2 * _tickRate;
                 }
+
                 if (conto.Wxz < 0)
                 {
                     conto.Wxz += Stat.Turn * 2 * _tickRate;
                 }
             }
-        }//
+        } //
 
         var i21 = (int)(3600.0F / (Speed * Speed));
         if (i21 < 5)
         {
             i21 = 5;
         }
+
         if (Speed < 0.0F)
         {
             i21 = -i21;
         }
+
         if (Wtouch)
         {
             if (!BadLanding)
@@ -904,15 +962,18 @@ public class Mad
                 {
                     _fxz = conto.Wxz / i21;
                 }
+
                 conto.Xz += conto.Wxz / i21 * _tickRate;
             }
+
             Wtouch = false;
             Gtouch = false;
         }
         else
         {
             conto.Xz += _fxz * _tickRate;
-        }//
+        } //
+
         if (Speed > 30.0F || Speed < -100.0F)
         {
             while (SafeMath.Abs(Mxz - Cxz) > 180)
@@ -926,10 +987,11 @@ public class Mad
                     Cxz += 360;
                 }
             }
+
             //
             if (SafeMath.Abs(Mxz - Cxz) < 30)
             {
-                Cxz += (Mxz - Cxz) / 4.0F * _tickRate;//
+                Cxz += (Mxz - Cxz) / 4.0F * _tickRate; //
             }
             else
             {
@@ -937,12 +999,14 @@ public class Mad
                 {
                     Cxz -= 10 * _tickRate;
                 }
+
                 if (Cxz < Mxz)
                 {
                     Cxz += 10 * _tickRate;
                 }
             }
         }
+
         Console.WriteLine(Cxz);
         var wheelx = new float[4];
         var wheelz = new float[4];
@@ -954,6 +1018,7 @@ public class Mad
             wheelz[i24] = conto.Z + conto.Keyz[i24];
             Scy[i24] += 7.0F * _tickRate;
         }
+
         Rot(wheelx, wheely, conto.X, conto.Y, Pxy, 4);
         Rot(wheely, wheelz, conto.Y, conto.Z, Pzy, 4);
         Rot(wheelx, wheelz, conto.X, conto.Z, conto.Xz, 4);
@@ -967,43 +1032,52 @@ public class Mad
             {
                 Scx[i28] = 200 + i26;
             }
+
             if (Scx[i28] - i26 < -200.0F)
             {
                 Scx[i28] = i26 - 200;
             }
+
             if (Scz[i28] - i27 > 200.0F)
             {
                 Scz[i28] = 200 + i27;
             }
+
             if (Scz[i28] - i27 < -200.0F)
             {
                 Scz[i28] = i27 - 200;
             }
         }
+
         for (var i29 = 0; i29 < 4; i29++)
         {
             wheely[i29] += Scy[i29] * _tickRate;
             wheelx[i29] += (Scx[0] + Scx[1] + Scx[2] + Scx[3]) / 4.0F * _tickRate;
             wheelz[i29] += (Scz[0] + Scz[1] + Scz[2] + Scz[3]) / 4.0F * _tickRate;
-        }//
+        } //
+
         var i30 = (conto.X - Trackers.Sx) / 3000;
         if (i30 > Trackers.Ncx)
         {
             i30 = Trackers.Ncx;
         }
+
         if (i30 < 0)
         {
             i30 = 0;
         }
+
         var i31 = (conto.Z - Trackers.Sz) / 3000;
         if (i31 > Trackers.Ncz)
         {
             i31 = Trackers.Ncz;
         }
+
         if (i31 < 0)
         {
             i31 = 0;
         }
+
         var surfaceType = 1;
         for (var i33 = 0; i33 < Trackers.Sect[i30, i31].Length; i33++)
         {
@@ -1015,7 +1089,8 @@ public class Mad
             {
                 surfaceType = Trackers.Skd[i34];
             }
-        }//
+        } //
+
         if (Mtouch)
         {
             var traction = Stat.Grip;
@@ -1024,26 +1099,31 @@ public class Mad
             {
                 traction -= Math.Abs(Txz - conto.Xz) * 4;
             }
+
             if (traction < Stat.Grip)
             {
                 if (Skid != 2)
                 {
                     Skid = 1;
                 }
+
                 Speed -= Speed / 100.0F * _tickRate;
-            }//
+            } //
             else if (Skid == 1)
             {
                 Skid = 2;
             }
+
             if (surfaceType == 1)
             {
                 traction = (int)(traction * 0.75);
             }
+
             if (surfaceType == 2)
             {
                 traction = (int)(traction * 0.55);
             }
+
             var speedx = -(int)(Speed * Medium.Sin(conto.Xz) * Medium.Cos(Pzy));
             var speedz = (int)(Speed * Medium.Cos(conto.Xz) * Medium.Cos(Pzy));
             var speedy = -(int)(Speed * Medium.Sin(Pzy));
@@ -1054,7 +1134,8 @@ public class Mad
                 speedy = 0;
                 traction = Stat.Grip / 5.0F;
                 Speed -= 2.0F * Math.Sign(Speed) * _tickRate;
-            }//
+            } //
+
             if (Math.Abs(Speed) > _drag * _tickRate)
             {
                 Speed -= _drag * Math.Sign(Speed) * _tickRate;
@@ -1063,14 +1144,16 @@ public class Mad
             {
                 Speed = 0.0F;
             }
+
             if (Cn == 8 && traction < 5.0F)
             {
                 traction = 5.0F;
             }
+
             if (traction < 1.0F)
             {
                 traction = 1.0F;
-            }//
+            } //
 
             float minTraction = 1.0f;
             traction = Math.Max(traction, minTraction);
@@ -1086,6 +1169,7 @@ public class Mad
                 {
                     Scx[j] = speedx;
                 }
+
                 if (Math.Abs(Scz[j] - speedz) > traction * _tickRate)
                 {
                     Scz[j] += traction * Math.Sign(speedz - Scz[j]) * _tickRate;
@@ -1094,6 +1178,7 @@ public class Mad
                 {
                     Scz[j] = speedz;
                 }
+
                 if (Math.Abs(Scy[j] - speedy) > traction * _tickRate)
                 {
                     Scy[j] += traction * Math.Sign(speedy - Scy[j]) * _tickRate;
@@ -1101,7 +1186,7 @@ public class Mad
                 else
                 {
                     Scy[j] = speedy;
-                }//
+                } //
 
                 // maxine: maybe this should be scaled to tickrate?
                 if (traction < Stat.Grip)
@@ -1114,6 +1199,7 @@ public class Mad
                     {
                         _dcnt = 0;
                     }
+
                     if (_dcnt > 40.0F * traction / Stat.Grip || BadLanding)
                     {
                         var f42 = 1.0F;
@@ -1121,11 +1207,12 @@ public class Mad
                         {
                             f42 = 1.2F;
                         }
+
                         if (Medium.Random() > 0.65)
                         {
                             conto.Dust(j, wheelx[j], wheely[j], wheelz[j], (int)Scx[j], (int)Scz[j],
                                 f42 * Stat.Simag, (int)_tilt, BadLanding && Mtouch);
-                            if (/*Im == XTGraphics.Im &&*/ !BadLanding)
+                            if ( /*Im == XTGraphics.Im &&*/ !BadLanding)
                             {
                                 //XTPart2.Skidf(Im, i32,
                                 //    (float) Math.Sqrt(Scx[i41] * Scx[i41] + Scz[i41] * Scz[i41]));
@@ -1139,6 +1226,7 @@ public class Mad
                             conto.Dust(j, wheelx[j], wheely[j], wheelz[j], (int)Scx[j], (int)Scz[j],
                                 1.1F * Stat.Simag, (int)_tilt, BadLanding && Mtouch);
                         }
+
                         if ((surfaceType == 2 || surfaceType == 3) && Medium.Random() > 0.6)
                         {
                             conto.Dust(j, wheelx[j], wheely[j], wheelz[j], (int)Scx[j], (int)Scz[j],
@@ -1150,15 +1238,19 @@ public class Mad
                 {
                     _dcnt = Math.Max(_dcnt - 2, 0);
                 }
+
                 if (surfaceType == 3 || surfaceType == 4)
                 {
-                    int k = Util.Random.Int(0, 4); // choose 4 wheels randomly to bounce up, usually some wheel will be chosen twice, which means another wheel is not chosen, causing tilt
+                    int
+                        k = Util.Random.Int(0,
+                            4); // choose 4 wheels randomly to bounce up, usually some wheel will be chosen twice, which means another wheel is not chosen, causing tilt
                     float bumpLift = surfaceType == 3 ? -100F : -150F;
                     float rng = 0.55F;
                     Scy[k] = bumpLift * rng * Speed / CarDefine.Swits[Cn, 2] * (CarDefine.Bounce[Cn] - 0.3F);
                 }
             }
-            Txz = conto.Xz;// CHK1
+
+            Txz = conto.Xz; // CHK1
 
             float scxsum = 0;
             float sczsum = 0;
@@ -1168,11 +1260,12 @@ public class Mad
                 scxsum += Scx[j];
                 sczsum += Scz[j];
             }
+
             float scxavg = scxsum / 4; /* nwheels */
             float sczavg = sczsum / 4;
             float scxz = float.Hypot(sczavg, scxavg);
 
-            Mxz = (int) dAtan2(-scxsum, sczsum);
+            Mxz = (int)dAtan2(-scxsum, sczsum);
 
             if (Skid == 2)
             {
@@ -1180,12 +1273,15 @@ public class Mad
                 {
                     Speed = scxz * Medium.Cos(Mxz - conto.Xz) * (revspeed ? -1 : 1);
                 }
+
                 Skid = 0;
             }
+
             if (BadLanding && scxsum == 0.0F && sczsum == 0.0F)
             {
                 surfaceType = 0;
-            }//
+            } //
+
             Mtouch = false;
             Mtcount = 0;
             wasMtouch = true;
@@ -1194,10 +1290,12 @@ public class Mad
         {
             Skid = 2;
         }
+
         var nGroundedWheels = 0;
         Span<bool> isWheelGrounded = stackalloc bool[4];
         float groundY = 250f;
         float wheelYThreshold = 5f;
+        float f48 = 0.0F;
         for (var i49 = 0; i49 < 4; i49++)
         {
             isWheelGrounded[i49] = false;
@@ -1209,10 +1307,11 @@ public class Mad
                 if (!wasMtouch && Scy[i49] != 7.0F)
                 {
                     var f50 = Scy[i49] / 333.33F;
-                    if (f50 > 0.3)
+                    if (f50 > 0.3F)
                     {
                         f50 = 0.3F;
                     }
+
                     if (surfaceType == 0)
                     {
                         f50 += 1.1f;
@@ -1221,15 +1320,34 @@ public class Mad
                     {
                         f50 += 1.2f;
                     }
-                    conto.Dust(i49, wheelx[i49], wheely[i49], wheelz[i49], (int)Scx[i49], (int)Scz[i49], f50 * Stat.Simag,
+
+                    conto.Dust(i49, wheelx[i49], wheely[i49], wheelz[i49], (int)Scx[i49], (int)Scz[i49],
+                        f50 * Stat.Simag,
                         0, BadLanding && Mtouch);
                 } // CHK2
+
                 wheely[i49] = 250.0F;
+                f48 += wheely[i49] - 250.0F;
                 isWheelGrounded[i49] = true;
 
                 bounceRebound(i49, conto);
             }
         }
+
+        if (GameSparker.DebugKeyStates.GetValueOrDefault(Keys.F2))
+        {
+            _debugApplyNFMMBouncing = !_debugApplyNFMMBouncing;
+            GameSparker.DebugKeyStates[Keys.F2] = false;
+        }
+
+        if (_debugApplyNFMMBouncing)
+            if (nGroundedWheels != 0) {
+                f48 /= nGroundedWheels;
+                for (int i52 = 0; i52 < 4; i52++)
+                    if (!isWheelGrounded[i52]) {
+                        wheely[i52] -= f48;
+                    }
+            }
 
         Span<bool> isWheelTouchingPiece = stackalloc bool[4]; // nwheels
         for (int j = 0; j < 4; ++j)
@@ -1727,13 +1845,13 @@ public class Mad
         //conto.y = (int) ((fs_23[0] + fs_23[1] + fs_23[2] + fs_23[3]) / 4.0F - (float) i_10 * Medium.Cos(this.Pzy) * Medium.Cos(this.Pxy) + f_12);
         //
         if (zyinv)
-            i = -1;
+            xneg = -1;
         else
-            i = 1;
+            xneg = 1;
 
         // CHK13
-        conto.X = (int) ((wheelx[0] - conto.Keyx[0] * Medium.Cos(conto.Xz) * _tickRate + i * conto.Keyz[0] * Medium.Sin(conto.Xz) * _tickRate + wheelx[1] - conto.Keyx[1] * Medium.Cos(conto.Xz) * _tickRate + i * conto.Keyz[1] * Medium.Sin(conto.Xz) * _tickRate + wheelx[2] - conto.Keyx[2] * Medium.Cos(conto.Xz) * _tickRate + i * conto.Keyz[2] * Medium.Sin(conto.Xz) * _tickRate + wheelx[3] - conto.Keyx[3] * Medium.Cos(conto.Xz) * _tickRate + i * conto.Keyz[3] * Medium.Sin(conto.Xz) * _tickRate) / 4.0F + bottomy * Medium.Sin(Pxy) * Medium.Cos(conto.Xz) - bottomy * Medium.Sin(Pzy) * Medium.Sin(conto.Xz) * _tickRate + airx);
-        conto.Z = (int) ((wheelz[0] - i * conto.Keyz[0] * Medium.Cos(conto.Xz) * _tickRate - conto.Keyx[0] * Medium.Sin(conto.Xz) * _tickRate + wheelz[1] - i * conto.Keyz[1] * Medium.Cos(conto.Xz) * _tickRate - conto.Keyx[1] * Medium.Sin(conto.Xz) * _tickRate + wheelz[2] - i * conto.Keyz[2] * Medium.Cos(conto.Xz) * _tickRate - conto.Keyx[2] * Medium.Sin(conto.Xz) * _tickRate + wheelz[3] - i * conto.Keyz[3] * Medium.Cos(conto.Xz) * _tickRate - conto.Keyx[3] * Medium.Sin(conto.Xz) * _tickRate) / 4.0F + bottomy * Medium.Sin(Pxy) * Medium.Sin(conto.Xz) - bottomy * Medium.Sin(Pzy) * Medium.Cos(conto.Xz) * _tickRate + airz);
+        conto.X = (int) ((wheelx[0] - conto.Keyx[0] * Medium.Cos(conto.Xz) * _tickRate + xneg * conto.Keyz[0] * Medium.Sin(conto.Xz) * _tickRate + wheelx[1] - conto.Keyx[1] * Medium.Cos(conto.Xz) * _tickRate + xneg * conto.Keyz[1] * Medium.Sin(conto.Xz) * _tickRate + wheelx[2] - conto.Keyx[2] * Medium.Cos(conto.Xz) * _tickRate + xneg * conto.Keyz[2] * Medium.Sin(conto.Xz) * _tickRate + wheelx[3] - conto.Keyx[3] * Medium.Cos(conto.Xz) * _tickRate + xneg * conto.Keyz[3] * Medium.Sin(conto.Xz) * _tickRate) / 4.0F + bottomy * Medium.Sin(Pxy) * Medium.Cos(conto.Xz) - bottomy * Medium.Sin(Pzy) * Medium.Sin(conto.Xz) * _tickRate + airx);
+        conto.Z = (int) ((wheelz[0] - xneg * conto.Keyz[0] * Medium.Cos(conto.Xz) * _tickRate - conto.Keyx[0] * Medium.Sin(conto.Xz) * _tickRate + wheelz[1] - xneg * conto.Keyz[1] * Medium.Cos(conto.Xz) * _tickRate - conto.Keyx[1] * Medium.Sin(conto.Xz) * _tickRate + wheelz[2] - xneg * conto.Keyz[2] * Medium.Cos(conto.Xz) * _tickRate - conto.Keyx[2] * Medium.Sin(conto.Xz) * _tickRate + wheelz[3] - xneg * conto.Keyz[3] * Medium.Cos(conto.Xz) * _tickRate - conto.Keyx[3] * Medium.Sin(conto.Xz) * _tickRate) / 4.0F + bottomy * Medium.Sin(Pxy) * Medium.Sin(conto.Xz) - bottomy * Medium.Sin(Pzy) * Medium.Cos(conto.Xz) * _tickRate + airz);
 
         if (Math.Abs(Speed) > 10.0F || !Mtouch)
         {
@@ -1853,11 +1971,11 @@ public class Mad
         var i91 = 0;
         if (Nofocus)
         {
-            i4 = 1;
+            zneg = 1;
         }
         else
         {
-            i4 = 7;
+            zneg = 7;
         }
         /*for (var i92 = 0; i92 < CheckPoints.N; i92++)
         {
@@ -2431,9 +2549,8 @@ public class Mad
                             conto.P[i111].HSB[0] = 0.05F;
                         }
                         conto.P[i111].Bfase += (int)Math.Abs(f112);
-                        new Color(conto.P[i111].C[0], conto.P[i111].C[1], conto.P[i111].C[2]);
-                        var color = Color.GetHSBColor(conto.P[i111].HSB[0], conto.P[i111].HSB[1],
-                            conto.P[i111].HSB[2]);
+                        // new Color(conto.P[i111].C[0], conto.P[i111].C[1], conto.P[i111].C[2]);
+                        var color = Color.GetHSBColor(conto.P[i111].HSB[0], conto.P[i111].HSB[1], conto.P[i111].HSB[2]);
                         conto.P[i111].C[0] = color.R;
                         conto.P[i111].C[1] = color.G;
                         conto.P[i111].C[2] = color.B;

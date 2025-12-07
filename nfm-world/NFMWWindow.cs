@@ -324,8 +324,10 @@ public unsafe class Program
             GameSparker.Render();
         
             G.SetColor(new Color(0, 0, 0));
-            G.DrawString("Render: " + _lastFrameTime + "ms", 100, 100);
-            G.DrawString("Tick: " + _lastTickTime + "ms", 100, 120);
+            G.DrawString($"Render: {_lastFrameTime}ms", 100, 100);
+            G.DrawString($"Tick: {_lastTickTime}ms", 100, 120);
+            G.DrawString($"Power: {GameSparker.cars_in_race[0]?.Mad?.Power:0.00}", 100, 140);
+            G.DrawString($"DEBUG apply NFMM bounce change (F2): {GameSparker.cars_in_race[0]?.Mad?._debugApplyNFMMBouncing}", 100, 160);
 
             displayList = drawListBuilder.CreateDisplayListNew()!;
         }

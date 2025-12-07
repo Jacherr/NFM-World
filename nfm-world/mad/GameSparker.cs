@@ -46,8 +46,12 @@ public class GameSparker
     private static int _indexOffset = 10;
     public static int _stagePartCount = 0;
 
-public static void KeyPressed(Keys key)
+    public static Dictionary<Keys, bool> DebugKeyStates = new();
+
+    public static void KeyPressed(Keys key)
     {
+        DebugKeyStates[key] = true;
+        
         //if (!_exwist)
         //{
 
@@ -122,6 +126,8 @@ public static void KeyPressed(Keys key)
 
     public static void KeyReleased(Keys key)
     {
+        DebugKeyStates[key] = false;
+        
         //if (!_exwist)
         //{
             if (cars_in_race[playerCarIndex].Control.Multion < 2)
