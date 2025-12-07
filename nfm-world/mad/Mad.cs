@@ -542,7 +542,7 @@ public class Mad
                     }
                     if (Ucomp < 20.0F * _tickRate)
                     {
-                        Ucomp += (float)(0.5 * Stat.Airs);//
+                        Ucomp += 0.5f * Stat.Airs * _tickRate;//
                     }
                     f = -Stat.Airc * Medium.Sin(conto.Xz) * i4 * _tickRate;
                     f11 = Stat.Airc * Medium.Cos(conto.Xz) * i4 * _tickRate;
@@ -568,7 +568,7 @@ public class Mad
                     }
                     if (Dcomp < 20.0F * _tickRate)
                     {
-                        Dcomp += (float)(0.5 * Stat.Airs);//
+                        Dcomp += 0.5f * Stat.Airs * _tickRate;//
                     }
                     f12 = Stat.Airc;
                 }

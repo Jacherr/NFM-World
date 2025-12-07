@@ -11,7 +11,7 @@ namespace NFMWorld.Mad
     {
         private bool _isOpen = false;
         private string _currentInput = string.Empty;
-        private readonly List<string> _outputLog = new();
+        private readonly List<(string message, string level)> _outputLog = new();
         private readonly Dictionary<string, Action<DevConsole, string[]>> _commands = new();
 
         private readonly List<string> _commandHistory = new();
@@ -25,16 +25,12 @@ namespace NFMWorld.Mad
         public DevConsole()
         {
             DevConsoleCommands.RegisterAll(this);
-            Log("NFM-World master-2025.12.06");
+            Log("NFM-World master-2025.12.07", "info");
         }
 
         public void Toggle()
         {
             _isOpen = !_isOpen;
-            if (_isOpen)
-            {
-                Console.WriteLine("Console opened");
-            }
         }
 
         public bool IsOpen()
@@ -75,9 +71,33 @@ namespace NFMWorld.Mad
             _outputLog.Clear();
         }
 
-        public void Log(string message)
+        public void Log(string message, string logLevel = "default")
         {
-            _outputLog.Add(message);
+            string formattedMessage = message;
+            string normalizedLevel = logLevel.ToLower();
+
+            // Format the message based on the log level
+            switch (normalizedLevel)
+            {
+                case "warning":
+                    formattedMessage = $"[WARN] {message}";
+                    break;
+                case "error":
+                    formattedMessage = message; // No prefix for error
+                    break;
+                case "info":
+                    formattedMessage = message; // No prefix for info
+                    break;
+                case "debug":
+                    formattedMessage = message; // No prefix for debug
+                    break;
+                default:
+                    formattedMessage = message; // Default to plain message
+                    normalizedLevel = "default";
+                    break;
+            }
+
+            _outputLog.Add((formattedMessage, normalizedLevel));
             if (_outputLog.Count > 100) _outputLog.RemoveAt(0); // Limit log size
         }
 
@@ -99,9 +119,30 @@ namespace NFMWorld.Mad
                 // output log
                 if (ImGui.BeginChild("ScrollingRegion", new System.Numerics.Vector2(0, -ImGui.GetFrameHeightWithSpacing()), ImGuiChildFlags.None, ImGuiWindowFlags.None))
                 {
-                    foreach (var line in _outputLog)
+                    foreach (var (message, level) in _outputLog)
                     {
-                        ImGui.TextUnformatted(line);
+                        // Set color based on log level
+                        switch (level)
+                        {
+                            case "warning":
+                                ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(1.0f, 1.0f, 0.0f, 1.0f)); // Yellow
+                                break;
+                            case "error":
+                                ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(1.0f, 0.4f, 0.4f, 1.0f)); // Red
+                                break;
+                            case "info":
+                                ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(0.34f, 0.8f, 1.0f, 1.0f)); // Aqua Blue
+                                break;
+                            case "debug":
+                                ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(0.612f, 1f, 0f, 1.0f)); // Green
+                                break;
+                            default:
+                                ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(1f, 1f, 1f, 1f)); // Default (White)
+                                break;
+                        }
+
+                        ImGui.TextUnformatted(message);
+                        ImGui.PopStyleColor();
                     }
                     
                     // auto-scroll to bottom

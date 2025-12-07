@@ -206,7 +206,9 @@ public unsafe class Program
         if (!loaded)
         {
             loaded = true;
-                
+            var originalOut = Console.Out;
+            GameSparker.Writer = new DevConsoleWriter(GameSparker.devConsole, originalOut);
+            Console.SetOut(GameSparker.Writer);
             GameSparker.Load();
         }
 

@@ -9,12 +9,12 @@ public class GameSparker
 {
     private static MicroStopwatch timer;
     private static UnlimitedArray<ContO> cars;
-    private static UnlimitedArray<ContO> stage_parts;
-    private static UnlimitedArray<ContO> placed_stage_elements;
+    public static UnlimitedArray<ContO> stage_parts;
+    public static UnlimitedArray<ContO> placed_stage_elements;
     private static CarState[] current_car_states;
     private static CarState[] prev_car_states;
 
-    private static DevConsole devConsole = new();
+    public static DevConsole devConsole = new();
 
     private static readonly string[] CarRads = {
         "2000tornados", "formula7", "canyenaro", "lescrab", "nimi", "maxrevenge", "leadoxide", "koolkat", "drifter",
@@ -41,6 +41,8 @@ public class GameSparker
 
     private static MediumState currentMediumState;
     private static MediumState prevMediumState;
+
+    public static DevConsoleWriter Writer = null!;
 
     // View modes
     public enum ViewMode
@@ -174,7 +176,7 @@ public static void KeyPressed(Keys key)
         //}
     }
 
-    private static int GetModel(string input)
+    public static int GetModel(string input)
     {
         // Combine all model arrays
         string[][] allModels = new string[][]
@@ -271,11 +273,27 @@ public static void KeyPressed(Keys key)
     }
 
 
+    public static void CreateObject(string objectName, int x, int y, int z, int r)
+    {
+        var model = GetModel(objectName);
+        if (model == -1)
+        {
+            devConsole.Log($"Object '{objectName}' not found.", "warning");
+            return;
+        }
+
+        placed_stage_elements[_stagePartCount] = new ContO(
+            stage_parts[model], x, 250 - stage_parts[model].Grat - y, z, r);
+
+        _stagePartCount++;
+
+        devConsole.Log($"Created {objectName} at ({x}, {y}, {z}), rotation: {r}", "info");
+    }
 
     /**
      * Loads stage currently set by checkpoints.stage onto stageContos
      */
-    private static void Loadstage(string stage)
+    public static void Loadstage(string stage)
     {
         placed_stage_elements.Clear();
         _stagePartCount = 0;
@@ -286,6 +304,8 @@ public static void KeyPressed(Keys key)
         Medium.Noelec = 0;
         Medium.Ground = 250;
         Medium.Trk = 0;
+        Medium.drawClouds = true;
+        Medium.drawMountains = true;
         var i = 0;
         var k = 100;
         var l = 0;
@@ -353,15 +373,27 @@ public static void KeyPressed(Keys key)
                 }
                 if (astring.StartsWith("mountains"))
                 {
-                    Medium.Mgen = Getint("mountains", astring, 0);
+                    //Medium.Mgen = Getint("mountains", astring, 0);
+
+                    var value = astring.Split(' ')[1].Trim();
+                    if (value.Equals("false", StringComparison.OrdinalIgnoreCase))
+                    {
+                        Medium.drawMountains = false;
+                    }
+                    else if (int.TryParse(value, out var mgenValue))
+                    {
+                        Medium.Mgen = mgenValue; // Set mountain generation to the specified number
+                    }
+                    else
+                    {
+                        devConsole.Log($"Invalid value for 'mountains': {value}", "warning");
+                    }
                 }
                 if (astring.StartsWith("set"))
                 {
                     var setindex = Getint("set", astring, 0);
 
                     setindex -= _indexOffset;
-                    Console.WriteLine("Setindex ais: " + setindex);
-                    // ok why does it not load certain shit and doesnt assign correct pieces properly, very strange
                     placed_stage_elements[_stagePartCount] = new ContO(stage_parts[setindex], Getint("set", astring, 1),
                         Medium.Ground - stage_parts[setindex].Grat, Getint("set", astring, 2),
                         Getint("set", astring, 3));
@@ -584,17 +616,20 @@ public static void KeyPressed(Keys key)
                     Trackers.Nt++;
                 }
             }
-            //Medium.Newpolys(k, i - k, m, l - m, _notb);
-            Medium.Newclouds(k, i, m, l);
-            Medium.Newmountains(k, i, m, l);
-            Medium.Newstars();
+            Medium.Newpolys(k, i - k, m, l - m, _stagePartCount);
+            if (Medium.drawMountains)
+                Medium.Newmountains(k, i, m, l);
+            if (Medium.drawClouds)
+                Medium.Newclouds(k, i, m, l);
+            if (Medium.drawStars)
+                Medium.Newstars();
             Trackers.Devidetrackers(k, i - k, m, l - m);
         }
         catch (Exception exception)
         {
-            Console.WriteLine("Error in stage " + stage);
-            Console.WriteLine("At line: " + astring);
-            Console.WriteLine(exception);
+            Writer.WriteLine("Error in stage: " + stage, "error");
+            Writer.WriteLine("At line: " + astring, "error");
+            Writer.WriteLine(exception.ToString(), "error");
         }
         GC.Collect();
     }
