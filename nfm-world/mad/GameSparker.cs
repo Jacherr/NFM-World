@@ -7,6 +7,8 @@ namespace NFMWorld.Mad;
 
 public class GameSparker
 {
+    public static readonly float PHYSICS_MULTIPLIER = 21.4f/63f;
+
     private static MicroStopwatch timer;
     private static UnlimitedArray<ContO> cars;
     public static UnlimitedArray<ContO> stage_parts;
