@@ -1596,27 +1596,9 @@ class Plane : IComparable<Plane>
             }
             var i143 = (i133 + i134) / 2;
             var i144 = (i135 + i136) / 2;
-            var i145 = (i143 - Trackers.Sx + Medium.X) / 3000;
-            if (i145 > Trackers.Ncx)
+            // maxine: remove trackers.sect use here
+            for (var i148 = Trackers.Nt - 1; i148 >= 0; i148--)
             {
-                i145 = Trackers.Ncx;
-            }
-            if (i145 < 0)
-            {
-                i145 = 0;
-            }
-            var i146 = (i144 - Trackers.Sz + Medium.Z) / 3000;
-            if (i146 > Trackers.Ncz)
-            {
-                i146 = Trackers.Ncz;
-            }
-            if (i146 < 0)
-            {
-                i146 = 0;
-            }
-            for (var i147 = Trackers.Sect[i145, i146].Length - 1; i147 >= 0; i147--)
-            {
-                var i148 = Trackers.Sect[i145, i146][i147];
                 var i149 = 0;
                 if (Math.Abs(Trackers.Zy[i148]) != 90 && Math.Abs(Trackers.Xy[i148]) != 90 &&
                     Trackers.Rady[i148] != 801 &&
