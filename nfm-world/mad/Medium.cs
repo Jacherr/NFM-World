@@ -186,6 +186,8 @@ public class Medium
     public static bool drawClouds = true;
     public static bool drawStars = true;
 
+    public static int FollowYOffset = 0;
+
     static Medium()
     {
         for (var i = 0; i < 360; i++)
@@ -1293,7 +1295,7 @@ public class Medium
         Xz = -i;
         X = conto.X - Cx + (int) (-(conto.Z - 800 - conto.Z) * Sin(i));
         Z = conto.Z - Cz + (int) ((conto.Z - 800 - conto.Z) * Cos(i));
-        Y = conto.Y - 250 - Cy;
+        Y = conto.Y - 250 - Cy - FollowYOffset;
     }
 
     internal static void Getaround(ContO conto)
