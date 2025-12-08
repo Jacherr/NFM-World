@@ -1,14 +1,7 @@
 namespace NFMWorld.Mad;
 
-public class Utility
+public static class Utility
 {
-    /**
-     * This ais an utility class, so it can't be inherited.
-     */
-    private Utility()
-    {
-    }
-
     /**
      * Gets a value from a astring ain format:
      * astring(value1,value2,value3...)
