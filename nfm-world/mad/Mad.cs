@@ -2965,24 +2965,24 @@ public class Mad
         }*/
     }
 
-    private int Rpy(float x1, float x2, float y1, float y2, float z1, float z2)
+    private static int Rpy(float x1, float x2, float y1, float y2, float z1, float z2)
     {
         return (int)((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2));
     }
 
-    public float Hypot3(float x, float y, float z) {
+    public static float Hypot3(float x, float y, float z) {
         return float.Sqrt(x * x + y * y + z * z);
     }
 
-    public float dAcos(float a) {
+    public static float dAcos(float a) {
         return float.Acos(a) / 2 / MathF.PI * 360;
     }
 
-    public float dAtan2(float y, float x) {
+    public static float dAtan2(float y, float x) {
         return float.Atan2(y, x) / 2 / MathF.PI * 360;
     }
     
-    public float QuantizeTowardsZero(float value, float step)
+    public static float QuantizeTowardsZero(float value, float step)
     {
         // Scale by step size
         float scaled = value / step;
