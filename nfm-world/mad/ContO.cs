@@ -87,6 +87,8 @@ public class ContO
     internal int Z;
     internal SinCosFloat Zy;
 
+    private static readonly float _tickRate = GameSparker.PHYSICS_MULTIPLIER;
+
     public static DevConsoleWriter Writer = null!;
 
     internal ContO(byte[] _is)
@@ -2167,7 +2169,7 @@ public class ContO
         }
         if (!Roted || Xz != 0)
         {
-            Xy += 11;
+            Xy += 11 * _tickRate;
             if (Xy > 360)
             {
                 Xy -= 360;
@@ -2175,7 +2177,7 @@ public class ContO
         }
         else
         {
-            Zy += 11;
+            Zy += 11 * _tickRate;
             if (Zy > 360)
             {
                 Zy -= 360;

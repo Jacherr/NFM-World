@@ -37,6 +37,7 @@ public class GameSparker
     {
         Follow,
         Around,
+        Watch
     }
     private static ViewMode currentViewMode = ViewMode.Follow;
     /////////////////////////////////
@@ -675,6 +676,9 @@ public class GameSparker
                 break;
             case ViewMode.Around:
                 Medium.Around(cars_in_race[playerCarIndex].Conto, true);
+                break;
+            case ViewMode.Watch:
+                Medium.Watch(cars_in_race[playerCarIndex].Conto, cars_in_race[playerCarIndex].Mad.Mxz);
                 break;
         }
     }

@@ -2577,7 +2577,7 @@ public class Medium
         Zy += (i26 - Zy) / 10;
     }
 
-    internal static void Watch(ContO conto, int i)
+    internal static void Watch(ContO conto, float i)
     {
         if (_td)
         {

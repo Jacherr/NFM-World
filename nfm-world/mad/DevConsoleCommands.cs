@@ -63,19 +63,8 @@ namespace NFMWorld.Mad
 
         private static void ResetCar(DevConsole console)
         {
-            // doesnt reset gravity i cba rn
-            GameSparker.cars_in_race[0].Conto.X = 0;
-            GameSparker.cars_in_race[0].Conto.Y = 250;
-            GameSparker.cars_in_race[0].Conto.Z = 0;
-            GameSparker.cars_in_race[0].Conto.Xy = 0;
-            GameSparker.cars_in_race[0].Conto.Xz = 0;
-            GameSparker.cars_in_race[0].Conto.Zy = 0;
-            GameSparker.cars_in_race[0].Mad.Speed = 0;
-
-            //idk how to get rid of flames yet
-            GameSparker.cars_in_race[0].Mad.Newcar = true;
-            GameSparker.cars_in_race[0].Mad.Wasted = false;
-            GameSparker.cars_in_race[0].Mad.Hitmag = 0;
+            GameSparker.cars_in_race.Clear();
+            GameSparker.cars_in_race[GameSparker.playerCarIndex] = new Car(new Stat(GameSparker.playerCarID), GameSparker.playerCarID,  GameSparker.cars[GameSparker.playerCarID], 0, 0);
             console.Log("Position reset");
         }
 
