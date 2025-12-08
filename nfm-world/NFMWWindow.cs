@@ -533,8 +533,8 @@ internal class NImpellerGraphics(NImpellerBackend backend) : IGraphics
 
     public void SetAlpha(float f)
     {
-        currentColor = new Color(currentColor.R, currentColor.G, currentColor.B, (byte)f*100);
-        _paint.SetColor(ImpellerColor.FromArgb((int) (255f*f), currentColor.R, currentColor.G, currentColor.B));
+        currentColor = new Color(currentColor.R, currentColor.G, currentColor.B, (byte)f*255);
+        _paint.SetColor(ImpellerColor.FromArgb(currentColor.A, currentColor.R, currentColor.G, currentColor.B));
     }
 
     public void DrawImage(IImage image, int x, int y)
@@ -556,6 +556,7 @@ internal class NImpellerGraphics(NImpellerBackend backend) : IGraphics
     {
         using var paragraphBuilder = _typographyContext.ParagraphBuilderNew()!;
         using var impellerParagraphStyle = ImpellerParagraphStyle.New()!;
+        _paint.SetDrawStyle(ImpellerDrawStyle.kImpellerDrawStyleFill);
         impellerParagraphStyle.SetForeground(_paint);
         impellerParagraphStyle.SetFontSize(16f);
         paragraphBuilder.PushStyle(impellerParagraphStyle);
