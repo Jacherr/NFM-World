@@ -1077,15 +1077,14 @@ public class Mad
         }
 
         var surfaceType = 1;
-        for (var i33 = 0; i33 < Trackers.Sect[i30, i31].Length; i33++)
+        for (var i = 0; i < Trackers.Nt; i++) // maxine: remove trackers.sect use here
         {
-            var i34 = Trackers.Sect[i30, i31][i33];
-            if (Math.Abs(Trackers.Zy[i34]) != 90 && Math.Abs(Trackers.Xy[i34]) != 90 &&
-                Math.Abs(conto.X - Trackers.X[i34]) < Trackers.Radx[i34] &&
-                Math.Abs(conto.Z - Trackers.Z[i34]) < Trackers.Radz[i34] &&
-                (!Trackers.Decor[i34] || Medium.Resdown != 2 /*|| XTGraphics.Multion != 0*/))
+            if (Math.Abs(Trackers.Zy[i]) != 90 && Math.Abs(Trackers.Xy[i]) != 90 &&
+                Math.Abs(conto.X - Trackers.X[i]) < Trackers.Radx[i] &&
+                Math.Abs(conto.Z - Trackers.Z[i]) < Trackers.Radz[i] &&
+                (!Trackers.Decor[i] || Medium.Resdown != 2 /*|| XTGraphics.Multion != 0*/))
             {
-                surfaceType = Trackers.Skd[i34];
+                surfaceType = Trackers.Skd[i];
             }
         } //
 
