@@ -1667,7 +1667,9 @@ public class Mad
             }
         }
 
-        // maxine: changing these to floats will cause an explosion to NaN. i cannot figure out why
+        // Jacher: change all this to float. The old code was blatantly wrong:
+        // i_81 = d > 1 ? 0 : (float) dAcos(ratio) * sgn;
+        // `d` was an unused double set to 0.0 and never used. GO figure.
         float i_81 = 0;
         if (Scy[2] != Scy[0]) {
             float sgn = Scy[2] < Scy[0] ? -1 : 1;
