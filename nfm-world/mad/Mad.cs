@@ -1091,11 +1091,12 @@ public class Mad
 
         if (Mtouch)
         {
+            // Jacher: 1/_tickrate for traction; Txz is set on previous tick so we need to scale
             var traction = Stat.Grip;
-            traction -= Math.Abs(Txz - conto.Xz) * Speed / 250.0F;
+            traction -= Math.Abs(Txz - conto.Xz) * (1 / _tickRate) * Speed / 250.0F;
             if (control.Handb)
             {
-                traction -= Math.Abs(Txz - conto.Xz) * 4;
+                traction -= Math.Abs(Txz - conto.Xz) * (1 / _tickRate) * 4;
             }
 
             if (traction < Stat.Grip)
@@ -1833,8 +1834,6 @@ public class Mad
             xneg = -1;
         else
             xneg = 1;
-
-        Console.WriteLine("x: " + airx + ", z: " + airz + ", sum: " + Medium.Sin(Pxy) + ", sum2: " + Medium.Sin(Pzy));
 
         // CHK13
         // car sliding fix by jacher: do not adjust to tickrate
