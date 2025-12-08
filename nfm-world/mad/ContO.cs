@@ -1745,37 +1745,16 @@ public class ContO
             if (i125 < 2000)
             {
                 var aabool = false;
-                if (Trackers.Ncx != 0 || Trackers.Ncz != 0)
+                // maxine: remove trackers.sect usage here
+                for (var i130 = Trackers.Nt - 1; i130 >= 0; i130--)
                 {
-                    var i127 = (X - Trackers.Sx) / 3000;
-                    if (i127 > Trackers.Ncx)
+                    if (Math.Abs(Trackers.Zy[i130]) != 90 && Math.Abs(Trackers.Xy[i130]) != 90 &&
+                        Math.Abs(X - Trackers.X[i130]) < Trackers.Radx[i130] + MaxR &&
+                        Math.Abs(Z - Trackers.Z[i130]) < Trackers.Radz[i130] + MaxR &&
+                        (!Trackers.Decor[i130] || Medium.Resdown != 2))
                     {
-                        i127 = Trackers.Ncx;
-                    }
-                    if (i127 < 0)
-                    {
-                        i127 = 0;
-                    }
-                    var i128 = (Z - Trackers.Sz) / 3000;
-                    if (i128 > Trackers.Ncz)
-                    {
-                        i128 = Trackers.Ncz;
-                    }
-                    if (i128 < 0)
-                    {
-                        i128 = 0;
-                    }
-                    for (var i129 = Trackers.Sect[i127, i128].Length - 1; i129 >= 0; i129--)
-                    {
-                        var i130 = Trackers.Sect[i127, i128][i129];
-                        if (Math.Abs(Trackers.Zy[i130]) != 90 && Math.Abs(Trackers.Xy[i130]) != 90 &&
-                            Math.Abs(X - Trackers.X[i130]) < Trackers.Radx[i130] + MaxR &&
-                            Math.Abs(Z - Trackers.Z[i130]) < Trackers.Radz[i130] + MaxR &&
-                            (!Trackers.Decor[i130] || Medium.Resdown != 2))
-                        {
-                            aabool = true;
-                            break;
-                        }
+                        aabool = true;
+                        break;
                     }
                 }
                 if (aabool)
@@ -2480,27 +2459,9 @@ public class ContO
         }
         if (Trackers.Ncx != 0 || Trackers.Ncz != 0)
         {
-            var i154 = (X - Trackers.Sx) / 3000;
-            if (i154 > Trackers.Ncx)
+            // maxine: remove trackers.sect use here
+            for (var i157 = Trackers.Nt - 1; i157 >= 0; i157--)
             {
-                i154 = Trackers.Ncx;
-            }
-            if (i154 < 0)
-            {
-                i154 = 0;
-            }
-            var i155 = (Z - Trackers.Sz) / 3000;
-            if (i155 > Trackers.Ncz)
-            {
-                i155 = Trackers.Ncz;
-            }
-            if (i155 < 0)
-            {
-                i155 = 0;
-            }
-            for (var i156 = Trackers.Sect[i154, i155].Length - 1; i156 >= 0; i156--)
-            {
-                var i157 = Trackers.Sect[i154, i155][i156];
                 var i158 = 0;
                 for (var i159 = 0; i159 < 4; i159++)
                 {
@@ -2643,9 +2604,9 @@ public class ContO
                 {
                     i211 = 0;
                 }
-                for (var i212 = 0; i212 < Trackers.Sect[i210, i211].Length; i212++)
+                // maxine: remove trackers.sect use here
+                for (var i213 = 0; i213 < Trackers.Nt; i213++)
                 {
-                    var i213 = Trackers.Sect[i210, i211][i212];
                     if (Math.Abs(Trackers.Zy[i213]) != 90 && Math.Abs(Trackers.Xy[i213]) != 90 &&
                         Math.Abs(Sx[i] - Trackers.X[i213]) < Trackers.Radx[i213] &&
                         Math.Abs(Sz[i] - Trackers.Z[i213]) < Trackers.Radz[i213])
