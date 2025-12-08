@@ -1017,9 +1017,9 @@ public class Mad
             Scy[i24] += 7.0F * _tickRate;
         }
 
-        Rot(wheelx, wheely, conto.X, conto.Y, Pxy, 4);
-        Rot(wheely, wheelz, conto.Y, conto.Z, Pzy, 4);
-        Rot(wheelx, wheelz, conto.X, conto.Z, conto.Xz, 4);
+        Plane.Rot(wheelx, wheely, conto.X, conto.Y, Pxy, 4);
+        Plane.Rot(wheely, wheelz, conto.Y, conto.Z, Pzy, 4);
+        Plane.Rot(wheelx, wheelz, conto.X, conto.Z, conto.Xz, 4);
         var wasMtouch = false;
         double d = 0.0f;
         var i26 = (int)((Scx[0] + Scx[1] + Scx[2] + Scx[3]) / 4.0F);
@@ -2963,20 +2963,6 @@ public class Mad
         {
             _fixes = 1;
         }*/
-    }
-
-    private void Rot(float[] fs, float[] fs134, int i, int i135, float i136, int i137)
-    {
-        if ((int)i136 != 0)
-        {
-            for (var i138 = 0; i138 < i137; i138++)
-            {
-                var f = fs[i138];
-                var f139 = fs134[i138];
-                fs[i138] = i + ((f - i) * Medium.Cos(i136) - (f139 - i135) * Medium.Sin(i136));
-                fs134[i138] = i135 + ((f - i) * Medium.Sin(i136) + (f139 - i135) * Medium.Cos(i136));
-            }
-        }
     }
 
     private int Rpy(float x1, float x2, float y1, float y2, float z1, float z2)
