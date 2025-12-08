@@ -10,13 +10,13 @@ public class GameSparker
     public static readonly float PHYSICS_MULTIPLIER = 21.4f/63f;
 
     private static MicroStopwatch timer;
-    private static UnlimitedArray<ContO> cars;
+    public static UnlimitedArray<ContO> cars;
     public static UnlimitedArray<ContO> stage_parts;
     public static UnlimitedArray<ContO> placed_stage_elements;
 
     public static DevConsole devConsole = new();
 
-    private static readonly string[] CarRads = {
+    public static readonly string[] CarRads = {
         "2000tornados", "formula7", "canyenaro", "lescrab", "nimi", "maxrevenge", "leadoxide", "koolkat", "drifter",
         "policecops", "mustang", "king", "audir8", "masheen", "radicalone", "drmonster"
     };
@@ -42,7 +42,8 @@ public class GameSparker
     /////////////////////////////////
 
     public static UnlimitedArray<Car> cars_in_race = [];
-    private static int playerCarIndex = 0;
+    public static int playerCarIndex = 0;
+    public static int playerCarID = 14;
 
     // stage loading
     private static int _indexOffset = 10;
@@ -170,12 +171,64 @@ public class GameSparker
         //}
     }
 
-    public static int GetModel(string input)
+    public static List<string> GetAvailableStages()
+    {
+        var stages = new List<string>();
+        var stagesPath = "data/stages";
+        
+        if (Directory.Exists(stagesPath))
+        {
+            // recursive search
+            foreach (var file in Directory.GetFiles(stagesPath, "*.txt", SearchOption.AllDirectories))
+            {
+                var relativePath = Path.GetRelativePath(stagesPath, file);
+                var pathWithoutExtension = Path.ChangeExtension(relativePath, null);
+                stages.Add(pathWithoutExtension.Replace('\\', '/'));
+            }
+        }
+        
+        // sort numbers properly
+        stages.Sort((a, b) => {
+            var aSegments = a.Split('/');
+            var bSegments = b.Split('/');
+            
+            for (int seg = 0; seg < Math.Min(aSegments.Length, bSegments.Length); seg++)
+            {
+                var aParts = System.Text.RegularExpressions.Regex.Split(aSegments[seg], @"(\d+)")
+                    .Where(s => !string.IsNullOrEmpty(s)).ToArray();
+                var bParts = System.Text.RegularExpressions.Regex.Split(bSegments[seg], @"(\d+)")
+                    .Where(s => !string.IsNullOrEmpty(s)).ToArray();
+                
+                for (int i = 0; i < Math.Min(aParts.Length, bParts.Length); i++)
+                {
+                    if (int.TryParse(aParts[i], out var aNum) && int.TryParse(bParts[i], out var bNum))
+                    {
+                        int numCompare = aNum.CompareTo(bNum);
+                        if (numCompare != 0) return numCompare;
+                    }
+                    else
+                    {
+                        int strCompare = string.Compare(aParts[i], bParts[i], StringComparison.OrdinalIgnoreCase);
+                        if (strCompare != 0) return strCompare;
+                    }
+                }
+                
+                if (aParts.Length != bParts.Length)
+                    return aParts.Length.CompareTo(bParts.Length);
+            }
+            
+            return aSegments.Length.CompareTo(bSegments.Length);
+        });
+        
+        return stages;
+    }
+
+    public static int GetModel(string input, bool forCar = false)
     {
         // Combine all model arrays
         string[][] allModels = new string[][]
         {
-            StageRads
+            forCar ? CarRads : StageRads
         };
 
         int modelId = 0;
@@ -231,7 +284,7 @@ public class GameSparker
             stage_parts[id] = new ContO(ais);
         });
 
-        Loadstage("15");
+        Loadstage("nfm2/15_dwm");
 
         cars_in_race[playerCarIndex] = new Car(new Stat(14), 14, cars[14], 0, 0);
 
@@ -357,20 +410,14 @@ public class GameSparker
                 }
                 if (astring.StartsWith("mountains"))
                 {
-                    //Medium.Mgen = Getint("mountains", astring, 0);
-
-                    var value = astring.Split(' ')[1].Trim();
-                    if (value.Equals("false", StringComparison.OrdinalIgnoreCase))
+                    // Check for mountains(false) first
+                    if (astring.Contains("false", StringComparison.OrdinalIgnoreCase))
                     {
                         Medium.drawMountains = false;
                     }
-                    else if (int.TryParse(value, out var mgenValue))
-                    {
-                        Medium.Mgen = mgenValue; // Set mountain generation to the specified number
-                    }
                     else
                     {
-                        devConsole.Log($"Invalid value for 'mountains': {value}", "warning");
+                        Medium.Mgen = Getint("mountains", astring, 0);
                     }
                 }
                 if (astring.StartsWith("set"))

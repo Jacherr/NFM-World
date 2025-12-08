@@ -18,9 +18,15 @@ namespace NFMWorld.Mad
             console.RegisterCommand("quit", (c, args) => ExitApplication(c));
             console.RegisterCommand("fov", SetFov);
             console.RegisterCommand("followy", SetFollowY);
+            console.RegisterCommand("car", SwitchCar);
 
             //im sobbing
             console.RegisterCommand("calc", (c, args) => OpenCalculator(c));
+            
+            // argument autocompleters
+            console.RegisterArgumentAutocompleter("car", (args) => new List<string>(GameSparker.CarRads));
+            console.RegisterArgumentAutocompleter("create", (args) => new List<string>(GameSparker.StageRads));
+            console.RegisterArgumentAutocompleter("map", (args) => GameSparker.GetAvailableStages());
         }
 
         private static void OpenCalculator(DevConsole console)
@@ -117,6 +123,33 @@ namespace NFMWorld.Mad
             var stageName = args[0];
             GameSparker.Loadstage(stageName);
             console.Log($"Switched to stage '{stageName}'");
+
+            GameSparker.cars_in_race.Clear();
+            GameSparker.cars_in_race[GameSparker.playerCarIndex] = new Car(new Stat(GameSparker.playerCarID), GameSparker.playerCarID,  GameSparker.cars[GameSparker.playerCarID], 0, 0);
+        }
+
+        private static void SwitchCar(DevConsole console, string[] args)
+        {
+            if (args.Length < 1)
+            {
+                console.Log("Usage: car <car_id>");
+                return;
+            }
+
+            var carId = args[0];
+            var id = GameSparker.GetModel(carId, true);
+
+            if (id == -1)
+            {
+                console.Log($"Car '{carId}' not found.", "warning");
+                return;
+            }
+
+            GameSparker.cars_in_race.Clear();
+            GameSparker.playerCarID = id;
+            GameSparker.cars_in_race[GameSparker.playerCarIndex] = new Car(new Stat(id), id,  GameSparker.cars[id], 0, 0);
+            
+            console.Log($"Switched to car '{carId}'");
         }
         
 

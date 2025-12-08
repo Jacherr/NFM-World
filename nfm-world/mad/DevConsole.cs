@@ -21,6 +21,7 @@ namespace NFMWorld.Mad
         // Autocomplete state
         private List<string> _autocompleteMatches = new();
         private int _autocompleteIndex = -1;
+        private readonly Dictionary<string, Func<string[], List<string>>> _argumentAutocompleters = new();
 
         public DevConsole()
         {
@@ -59,6 +60,11 @@ namespace NFMWorld.Mad
         public void RegisterCommand(string name, Action<DevConsole, string[]> action)
         {
             _commands[name] = action;
+        }
+
+        public void RegisterArgumentAutocompleter(string commandName, Func<string[], List<string>> autocompleter)
+        {
+            _argumentAutocompleters[commandName] = autocompleter;
         }
 
         public IEnumerable<string> GetCommandNames()
@@ -311,25 +317,35 @@ namespace NFMWorld.Mad
                 
                 if (ImGui.Begin("##Autocomplete", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoFocusOnAppearing | ImGuiWindowFlags.NoInputs))
                 {
-                    for (int i = 0; i < _autocompleteMatches.Count; i++)
+                    if (ImGui.BeginChild("##AutocompleteScroll", new System.Numerics.Vector2(0, 0), ImGuiChildFlags.None, ImGuiWindowFlags.None))
                     {
-                        bool isSelected = i == _autocompleteIndex;
-                        
-                        if (isSelected)
+                        for (int i = 0; i < _autocompleteMatches.Count; i++)
                         {
-                            // Draw selection background
-                            var drawList = ImGui.GetWindowDrawList();
-                            var textPos = ImGui.GetCursorScreenPos();
-                            var textSize = ImGui.CalcTextSize(_autocompleteMatches[i]);
-                            drawList.AddRectFilled(
-                                new System.Numerics.Vector2(textPos.X - 4, textPos.Y),
-                                new System.Numerics.Vector2(textPos.X + textSize.X + 4, textPos.Y + textSize.Y),
-                                ImGui.GetColorU32(new System.Numerics.Vector4(0.3f, 0.3f, 0.8f, 0.6f))
-                            );
+                            bool isSelected = i == _autocompleteIndex;
+                            
+                            if (isSelected)
+                            {
+                                // Draw selection background
+                                var drawList = ImGui.GetWindowDrawList();
+                                var textPos = ImGui.GetCursorScreenPos();
+                                var textSize = ImGui.CalcTextSize(_autocompleteMatches[i]);
+                                drawList.AddRectFilled(
+                                    new System.Numerics.Vector2(textPos.X - 4, textPos.Y),
+                                    new System.Numerics.Vector2(textPos.X + textSize.X + 4, textPos.Y + textSize.Y),
+                                    ImGui.GetColorU32(new System.Numerics.Vector4(0.3f, 0.3f, 0.8f, 0.6f))
+                                );
+                            }
+                            
+                            ImGui.Text(_autocompleteMatches[i]);
+                            
+                            // Auto-scroll to selected item
+                            if (isSelected)
+                            {
+                                ImGui.SetScrollHereY(0.5f);
+                            }
                         }
-                        
-                        ImGui.Text(_autocompleteMatches[i]);
                     }
+                    ImGui.EndChild();
                 }
                 ImGui.End();
                 
@@ -346,21 +362,55 @@ namespace NFMWorld.Mad
             if (string.IsNullOrWhiteSpace(_currentInput))
                 return;
             
-            // Get the first word (command part)
+            // Split input into parts
+            var parts = _currentInput.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             var firstSpace = _currentInput.IndexOf(' ');
-            var prefix = firstSpace >= 0 ? _currentInput.Substring(0, firstSpace) : _currentInput;
             
-            // Find all matching commands
-            foreach (var cmd in _commands.Keys)
+            // If no space yet, autocomplete command names
+            if (firstSpace < 0)
             {
-                if (cmd.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                var prefix = parts.Length > 0 ? parts[0] : string.Empty;
+                
+                // Find all matching commands
+                foreach (var cmd in _commands.Keys)
                 {
-                    _autocompleteMatches.Add(cmd);
+                    if (cmd.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                    {
+                        _autocompleteMatches.Add(cmd);
+                    }
+                }
+                
+                // Sort command matches alphabetically
+                _autocompleteMatches.Sort();
+            }
+            // If we have a space, we're in argument completion mode
+            else if (parts.Length > 0)
+            {
+                var command = parts[0];
+                var args = parts.Length > 1 ? parts[1..] : Array.Empty<string>();
+                var currentArg = _currentInput.EndsWith(' ') ? string.Empty : (args.Length > 0 ? args[^1] : string.Empty);
+                
+                // Check if this command has an argument autocompleter
+                if (_argumentAutocompleters.TryGetValue(command, out var autocompleter))
+                {
+                    var suggestions = autocompleter(args);
+                    
+                    // Filter suggestions based on current partial argument
+                    foreach (var suggestion in suggestions)
+                    {
+                        if (string.IsNullOrEmpty(currentArg) || suggestion.StartsWith(currentArg, StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Build the full command with this suggestion
+                            var previousArgs = args.Length > 0 && !_currentInput.EndsWith(' ') ? args[..^1] : args;
+                            var fullCommand = command + " " + string.Join(" ", previousArgs);
+                            if (previousArgs.Length > 0) fullCommand += " ";
+                            _autocompleteMatches.Add(fullCommand + suggestion);
+                        }
+                    }
+                    
+                    // Don't sort - argument completers may have custom sorting (e.g., natural sort for numbers)
                 }
             }
-            
-            // Sort matches alphabetically
-            _autocompleteMatches.Sort();
             
             // Set initial selection to first match
             if (_autocompleteMatches.Count > 0)

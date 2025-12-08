@@ -1834,7 +1834,8 @@ public class Mad
         else
             xneg = 1;
 
-        Console.WriteLine("x: " + airx + ", z: " + airz + ", sum: " + Medium.Sin(Pxy) + ", sum2: " + Medium.Sin(Pzy));
+        // oteek: temporarily commented it due to console spam
+        //Console.WriteLine("x: " + airx + ", z: " + airz + ", sum: " + Medium.Sin(Pxy) + ", sum2: " + Medium.Sin(Pzy));
 
         // CHK13
         // car sliding fix by jacher: do not adjust to tickrate
