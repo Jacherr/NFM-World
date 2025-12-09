@@ -185,8 +185,10 @@ public class Medium
     public static bool drawMountains = true;
     public static bool drawClouds = true;
     public static bool drawStars = true;
+    public static bool drawPolys = true;
 
     public static int FollowYOffset = 0;
+    public static int FollowZOffset = 0;
 
     static Medium()
     {
@@ -726,9 +728,7 @@ public class Medium
                 }
             }
             if (Lightson)
-            {
-                Drawstars();
-            }
+                Drawstars();    // needs fixing
 
             Drawmountains();
             Drawclouds();
@@ -751,6 +751,7 @@ public class Medium
 
     private static void Drawclouds()
     {
+        if (!drawClouds) return;
         for (var i = 0; i < _noc; i++)
         {
             var i104 = Cx + (int) ((_clx[i] - X / 20 - Cx) * Cos(Xz) - (_clz[i] - Z / 20 - Cz) * Sin(Xz));
@@ -1064,6 +1065,7 @@ public class Medium
 
     private static void Drawmountains()
     {
+        if (!drawMountains) return;
         for (var i = 0; i < _nmt; i++)
         {
             var i185 = _mrd[i];
@@ -1293,8 +1295,9 @@ public class Medium
         }
         i += _bcxz;
         Xz = -i;
-        X = conto.X - Cx + (int) (-(conto.Z - 800 - conto.Z) * Sin(i));
-        Z = conto.Z - Cz + (int) ((conto.Z - 800 - conto.Z) * Cos(i));
+        var cameraDistance = -800 - FollowZOffset;
+        X = conto.X - Cx + (int) (-cameraDistance * Sin(i));
+        Z = conto.Z - Cz + (int) (cameraDistance * Cos(i));
         Y = conto.Y - 250 - Cy - FollowYOffset;
     }
 
@@ -1596,6 +1599,8 @@ public class Medium
 
     public static void Groundpolys()
     {
+        if (!drawPolys) return;
+
         var i = (X - _sgpx) / 1200 - 12;
         if (i < 0)
         {
@@ -2265,7 +2270,7 @@ public class Medium
         return Rand[_trn] / 10.0F;
     }
 
-    internal static void Setcloads(int i, int i252, int i253, int i254, int i255)
+    internal static void Setclouds(int i, int i252, int i253, int i254, int i255)
     {
         if (i254 < 0)
         {

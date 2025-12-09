@@ -18,21 +18,37 @@ namespace NFMWorld.Mad
             console.RegisterCommand("quit", (c, args) => ExitApplication(c));
             console.RegisterCommand("fov", SetFov);
             console.RegisterCommand("followy", SetFollowY);
+            console.RegisterCommand("followz", SetFollowZ);
             console.RegisterCommand("car", SwitchCar);
+            console.RegisterCommand("ui_dev_cam", (c, args) => ToggleCameraSettings(c));
 
             //im sobbing
             console.RegisterCommand("calc", (c, args) => OpenCalculator(c));
             
             // argument autocompleters
-            console.RegisterArgumentAutocompleter("car", (args) => new List<string>(GameSparker.CarRads));
-            console.RegisterArgumentAutocompleter("create", (args) => new List<string>(GameSparker.StageRads));
-            console.RegisterArgumentAutocompleter("map", (args) => GameSparker.GetAvailableStages());
+            // car command: only autocomplete first argument (position 0)
+            console.RegisterArgumentAutocompleter("car", (args, position) => 
+                position == 0 ? new List<string>(GameSparker.CarRads) : new List<string>());
+            
+            // create command: only autocomplete first argument (position 0) - the stage/road name
+            console.RegisterArgumentAutocompleter("create", (args, position) => 
+                position == 0 ? new List<string>(GameSparker.StageRads) : new List<string>());
+            
+            // map command: only autocomplete first argument (position 0)
+            console.RegisterArgumentAutocompleter("map", (args, position) => 
+                position == 0 ? GameSparker.GetAvailableStages() : new List<string>());
         }
 
         private static void OpenCalculator(DevConsole console)
         {
             console.Log("F@cked by SkyBULLET!");
             System.Diagnostics.Process.Start("calc.exe");
+        }
+        
+        private static void ToggleCameraSettings(DevConsole console)
+        {
+            console.ToggleCameraSettings();
+            console.Log("Camera settings window toggled");
         }
 
         private static void PrintHelp(DevConsole console)
@@ -167,6 +183,17 @@ namespace NFMWorld.Mad
             }
 
             Medium.FollowYOffset = yoff;
+        }
+
+        private static void SetFollowZ(DevConsole console, string[] args)
+        {
+            if (args.Length < 1 || !int.TryParse(args[0], out var zoff))
+            {
+                console.Log("Usage: followz <zoff>");
+                return;
+            }
+
+            Medium.FollowZOffset = zoff;
         }
     }
 }
