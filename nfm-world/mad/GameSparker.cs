@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using NFMWorld.Mad.Interp;
 using NFMWorld.Util;
-using ImGuiNET;
+using NFMWorld.Mad.UI;
 
 namespace NFMWorld.Mad;
 
@@ -9,10 +9,23 @@ public class GameSparker
 {
     public static readonly float PHYSICS_MULTIPLIER = 21.4f/63f;
 
-    private static MicroStopwatch timer;
-    public static UnlimitedArray<ContO> cars;
-    public static UnlimitedArray<ContO> stage_parts;
-    public static UnlimitedArray<ContO> placed_stage_elements;
+    public static readonly string version = "NFM-World master-2025.12.11";
+
+    public enum GameState
+    {
+        Menu,
+        InGame
+    }
+
+    public static GameState CurrentState = GameState.Menu;
+    public static MainMenu? MainMenu = null;
+    public static MessageWindow MessageWindow = new();
+    public static SettingsMenu SettingsMenu = new();
+
+    private static MicroStopwatch timer = null!;
+    public static UnlimitedArray<ContO> cars = null!;
+    public static UnlimitedArray<ContO> stage_parts = null!;
+    public static UnlimitedArray<ContO> placed_stage_elements = null!;
 
     public static DevConsole devConsole = new();
 
@@ -65,6 +78,11 @@ public class GameSparker
         if (key == Keys.F1)
         {
             devConsole.Toggle();
+            return;
+        }
+
+        if (CurrentState == GameState.Menu)
+        {
             return;
         }
 
@@ -131,6 +149,11 @@ public class GameSparker
     public static void KeyReleased(Keys key)
     {
         DebugKeyStates[key] = false;
+        
+        if (CurrentState == GameState.Menu)
+        {
+            return;
+        }
         
         //if (!_exwist)
         //{
@@ -264,7 +287,7 @@ public class GameSparker
         timer.Start();
         new Medium();
 
-        Medium.D();
+        //Medium.D();
 
         //Medium.FocusPoint -= 100;
         
@@ -284,9 +307,15 @@ public class GameSparker
             stage_parts[id] = new ContO(ais);
         });
 
-        Loadstage("nfm2/15_dwm");
-
-        cars_in_race[playerCarIndex] = new Car(new Stat(14), 14, cars[14], 0, 0);
+        // init menu
+        CurrentState = GameState.Menu;
+        MainMenu = new MainMenu();
+        
+        // Initialize SettingsMenu writer
+        SettingsMenu.Writer = Writer;
+        
+        // load user config
+        SettingsMenu.LoadConfig();
 
         for (var i = 0; i < StageRads.Length; i++) {
             if (stage_parts[i] == null) {
@@ -300,9 +329,21 @@ public class GameSparker
             }
         }
 
-        devConsole.ExecuteCommand("ui_dev_cam");
+        //devConsole.ExecuteCommand("ui_dev_cam");
 
         Medium.Fadfrom(5000);
+    }
+
+    public static void StartGame()
+    {
+        // temp
+        CurrentState = GameState.InGame;
+        MainMenu = null;
+
+        Loadstage("nfm2/15_dwm");
+        cars_in_race[playerCarIndex] = new Car(new Stat(14), 14, cars[14], 0, 0);
+        
+        Console.WriteLine("Game started!");
     }
 
     internal static int Getint(string astring, string string4, int i)
@@ -708,6 +749,12 @@ public class GameSparker
 
     public static void GameTick()
     {
+        // only tick game logic when actually in-game
+        if (CurrentState != GameState.InGame)
+        {
+            return;
+        }
+
         cars_in_race[playerCarIndex].Drive();
         switch (currentViewMode)
         {
@@ -725,6 +772,12 @@ public class GameSparker
 
     public static void Render()
     {
+        // only render game when in-game state
+        if (CurrentState != GameState.InGame)
+        {
+            return;
+        }
+
         Medium.D();
 
         var renderQueue = new UnlimitedArray<ContO>(placed_stage_elements.Count);
@@ -766,8 +819,10 @@ public class GameSparker
         }
     }
 
-    public static void RenderDevConsole()
+    public static void RenderImgui()
     {
         devConsole.Render();
+        MessageWindow.Render();
+        SettingsMenu.Render();
     }
 }

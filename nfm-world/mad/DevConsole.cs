@@ -30,7 +30,7 @@ namespace NFMWorld.Mad
         public DevConsole()
         {
             DevConsoleCommands.RegisterAll(this);
-            Log("NFM-World master-2025.12.10", "info");
+            Log(GameSparker.version, "info");
         }
 
         public void Toggle()
@@ -84,6 +84,7 @@ namespace NFMWorld.Mad
         public void ClearLog()
         {
             _outputLog.Clear();
+            Log(GameSparker.version, "info");
         }
 
         public void Log(string message, string logLevel = "default")

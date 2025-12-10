@@ -7,6 +7,8 @@ namespace NFMWorld.Mad
     {
         public static void RegisterAll(DevConsole console)
         {
+
+            // general
             console.RegisterCommand("help", (c, args) => PrintHelp(c));
             console.RegisterCommand("clear", (c, args) => ClearLog(c));
             console.RegisterCommand("speed", SetSpeed);
@@ -20,7 +22,16 @@ namespace NFMWorld.Mad
             console.RegisterCommand("followy", SetFollowY);
             console.RegisterCommand("followz", SetFollowZ);
             console.RegisterCommand("car", SwitchCar);
+
+            console.RegisterCommand("disconnect", (c, args) => Disconnect(c));
+
+            //ui
             console.RegisterCommand("ui_dev_cam", (c, args) => ToggleCameraSettings(c));
+            console.RegisterCommand("ui_dev_msg", ShowMessageTest);
+
+            //cheats
+            //console.RegisterCommand("sv_cheats", SVCheats);
+            //console.RegisterCommand("god", Godmode);
 
             //im sobbing
             console.RegisterCommand("calc", (c, args) => OpenCalculator(c));
@@ -194,6 +205,79 @@ namespace NFMWorld.Mad
             }
 
             Medium.FollowZOffset = zoff;
+        }
+
+        private static void ShowMessageTest(DevConsole console, string[] args)
+        {
+            if (args.Length == 0)
+            {
+                console.Log("Usage: msg <ok|yesno|okcancel|custom>");
+                return;
+            }
+
+            switch (args[0].ToLower())
+            {
+                case "ok":
+                    GameSparker.MessageWindow.ShowMessage(
+                        "Information",
+                        "This is a simple message with an OK button.",
+                        result => console.Log($"User clicked: {result}")
+                    );
+                    break;
+
+                case "yesno":
+                    GameSparker.MessageWindow.ShowYesNo(
+                        "Confirmation",
+                        "Do you want to continue?",
+                        result => 
+                        {
+                            console.Log($"User clicked: {result}");
+                            if (result == UI.MessageWindow.MessageResult.Yes)
+                            {
+                                console.Log("User confirmed!");
+                            }
+                            else
+                            {
+                                console.Log("User declined.");
+                            }
+                        }
+                    );
+                    break;
+
+                case "okcancel":
+                    GameSparker.MessageWindow.ShowOKCancel(
+                        "Warning",
+                        "Are you sure you want to proceed? This action cannot be undone.",
+                        result => console.Log($"User clicked: {result}")
+                    );
+                    break;
+
+                case "custom":
+                    GameSparker.MessageWindow.ShowCustom(
+                        "Choose Option",
+                        "Please select one of the following options:",
+                        new[] { "Option A", "Option B", "Option C" },
+                        result => console.Log($"User selected: {result}")
+                    );
+                    break;
+
+                default:
+                    console.Log("Invalid argument. Use: ok, yesno, okcancel, or custom");
+                    break;
+            }
+        }
+
+        private static void Disconnect(DevConsole console)
+        {
+            if (GameSparker.CurrentState == GameSparker.GameState.Menu)
+            {
+                console.Log("Not in game.");
+                return;
+            }
+
+            GameSparker.CurrentState = GameSparker.GameState.Menu;
+            GameSparker.MainMenu = new UI.MainMenu();
+            console.Log("Returned to main menu.");
         }
     }
 }

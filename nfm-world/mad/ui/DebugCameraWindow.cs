@@ -49,7 +49,7 @@ namespace NFMWorld.Mad.UI
                 
                 // Follow Y Offset
                 ImGui.Text("Follow Y Offset:");
-                if (ImGui.SliderInt("##FollowY", ref _followY, -500, 500))
+                if (ImGui.SliderInt("##FollowY", ref _followY, -160, 500))
                 {
                     Medium.FollowYOffset = _followY;
                 }

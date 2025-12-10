@@ -82,12 +82,12 @@ public class ImGuiController : IDisposable
         // Buttons (dark with orange on hover)
         colors[(int)ImGuiCol.Button] = new Vector4(0.15f, 0.12f, 0.25f, 1.0f);
         colors[(int)ImGuiCol.ButtonHovered] = new Vector4(0.25f, 0.20f, 0.35f, 1.0f);
-        colors[(int)ImGuiCol.ButtonActive] = new Vector4(0.9f, 0.5f, 0.1f, 0.8f);
+        colors[(int)ImGuiCol.ButtonActive] = new Vector4(0.5f, 0.3f, 0.01f, 0.8f);
         
         // Headers
         colors[(int)ImGuiCol.Header] = new Vector4(0.20f, 0.15f, 0.30f, 1.0f);
         colors[(int)ImGuiCol.HeaderHovered] = new Vector4(0.9f, 0.5f, 0.1f, 0.6f);
-        colors[(int)ImGuiCol.HeaderActive] = new Vector4(0.9f, 0.5f, 0.1f, 0.8f);
+        colors[(int)ImGuiCol.HeaderActive] = new Vector4(0.5f, 0.3f, 0.01f, 0.8f);
         
         // Tabs
         colors[(int)ImGuiCol.Tab] = new Vector4(0.15f, 0.12f, 0.25f, 1.0f);
