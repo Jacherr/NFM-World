@@ -37,7 +37,6 @@ public class GameSparker
     {
         Follow,
         Around,
-        Watch
     }
     private static ViewMode currentViewMode = ViewMode.Follow;
     /////////////////////////////////
@@ -264,6 +263,7 @@ public class GameSparker
         timer.Start();
         new Medium();
 
+        Medium.Groundpolys();
         Medium.D();
 
         //Medium.FocusPoint -= 100;
@@ -299,8 +299,6 @@ public class GameSparker
                 throw new Exception("No valid ContO (Vehicle) has been assigned to ID " + i + " (" + StageRads[i] + ")");
             }
         }
-
-        devConsole.ExecuteCommand("ui_dev_cam");
 
         Medium.Fadfrom(5000);
     }
@@ -345,8 +343,6 @@ public class GameSparker
         Medium.Trk = 0;
         Medium.drawClouds = true;
         Medium.drawMountains = true;
-        Medium.drawStars = true;
-        Medium.drawPolys = true;
         var i = 0;
         var k = 100;
         var l = 0;
@@ -375,15 +371,8 @@ public class GameSparker
                 }
                 if (astring.StartsWith("polys"))
                 {
-                    if (astring.Contains("false", StringComparison.OrdinalIgnoreCase))
-                    {
-                        Medium.drawPolys = false;
-                    }
-                    else
-                    {
-                        Medium.Setpolys(Getint("polys", astring, 0), Getint("polys", astring, 1),
+                    Medium.Setpolys(Getint("polys", astring, 0), Getint("polys", astring, 1),
                         Getint("polys", astring, 2));
-                    }
                 }
                 if (astring.StartsWith("fog"))
                 {
@@ -396,15 +385,8 @@ public class GameSparker
                 }
                 if (astring.StartsWith("clouds"))
                 {
-                    if (astring.Contains("false", StringComparison.OrdinalIgnoreCase))
-                    {
-                        Medium.drawClouds = false;
-                    }
-                    else
-                    {
-                        Medium.Setclouds(Getint("clouds", astring, 0), Getint("clouds", astring, 1),
-                            Getint("clouds", astring, 2), Getint("clouds", astring, 3), Getint("clouds", astring, 4));
-                    }
+                    Medium.Setcloads(Getint("clouds", astring, 0), Getint("clouds", astring, 1),
+                        Getint("clouds", astring, 2), Getint("clouds", astring, 3), Getint("clouds", astring, 4));
                 }
                 if (astring.StartsWith("density"))
                 {
@@ -441,24 +423,12 @@ public class GameSparker
                 if (astring.StartsWith("set"))
                 {
                     var setindex = Getint("set", astring, 0);
+
                     setindex -= _indexOffset;
-                    var setheight = Medium.Ground - stage_parts[setindex].Grat;
-                    
-                    var hasCustomY = astring.Split(',').Length >= 5;
-                    if (hasCustomY)
-                    {
-                        setheight = Getint("set", astring, 4);
-                        placed_stage_elements[_stagePartCount] = new ContO(stage_parts[setindex], Getint("set", astring, 1),
-                            setheight, Getint("set", astring, 2),
-                            Getint("set", astring, 3));
-                    }
-                    else
-                    {
-                        placed_stage_elements[_stagePartCount] = new ContO(stage_parts[setindex], Getint("set", astring, 1),
-                            setheight, Getint("set", astring, 2),
-                            Getint("set", astring, 3));
-                    }
-                    if (astring.Contains(")p"))     //AI tags
+                    placed_stage_elements[_stagePartCount] = new ContO(stage_parts[setindex], Getint("set", astring, 1),
+                        Medium.Ground - stage_parts[setindex].Grat, Getint("set", astring, 2),
+                        Getint("set", astring, 3));
+                    if (astring.Contains(")p"))
                     {
                         // CheckPoints.X[CheckPoints.N] = Getint("set", astring, 1);
                         // CheckPoints.Z[CheckPoints.N] = Getint("set", astring, 2);
@@ -497,22 +467,9 @@ public class GameSparker
                 {
                     var chkindex = Getint("chk", astring, 0);
                     chkindex -= _indexOffset;
-
                     var chkheight = Medium.Ground - stage_parts[chkindex].Grat;
-
-                    // Check if optional Y coordinate is provided (5 parameters instead of 4)
-                    var hasCustomY = astring.Split(',').Length >= 5;
-                    if (hasCustomY)
-                    {
-                        chkheight = Getint("chk", astring, 4);
-                        placed_stage_elements[_stagePartCount] = new ContO(stage_parts[chkindex], Getint("chk", astring, 1), chkheight,
-                            Getint("chk", astring, 2), Getint("chk", astring, 3));
-                    }
-                    else
-                    {
-                        placed_stage_elements[_stagePartCount] = new ContO(stage_parts[chkindex], Getint("chk", astring, 1), chkheight,
-                            Getint("chk", astring, 2), Getint("chk", astring, 3));
-                    }
+                    placed_stage_elements[_stagePartCount] = new ContO(stage_parts[chkindex], Getint("chk", astring, 1), chkheight,
+                        Getint("chk", astring, 2), Getint("chk", astring, 3));
                     
                     // CheckPoints.X[CheckPoints.N] = Getint("chk", astring, 1);
                     // CheckPoints.Z[CheckPoints.N] = Getint("chk", astring, 2);
@@ -555,7 +512,6 @@ public class GameSparker
                     //CheckPoints.Fn++;
                     _stagePartCount++;
                 }
-                // oteek: FUCK PILES IM NGL
                 // if (!CheckPoints.Notb && astring.StartsWith("pile"))
                 // {
                 //     _stageContos[_nob] = new ContO(Getint("pile", astring, 0), Getint("pile", astring, 1),
@@ -692,9 +648,12 @@ public class GameSparker
                 }
             }
             Medium.Newpolys(k, i - k, m, l - m, _stagePartCount);
-            Medium.Newmountains(k, i, m, l);
-            Medium.Newclouds(k, i, m, l);
-            Medium.Newstars();
+            if (Medium.drawMountains)
+                Medium.Newmountains(k, i, m, l);
+            if (Medium.drawClouds)
+                Medium.Newclouds(k, i, m, l);
+            if (Medium.drawStars)
+                Medium.Newstars();
             Trackers.Devidetrackers(k, i - k, m, l - m);
         }
         catch (Exception exception)
@@ -717,9 +676,6 @@ public class GameSparker
             case ViewMode.Around:
                 Medium.Around(cars_in_race[playerCarIndex].Conto, true);
                 break;
-            case ViewMode.Watch:
-                Medium.Watch(cars_in_race[playerCarIndex].Conto, cars_in_race[playerCarIndex].Mad.Mxz);
-                break;
         }
     }
 
@@ -739,7 +695,10 @@ public class GameSparker
             }
             else if (car.Conto.Dist == 0)
             {
+                int originalY = car.Conto.Y;
+                car.Conto.Y -= (int)(car.Conto.Grat * PHYSICS_MULTIPLIER);
                 car.Conto.D();
+                car.Conto.Y = originalY;
             }
         }
         
@@ -762,7 +721,14 @@ public class GameSparker
         // render all objects in the sorted order
         foreach (var obj in renderQueue)
         {
-            obj.D();
+            if(obj.Keyx[0] != 0)
+            {
+                int originalY = obj.Y;
+                obj.Y -= (int)(obj.Grat * PHYSICS_MULTIPLIER);
+                obj.D();
+                obj.Y = originalY;
+                
+            } else obj.D();
         }
     }
 
