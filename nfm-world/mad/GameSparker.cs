@@ -385,7 +385,7 @@ public class GameSparker
                 }
                 if (astring.StartsWith("clouds"))
                 {
-                    Medium.Setcloads(Getint("clouds", astring, 0), Getint("clouds", astring, 1),
+                    Medium.Setclouds(Getint("clouds", astring, 0), Getint("clouds", astring, 1),
                         Getint("clouds", astring, 2), Getint("clouds", astring, 3), Getint("clouds", astring, 4));
                 }
                 if (astring.StartsWith("density"))
