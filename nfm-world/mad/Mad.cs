@@ -452,7 +452,7 @@ public class Mad
         }
 
 
-        var bottomy = conto.Grat * _tickRate;
+        var bottomy = conto.Grat;
         if (zyinv)
         {
             if (xyinv)

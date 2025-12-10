@@ -695,10 +695,7 @@ public class GameSparker
             }
             else if (car.Conto.Dist == 0)
             {
-                int originalY = car.Conto.Y;
-                car.Conto.Y -= (int)(car.Conto.Grat * PHYSICS_MULTIPLIER);
                 car.Conto.D();
-                car.Conto.Y = originalY;
             }
         }
         
@@ -721,14 +718,7 @@ public class GameSparker
         // render all objects in the sorted order
         foreach (var obj in renderQueue)
         {
-            if(obj.Keyx[0] != 0)
-            {
-                int originalY = obj.Y;
-                obj.Y -= (int)(obj.Grat * PHYSICS_MULTIPLIER);
-                obj.D();
-                obj.Y = originalY;
-                
-            } else obj.D();
+            obj.D();
         }
     }
 
