@@ -2,6 +2,7 @@ using ImGuiNET;
 using System.Numerics;
 using System.IO;
 using System.Globalization;
+using NFMWorld.Util;
 
 namespace NFMWorld.Mad.UI;
 
@@ -17,10 +18,33 @@ public class SettingsMenu
     
     private readonly string[] _tabNames = { "Keyboard", "Video", "Audio", "Game" };
 
+    // Keyboard bindings
+    public class KeyBindings
+    {
+        public Keys Accelerate { get; set; } = Keys.Up;
+        public Keys Brake { get; set; } = Keys.Down;
+        public Keys TurnLeft { get; set; } = Keys.Left;
+        public Keys TurnRight { get; set; } = Keys.Right;
+        public Keys Handbrake { get; set; } = Keys.Space;
+        public Keys Enter { get; set; } = Keys.Enter;
+        public Keys LookLeft { get; set; } = Keys.Z;
+        public Keys LookBack { get; set; } = Keys.X;
+        public Keys LookRight { get; set; } = Keys.C;
+        public Keys ToggleMusic { get; set; } = Keys.M;
+        public Keys ToggleSFX { get; set; } = Keys.N;
+        public Keys ToggleArrace { get; set; } = Keys.A;
+        public Keys ToggleRadar { get; set; } = Keys.S;
+        public Keys CycleView { get; set; } = Keys.V;
+    }
+
+    public static KeyBindings Bindings = new KeyBindings();
+    private string? _capturingAction = null;
+    private int _selectedBindingIndex = -1;
+
     // Video settings
     private int _selectedRenderer = 0;
     private readonly string[] _renderers = { "SkiaSharp" };
-    private int _selectedResolution = 3;
+    private int _selectedResolution = 2;
     private readonly string[] _resolutions = { "800 x 600", "1024 x 768", "1280 x 720", "1280 x 1024", "1920 x 1080", "2560 x 1440" };
     private int _selectedDisplayMode = 1;
     private readonly string[] _displayModes = { "Fullscreen", "Windowed", "Borderless" };
@@ -43,6 +67,8 @@ public class SettingsMenu
     private string _settingMessage = "";
 
     public bool IsOpen => _isOpen;
+
+    Vector4 RGB(int r, int g, int b, float a = 1.0f) => new Vector4(r / 255f, g / 255f, b / 255f, a);
 
     public void Open()
     {
@@ -138,6 +164,58 @@ public class SettingsMenu
         ImGui.SliderFloat("##EffectsVolume", ref _effectsVolume, 0.0f, 1.0f, "%.2f");
     }
 
+    public void HandleKeyCapture(Keys key)
+    {
+        if (_capturingAction == null || !_isOpen)
+            return;
+
+        // Cancel capture on ESC
+        if (key == Keys.Escape)
+        {
+            _capturingAction = null;
+            _selectedBindingIndex = -1;
+            return;
+        }
+
+        // Don't allow binding F1 (console key)
+        if (key == Keys.F1)
+        {
+            return;
+        }
+
+        // Clear any existing binding that uses this key
+        var allProperties = typeof(KeyBindings).GetProperties();
+        foreach (var prop in allProperties)
+        {
+            if (prop.Name != _capturingAction && prop.GetValue(Bindings) is Keys existingKey && existingKey == key)
+            {
+                // Clear the conflicting binding by setting it to None
+                prop.SetValue(Bindings, Keys.None);
+                Writer?.WriteLine($"Cleared {prop.Name} (was {key})", "debug");
+            }
+        }
+
+        // Set the new binding
+        var property = typeof(KeyBindings).GetProperty(_capturingAction);
+        if (property != null)
+        {
+            property.SetValue(Bindings, key);
+            Writer?.WriteLine($"Bound {_capturingAction} to {key}", "debug");
+        }
+
+        _capturingAction = null;
+        _selectedBindingIndex = -1;
+    }
+
+    private void ResetKeyBindings()
+    {
+        Bindings = new KeyBindings();
+        _capturingAction = null;
+        _selectedBindingIndex = -1;
+    }
+
+    public bool IsCapturingKey() => _capturingAction != null;
+
     private void DrawVideoTab()
     {
         ImGui.Text("Video Settings");
@@ -181,9 +259,71 @@ public class SettingsMenu
 
     private void DrawKeyboardTab()
     {
-        ImGui.Text("Keyboard Settings");
+        ImGui.Text("Key Bindings");
         ImGui.Spacing();
-        ImGui.TextWrapped("Key binding configuration will be added here.");
+
+        if (ImGui.Button("Reset All to Defaults", new Vector2(-1, 0)))
+        {
+            GameSparker.MessageWindow.ShowYesNo("Reset Key Binds", "Are you sure you want to reset key binds to default?",
+            result => {
+                if (result == MessageWindow.MessageResult.Yes) {
+                    ResetKeyBindings();
+                }
+            });
+        }
+
+        ImGui.Spacing();
+        ImGui.Separator();
+        ImGui.Spacing();
+
+        // Draw key binding table
+        var bindings = new (string Action, string PropertyName, Keys Key)[] 
+        {
+            ("Accelerate", "Accelerate", Bindings.Accelerate),
+            ("Brake / Reverse", "Brake", Bindings.Brake),
+            ("Turn Left", "TurnLeft", Bindings.TurnLeft),
+            ("Turn Right", "TurnRight", Bindings.TurnRight),
+            ("Handbrake / Stunt", "Handbrake", Bindings.Handbrake),
+            //("Enter", "Enter", Bindings.Enter),       //iirc previously this would bring up pause menu in game and also used as keyboard navigation through menus, perhaps not needed to be able to be binded here
+            ("Look Back", "LookBack", Bindings.LookBack),
+            ("Look Left", "LookLeft", Bindings.LookLeft),
+            ("Look Right", "LookRight", Bindings.LookRight),
+            ("Toggle Music", "ToggleMusic", Bindings.ToggleMusic),
+            ("Toggle SFX", "ToggleSFX", Bindings.ToggleSFX),
+            ("Toggle Arrow Mode", "ToggleArrace", Bindings.ToggleArrace),
+            ("Toggle Radar", "ToggleRadar", Bindings.ToggleRadar),
+            ("Cycle View", "CycleView", Bindings.CycleView)
+        };
+
+        ImGui.Columns(2, "KeyBindings", true);
+        ImGui.SetColumnWidth(0, 200);
+        
+        for (int i = 0; i < bindings.Length; i++)
+        {
+            var (action, propName, key) = bindings[i];
+            
+            ImGui.Text(action);
+            ImGui.NextColumn();
+            
+            bool isCapturing = _capturingAction == propName;
+            string buttonLabel = isCapturing ? "Press any key..." : key.ToString();
+            
+            if (isCapturing)
+                ImGui.PushStyleColor(ImGuiCol.Button, RGB(128, 77, 3, 0.8f));
+            
+            if (ImGui.Button($"{buttonLabel}##{propName}", new Vector2(-1, 0)))
+            {
+                _capturingAction = propName;
+                _selectedBindingIndex = i;
+            }
+            
+            if (isCapturing)
+                ImGui.PopStyleColor();
+            
+            ImGui.NextColumn();
+        }
+        
+        ImGui.Columns(1);
     }
 
     private void DrawGameTab()
@@ -205,9 +345,14 @@ public class SettingsMenu
         ImGui.Spacing();
         if (ImGui.Button("Reset Camera Defaults", new Vector2(-1, 0)))
         {
-            _fov = 90.0f;
-            _followY = 0;
-            _followZ = 0;
+            GameSparker.MessageWindow.ShowYesNo("Reset Camera", "Are you sure you want to reset camera settings to default?",
+            result => {
+                if (result == MessageWindow.MessageResult.Yes) {
+                    _fov = 90.0f;
+                    _followY = 0;
+                    _followZ = 0;
+                }
+            });
         }
     }
 
@@ -237,6 +382,17 @@ public class SettingsMenu
         if (ImGui.Button("Apply", new Vector2(buttonWidth, 30)))
         {
             ApplySettings();
+        }
+
+        if (_capturingAction != null)
+        {
+            if (!string.IsNullOrEmpty(_settingMessage))
+            {
+                _settingMessage = "";
+            }
+            ImGui.Spacing();
+            ImGui.TextColored(new Vector4(1.0f, 0.7f, 0.2f, 1.0f), 
+                "Press any key to bind, or ESC to cancel...");
         }
 
         // Show message if settings were applied
@@ -323,6 +479,23 @@ public class SettingsMenu
                 cfgWriter.WriteLine($"camera_fov {_fov.ToString("F1", CultureInfo.InvariantCulture)}");
                 cfgWriter.WriteLine($"camera_follow_y {_followY}");
                 cfgWriter.WriteLine($"camera_follow_z {_followZ}");
+                cfgWriter.WriteLine();
+                
+                // Key bindings
+                cfgWriter.WriteLine("// Key Bindings");
+                cfgWriter.WriteLine($"key_accelerate {(int)Bindings.Accelerate}");
+                cfgWriter.WriteLine($"key_brake {(int)Bindings.Brake}");
+                cfgWriter.WriteLine($"key_turnleft {(int)Bindings.TurnLeft}");
+                cfgWriter.WriteLine($"key_turnright {(int)Bindings.TurnRight}");
+                cfgWriter.WriteLine($"key_handbrake {(int)Bindings.Handbrake}");
+                cfgWriter.WriteLine($"key_lookback {(int)Bindings.LookBack}");
+                cfgWriter.WriteLine($"key_lookleft {(int)Bindings.LookLeft}");
+                cfgWriter.WriteLine($"key_lookright {(int)Bindings.LookRight}");
+                cfgWriter.WriteLine($"key_togglemusic {(int)Bindings.ToggleMusic}");
+                cfgWriter.WriteLine($"key_togglesfx {(int)Bindings.ToggleSFX}");
+                cfgWriter.WriteLine($"key_togglearrace {(int)Bindings.ToggleArrace}");
+                cfgWriter.WriteLine($"key_toggleradar {(int)Bindings.ToggleRadar}");
+                cfgWriter.WriteLine($"key_cycleview {(int)Bindings.CycleView}");
             }
             
             Writer?.WriteLine($"Config saved to {configPath}", "debug");
@@ -339,13 +512,13 @@ public class SettingsMenu
         {
             string configPath = Path.Combine("data", "cfg", "config.cfg");
             
-            if (!File.Exists(configPath))
+            if (!System.IO.File.Exists(configPath))
             {
                 Writer?.WriteLine("No config file found, using defaults.", "warning");
                 return;
             }
             
-            string[] lines = File.ReadAllLines(configPath);
+            string[] lines = System.IO.File.ReadAllLines(configPath);
             
             foreach (string line in lines)
             {
@@ -404,6 +577,47 @@ public class SettingsMenu
                             break;
                         case "camera_follow_z":
                             _followZ = int.Parse(value);
+                            break;
+                        
+                        // Key bindings
+                        case "key_accelerate":
+                            Bindings.Accelerate = (Keys)int.Parse(value);
+                            break;
+                        case "key_brake":
+                            Bindings.Brake = (Keys)int.Parse(value);
+                            break;
+                        case "key_turnleft":
+                            Bindings.TurnLeft = (Keys)int.Parse(value);
+                            break;
+                        case "key_turnright":
+                            Bindings.TurnRight = (Keys)int.Parse(value);
+                            break;
+                        case "key_handbrake":
+                            Bindings.Handbrake = (Keys)int.Parse(value);
+                            break;
+                        case "key_lookback":
+                            Bindings.LookBack = (Keys)int.Parse(value);
+                            break;
+                        case "key_lookleft":
+                            Bindings.LookLeft = (Keys)int.Parse(value);
+                            break;
+                        case "key_lookright":
+                            Bindings.LookRight = (Keys)int.Parse(value);
+                            break;
+                        case "key_togglemusic":
+                            Bindings.ToggleMusic = (Keys)int.Parse(value);
+                            break;
+                        case "key_togglesfx":
+                            Bindings.ToggleSFX = (Keys)int.Parse(value);
+                            break;
+                        case "key_togglearrace":
+                            Bindings.ToggleArrace = (Keys)int.Parse(value);
+                            break;
+                        case "key_toggleradar":
+                            Bindings.ToggleRadar = (Keys)int.Parse(value);
+                            break;
+                        case "key_cycleview":
+                            Bindings.CycleView = (Keys)int.Parse(value);
                             break;
                     }
                 }

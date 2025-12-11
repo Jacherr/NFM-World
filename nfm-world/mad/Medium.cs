@@ -1255,22 +1255,32 @@ public class Medium
         }
         if (i27 != 0)
         {
-            if (i27 == 1)
+            if (i27 == 2)   //look right
             {
-                if (_bcxz < 180)
-                {
-                    _bcxz += i28;
+                if (_bcxz > -90) {
+                    //_bcxz -= i28;
+                    _bcxz = -90;
                 }
-                if (_bcxz > 180)
-                {
-                    _bcxz = 180;
+                if (_bcxz < -90) {
+                    _bcxz = -90;
                 }
             }
-            if (i27 == -1)
+            if (i27 == 3)   //look left
+            {
+                if (_bcxz < 90) {
+                    //_bcxz += i28;
+                    _bcxz = 90;
+                }
+                if (_bcxz > 90) {
+                    _bcxz = 90;
+                }
+            }
+            if (i27 == -1)  // look back
             {
                 if (_bcxz > -180)
                 {
-                    _bcxz -= i28;
+                    //_bcxz -= i28;
+                    _bcxz = -180;
                 }
                 if (_bcxz < -180)
                 {
@@ -1282,11 +1292,13 @@ public class Medium
         {
             if (_bcxz > 0)
             {
-                _bcxz -= i28;
+                //_bcxz -= i28;
+                _bcxz = 0;
             }
             else
             {
-                _bcxz += i28;
+                //_bcxz += i28;
+                _bcxz = 0;
             }
         }
         else if (_bcxz != 0)

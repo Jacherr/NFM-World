@@ -52,67 +52,73 @@ public class ImGuiController : IDisposable
         style.WindowBorderSize = 2.0f;
         style.FrameBorderSize = 2.0f;
         
-        // Colors
+        Vector4 RGB(int r, int g, int b, float a = 1.0f) => new Vector4(r / 255f, g / 255f, b / 255f, a);
+        
         var colors = style.Colors;
         
         // Windows and backgrounds
-        colors[(int)ImGuiCol.WindowBg] = new Vector4(0.12f, 0.10f, 0.18f, 0.95f);
-        colors[(int)ImGuiCol.ChildBg] = new Vector4(0.10f, 0.08f, 0.15f, 0.90f);
-        colors[(int)ImGuiCol.PopupBg] = new Vector4(0.10f, 0.08f, 0.15f, 0.95f);
-        colors[(int)ImGuiCol.MenuBarBg] = new Vector4(0.15f, 0.12f, 0.22f, 1.0f);
+        colors[(int)ImGuiCol.WindowBg] = RGB(31, 26, 46, 0.95f);          // Dark purple
+        colors[(int)ImGuiCol.ChildBg] = RGB(26, 20, 38, 0.90f);           // Darker purple
+        colors[(int)ImGuiCol.PopupBg] = RGB(26, 20, 38, 0.95f);           // Darker purple
+        colors[(int)ImGuiCol.MenuBarBg] = RGB(38, 31, 56, 1.0f);          // Medium purple
         
         // Borders
-        colors[(int)ImGuiCol.Border] = new Vector4(0.9f, 0.5f, 0.1f, 0.8f);
-        colors[(int)ImGuiCol.BorderShadow] = new Vector4(0.0f, 0.0f, 0.0f, 0.5f);
+        colors[(int)ImGuiCol.Border] = RGB(230, 128, 26, 0.8f);           // Orange
+        colors[(int)ImGuiCol.BorderShadow] = RGB(0, 0, 0, 0.5f);          // Black shadow
         
         // Text
-        colors[(int)ImGuiCol.Text] = new Vector4(1.0f, 0.75f, 0.2f, 1.0f);
-        colors[(int)ImGuiCol.TextDisabled] = new Vector4(0.6f, 0.45f, 0.15f, 1.0f);
+        colors[(int)ImGuiCol.Text] = RGB(255, 191, 51, 1.0f);             // Light orange/yellow
+        colors[(int)ImGuiCol.TextDisabled] = RGB(153, 115, 38, 1.0f);     // Dimmed orange
         
         // Title bar
-        colors[(int)ImGuiCol.TitleBg] = new Vector4(0.15f, 0.12f, 0.25f, 1.0f);
-        colors[(int)ImGuiCol.TitleBgActive] = new Vector4(0.20f, 0.15f, 0.35f, 1.0f);
-        colors[(int)ImGuiCol.TitleBgCollapsed] = new Vector4(0.12f, 0.10f, 0.20f, 0.75f);
+        colors[(int)ImGuiCol.TitleBg] = RGB(38, 31, 64, 1.0f);            // Dark purple
+        colors[(int)ImGuiCol.TitleBgActive] = RGB(51, 38, 89, 1.0f);      // Medium purple
+        colors[(int)ImGuiCol.TitleBgCollapsed] = RGB(31, 26, 51, 0.75f);  // Very dark purple
         
         // Frames (inputs, etc)
-        colors[(int)ImGuiCol.FrameBg] = new Vector4(0.15f, 0.12f, 0.22f, 0.9f);
-        colors[(int)ImGuiCol.FrameBgHovered] = new Vector4(0.25f, 0.20f, 0.35f, 1.0f);
-        colors[(int)ImGuiCol.FrameBgActive] = new Vector4(0.30f, 0.25f, 0.40f, 1.0f);
+        colors[(int)ImGuiCol.FrameBg] = RGB(38, 31, 56, 0.9f);            // Medium purple
+        colors[(int)ImGuiCol.FrameBgHovered] = RGB(64, 51, 89, 1.0f);     // Lighter purple
+        colors[(int)ImGuiCol.FrameBgActive] = RGB(77, 64, 102, 1.0f);     // Even lighter purple
         
         // Buttons (dark with orange on hover)
-        colors[(int)ImGuiCol.Button] = new Vector4(0.15f, 0.12f, 0.25f, 1.0f);
-        colors[(int)ImGuiCol.ButtonHovered] = new Vector4(0.25f, 0.20f, 0.35f, 1.0f);
-        colors[(int)ImGuiCol.ButtonActive] = new Vector4(0.5f, 0.3f, 0.01f, 0.8f);
+        colors[(int)ImGuiCol.Button] = RGB(38, 31, 64, 1.0f);             // Dark purple
+        colors[(int)ImGuiCol.ButtonHovered] = RGB(64, 51, 89, 1.0f);      // Lighter purple
+        colors[(int)ImGuiCol.ButtonActive] = RGB(128, 77, 3, 0.8f);       // Dark orange
         
         // Headers
-        colors[(int)ImGuiCol.Header] = new Vector4(0.20f, 0.15f, 0.30f, 1.0f);
-        colors[(int)ImGuiCol.HeaderHovered] = new Vector4(0.9f, 0.5f, 0.1f, 0.6f);
-        colors[(int)ImGuiCol.HeaderActive] = new Vector4(0.5f, 0.3f, 0.01f, 0.8f);
+        colors[(int)ImGuiCol.Header] = RGB(51, 38, 77, 1.0f);             // Medium purple
+        colors[(int)ImGuiCol.HeaderHovered] = RGB(230, 128, 26, 0.6f);    // Orange
+        colors[(int)ImGuiCol.HeaderActive] = RGB(128, 77, 3, 0.8f);       // Dark orange
         
         // Tabs
-        colors[(int)ImGuiCol.Tab] = new Vector4(0.15f, 0.12f, 0.25f, 1.0f);
-        colors[(int)ImGuiCol.TabHovered] = new Vector4(0.9f, 0.5f, 0.1f, 0.8f);
+        colors[(int)ImGuiCol.Tab] = RGB(38, 31, 64, 1.0f);                     // Dark purple (inactive)
+        colors[(int)ImGuiCol.TabHovered] = RGB(230, 128, 26, 0.8f);            // Orange (hovered)
+        colors[(int)ImGuiCol.TabSelected] = RGB(128, 77, 3, 1.0f);           // Orange (active/selected)
+        colors[(int)ImGuiCol.TabDimmed] = RGB(31, 26, 51, 1.0f);               // Very dark purple (unfocused)
+        colors[(int)ImGuiCol.TabDimmedSelected] = RGB(128, 77, 26, 0.8f);      // Dimmed orange (unfocused selected)
+        colors[(int)ImGuiCol.TabDimmedSelectedOverline] = RGB(230, 128, 26, 1.0f); // Orange underline
+        colors[(int)ImGuiCol.TabSelectedOverline] = RGB(230, 128, 26, 1.0f);   // Orange underline (focused)
         
         // Checkmarks and sliders (orange)
-        colors[(int)ImGuiCol.CheckMark] = new Vector4(1.0f, 0.7f, 0.2f, 1.0f);
-        colors[(int)ImGuiCol.SliderGrab] = new Vector4(0.9f, 0.5f, 0.1f, 1.0f);
-        colors[(int)ImGuiCol.SliderGrabActive] = new Vector4(1.0f, 0.65f, 0.2f, 1.0f);
+        colors[(int)ImGuiCol.CheckMark] = RGB(255, 179, 51, 1.0f);        // Light orange
+        colors[(int)ImGuiCol.SliderGrab] = RGB(230, 128, 26, 1.0f);       // Orange
+        colors[(int)ImGuiCol.SliderGrabActive] = RGB(255, 166, 51, 1.0f); // Lighter orange
         
         // Scrollbar
-        colors[(int)ImGuiCol.ScrollbarBg] = new Vector4(0.10f, 0.08f, 0.15f, 0.9f);
-        colors[(int)ImGuiCol.ScrollbarGrab] = new Vector4(0.25f, 0.20f, 0.35f, 1.0f);
-        colors[(int)ImGuiCol.ScrollbarGrabHovered] = new Vector4(0.35f, 0.28f, 0.45f, 1.0f);
-        colors[(int)ImGuiCol.ScrollbarGrabActive] = new Vector4(0.9f, 0.5f, 0.1f, 1.0f);
+        colors[(int)ImGuiCol.ScrollbarBg] = RGB(26, 20, 38, 0.9f);        // Dark purple
+        colors[(int)ImGuiCol.ScrollbarGrab] = RGB(64, 51, 89, 1.0f);      // Medium purple
+        colors[(int)ImGuiCol.ScrollbarGrabHovered] = RGB(89, 71, 115, 1.0f); // Lighter purple
+        colors[(int)ImGuiCol.ScrollbarGrabActive] = RGB(230, 128, 26, 1.0f); // Orange
         
         // Separators (orange)
-        colors[(int)ImGuiCol.Separator] = new Vector4(0.9f, 0.5f, 0.1f, 0.5f);
-        colors[(int)ImGuiCol.SeparatorHovered] = new Vector4(0.9f, 0.5f, 0.1f, 0.8f);
-        colors[(int)ImGuiCol.SeparatorActive] = new Vector4(1.0f, 0.6f, 0.2f, 1.0f);
+        colors[(int)ImGuiCol.Separator] = RGB(230, 128, 26, 0.5f);        // Orange
+        colors[(int)ImGuiCol.SeparatorHovered] = RGB(230, 128, 26, 0.8f); // Orange
+        colors[(int)ImGuiCol.SeparatorActive] = RGB(255, 153, 51, 1.0f);  // Lighter orange
         
         // Resize grip
-        colors[(int)ImGuiCol.ResizeGrip] = new Vector4(0.9f, 0.5f, 0.1f, 0.3f);
-        colors[(int)ImGuiCol.ResizeGripHovered] = new Vector4(0.9f, 0.5f, 0.1f, 0.6f);
-        colors[(int)ImGuiCol.ResizeGripActive] = new Vector4(1.0f, 0.6f, 0.2f, 1.0f);
+        colors[(int)ImGuiCol.ResizeGrip] = RGB(230, 128, 26, 0.3f);       // Orange
+        colors[(int)ImGuiCol.ResizeGripHovered] = RGB(230, 128, 26, 0.6f); // Orange
+        colors[(int)ImGuiCol.ResizeGripActive] = RGB(255, 153, 51, 1.0f);  // Lighter orange
         style.FrameRounding = 3.0f;
         style.WindowPadding = new Vector2(10, 10);
         style.FramePadding = new Vector2(5, 3);

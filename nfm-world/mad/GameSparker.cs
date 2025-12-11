@@ -69,11 +69,6 @@ public class GameSparker
     {
         DebugKeyStates[key] = true;
         
-        //if (!_exwist)
-        //{
-
-        //Console.WriteLine($"Key pressed: {key}");
-
         // ideally it would be perfect if it was the tilde key, like in Source Engine games
         if (key == Keys.F1)
         {
@@ -83,63 +78,73 @@ public class GameSparker
 
         if (CurrentState == GameState.Menu)
         {
+            // Handle key capture for settings menu
+            if (SettingsMenu.IsOpen && SettingsMenu.IsCapturingKey())
+            {
+                SettingsMenu.HandleKeyCapture(key);
+            }
             return;
         }
 
         if (!devConsole.IsOpen()) {
-            //115 114 99
-            if (key == Keys.Up)
+            var bindings = SettingsMenu.Bindings;
+            
+            if (key == bindings.Accelerate)
             {
                 cars_in_race[playerCarIndex].Control.Up = true;
             }
-            if (key == Keys.Down)
+            if (key == bindings.Brake)
             {
                 cars_in_race[playerCarIndex].Control.Down = true;
             }
-            if (key == Keys.Right)
+            if (key == bindings.TurnRight)
             {
                 cars_in_race[playerCarIndex].Control.Right = true;
             }
-            if (key == Keys.Left)
+            if (key == bindings.TurnLeft)
             {
                 cars_in_race[playerCarIndex].Control.Left = true;
             }
-            if (key == Keys.Space)
+            if (key == bindings.Handbrake)
             {
                 cars_in_race[playerCarIndex].Control.Handb = true;
             }
-            if (key == Keys.Enter)
+            if (key == bindings.Enter)
             {
                 cars_in_race[playerCarIndex].Control.Enter = true;
             }
-            if (key == Keys.Z)
+            if (key == bindings.LookBack)
             {
                 cars_in_race[playerCarIndex].Control.Lookback = -1;
             }
-            if (key == Keys.X)
+            if (key == bindings.LookLeft)
             {
-                cars_in_race[playerCarIndex].Control.Lookback = 1;
+                cars_in_race[playerCarIndex].Control.Lookback = 3;
             }
-            if (key == Keys.M)
+            if (key == bindings.LookRight)
+            {
+                cars_in_race[playerCarIndex].Control.Lookback = 2;
+            }
+            if (key == bindings.ToggleMusic)
             {
                 cars_in_race[playerCarIndex].Control.Mutem = !cars_in_race[playerCarIndex].Control.Mutem;
             }
 
-            if (key == Keys.N)
+            if (key == bindings.ToggleSFX)
             {
                 cars_in_race[playerCarIndex].Control.Mutes = !cars_in_race[playerCarIndex].Control.Mutes;
             }
 
-            if (key == Keys.A)
+            if (key == bindings.ToggleArrace)
             {
                 cars_in_race[playerCarIndex].Control.Arrace = !cars_in_race[playerCarIndex].Control.Arrace;
             }
 
-            if (key == Keys.S)
+            if (key == bindings.ToggleRadar)
             {
                 cars_in_race[playerCarIndex].Control.Radar = !cars_in_race[playerCarIndex].Control.Radar;
             }
-            if (key == Keys.V)
+            if (key == bindings.CycleView)
             {
                 currentViewMode = (ViewMode)(((int)currentViewMode + 1) % Enum.GetValues<ViewMode>().Length);
             }
@@ -155,44 +160,39 @@ public class GameSparker
             return;
         }
         
-        //if (!_exwist)
-        //{
-            if (cars_in_race[playerCarIndex].Control.Multion < 2)
+        var bindings = SettingsMenu.Bindings;
+        
+        if (cars_in_race[playerCarIndex].Control.Multion < 2)
+        {
+            if (key == bindings.Accelerate)
             {
-                if (key == Keys.Up)
-                {
-                    cars_in_race[playerCarIndex].Control.Up = false;
-                }
-                if (key == Keys.Down)
-                {
-                    cars_in_race[playerCarIndex].Control.Down = false;
-                }
-                if (key == Keys.Right)
-                {
-                    cars_in_race[playerCarIndex].Control.Right = false;
-                }
-                if (key == Keys.Left)
-                {
-                    cars_in_race[playerCarIndex].Control.Left = false;
-                }
-                if (key == Keys.Space)
-                {
-                    cars_in_race[playerCarIndex].Control.Handb = false;
-                }
+                cars_in_race[playerCarIndex].Control.Up = false;
             }
-            if (key == Keys.Escape)
+            if (key == bindings.Brake)
             {
-                cars_in_race[playerCarIndex].Control.Exit = false;
-//                if (Madness.fullscreen)
-//                {
-//                    Madness.exitfullscreen();
-//                }
+                cars_in_race[playerCarIndex].Control.Down = false;
             }
-            if (key == Keys.X || key == Keys.Z)
+            if (key == bindings.TurnRight)
             {
-                cars_in_race[playerCarIndex].Control.Lookback = 0;
+                cars_in_race[playerCarIndex].Control.Right = false;
             }
-        //}
+            if (key == bindings.TurnLeft)
+            {
+                cars_in_race[playerCarIndex].Control.Left = false;
+            }
+            if (key == bindings.Handbrake)
+            {
+                cars_in_race[playerCarIndex].Control.Handb = false;
+            }
+        }
+        if (key == Keys.Escape)
+        {
+            cars_in_race[playerCarIndex].Control.Exit = false;
+        }
+        if (key == bindings.LookBack || key == bindings.LookLeft || key == bindings.LookRight)
+        {
+            cars_in_race[playerCarIndex].Control.Lookback = 0;
+        }
     }
 
     public static List<string> GetAvailableStages()

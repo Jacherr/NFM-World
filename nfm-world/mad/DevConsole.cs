@@ -136,7 +136,7 @@ namespace NFMWorld.Mad
         {
             // windows size
             ImGui.SetNextWindowPos(new System.Numerics.Vector2(50, 50), ImGuiCond.FirstUseEver);
-            ImGui.SetNextWindowSize(new System.Numerics.Vector2(900, 600), ImGuiCond.FirstUseEver);
+            ImGui.SetNextWindowSize(new System.Numerics.Vector2(540, 400), ImGuiCond.FirstUseEver);
 
             // console pos on screen so autocomplete window moves with it
             System.Numerics.Vector2 consolePos = default;

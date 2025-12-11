@@ -113,7 +113,7 @@ public class MainMenu
     public void Render()
     {
         // Clear to dark purple background
-        G.SetColor(new Color(30, 20, 50)); // Dark purple
+        G.SetColor(new Color(15, 0, 35));
         G.FillRect(0, 0, 1920, 1080);
 
         // Draw title

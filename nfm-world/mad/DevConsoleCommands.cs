@@ -117,7 +117,7 @@ namespace NFMWorld.Mad
 
         private static void CreateObject(DevConsole console, string[] args)
         {
-            if (args.Length < 4 || !int.TryParse(args[1], out var x) || !int.TryParse(args[2], out var y) || !int.TryParse(args[3], out var z) || !int.TryParse(args[4], out var r))
+            if (args.Length < 5 || !int.TryParse(args[1], out var x) || !int.TryParse(args[2], out var y) || !int.TryParse(args[3], out var z) || !int.TryParse(args[4], out var r))
             {
                 console.Log("Usage: create <object_name> <x> <y> <z> <r>");
                 return;
